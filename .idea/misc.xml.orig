@@ -25,16 +25,10 @@
     </option>
   </component>
 <<<<<<< HEAD
-<<<<<<< .merge_file_a23912
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" project-jdk-name="JDK" project-jdk-type="JavaSDK">
 =======
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="1.8" project-jdk-type="JavaSDK">
->>>>>>> .merge_file_a28048
-=======
-
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" project-jdk-name="JDK" project-jdk-type="JavaSDK">
-
->>>>>>> 0f18239e5a1cf6db10655d322a9668881c597d58
+>>>>>>> caed520d53b908c0df4256c679e37834ad7735a7
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
