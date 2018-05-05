@@ -3,7 +3,7 @@ package com.ellalee.travelmaker;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class MapMain extends AppCompatActivity {
+public class MapMain extends AppCompatActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
