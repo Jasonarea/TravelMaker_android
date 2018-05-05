@@ -4,6 +4,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.app.FragmentManager;
 
+<<<<<<< HEAD
+public class MapMain extends AppCompatActivity{
+=======
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -23,6 +26,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 
 public class MapMain extends AppCompatActivity implements OnMapReadyCallback {
+>>>>>>> f06e61f7a0f0e9ea402435944c100071764900a9
 
     @Override
 
@@ -54,9 +58,9 @@ public class MapMain extends AppCompatActivity implements OnMapReadyCallback {
 
         markerOptions.position(SEOUL);
 
-        markerOptions.title("seoul");
+        markerOptions.title("서울");
 
-        markerOptions.snippet("capital");
+        markerOptions.snippet("한국의 수도");
 
         map.addMarker(markerOptions);
 
