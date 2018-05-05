@@ -12,9 +12,11 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
 
+import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
 
 import com.google.api.services.gmail.model.*;
+import com.google.api.services.gmail.model.Thread;
 
 import android.Manifest;
 import android.accounts.AccountManager;
@@ -37,10 +39,16 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
+
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.MimeMessage;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -110,6 +118,7 @@ public class GmailSync extends Activity implements EasyPermissions.PermissionCal
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
+
     }
 
 
@@ -310,6 +319,126 @@ public class GmailSync extends Activity implements EasyPermissions.PermissionCal
                 connectionStatusCode,
                 REQUEST_GOOGLE_PLAY_SERVICES);
         dialog.show();
+    }
+
+    /**
+     * List all Messages of the user's mailbox matching the query.
+     *
+     * @param service Authorized Gmail API instance.
+     * @param userId User's email address. The special value "me"
+     * can be used to indicate the authenticated user.
+     * @param query String used to filter the Messages listed.
+     * @throws IOException
+     */
+    public static List<Message> listMessagesMatchingQuery(Gmail service, String userId,
+                                                          String query) throws IOException {
+        ListMessagesResponse response = service.users().messages().list(userId).setQ(query).execute();
+
+        List<Message> messages = new ArrayList<Message>();
+        while (response.getMessages() != null) {
+            messages.addAll(response.getMessages());
+            if (response.getNextPageToken() != null) {
+                String pageToken = response.getNextPageToken();
+                response = service.users().messages().list(userId).setQ(query)
+                        .setPageToken(pageToken).execute();
+            } else {
+                break;
+            }
+        }
+
+        for (Message message : messages) {
+            System.out.println(message.toPrettyString());
+        }
+
+        return messages;
+    }
+    /**
+     * List all Threads of the user's mailbox matching the query.
+     *
+     * @param service Authorized Gmail API instance.
+     * @param userId User's email address. The special value "me"
+     * can be used to indicate the authenticated user.
+     * @param query String used to filter the Threads listed.
+     * @throws IOException
+     */
+    public static void listThreadsMatchingQuery (Gmail service, String userId,
+                                                 String query) throws IOException {
+        ListThreadsResponse response = service.users().threads().list(userId).setQ(query).execute();
+        List<Thread> threads = new ArrayList<Thread>();
+        while(response.getThreads() != null) {
+            threads.addAll(response.getThreads());
+            if(response.getNextPageToken() != null) {
+                String pageToken = response.getNextPageToken();
+                response = service.users().threads().list(userId).setQ(query).setPageToken(pageToken).execute();
+            } else {
+                break;
+            }
+        }
+
+        for(Thread thread : threads) {
+            System.out.println(thread.toPrettyString());
+        }
+    }
+
+    /**
+     * List all Threads of the user's mailbox with labelIds applied.
+     *
+     * @param service Authorized Gmail API instance.
+     * @param userId User's email address. The special value "me"
+     * can be used to indicate the authenticated user.
+     * @param labelIds String used to filter the Threads listed.
+     * @throws IOException
+     */
+    public static void listThreadsWithLabels (Gmail service, String userId,
+                                              List<String> labelIds) throws IOException {
+        ListThreadsResponse response = service.users().threads().list(userId).setLabelIds(labelIds).execute();
+        List<Thread> threads = new ArrayList<Thread>();
+        while(response.getThreads() != null) {
+            threads.addAll(response.getThreads());
+            if(response.getNextPageToken() != null) {
+                String pageToken = response.getNextPageToken();
+                response = service.users().threads().list(userId).setLabelIds(labelIds)
+                        .setPageToken(pageToken).execute();
+            } else {
+                break;
+            }
+        }
+
+        for(Thread thread : threads) {
+            System.out.println(thread.toPrettyString());
+        }
+    }
+    /**
+     * List all Messages of the user's mailbox with labelIds applied.
+     *
+     * @param service Authorized Gmail API instance.
+     * @param userId User's email address. The special value "me"
+     * can be used to indicate the authenticated user.
+     * @param labelIds Only return Messages with these labelIds applied.
+     * @throws IOException
+     */
+    public static List<Message> listMessagesWithLabels(Gmail service, String userId,
+                                                       List<String> labelIds) throws IOException {
+        ListMessagesResponse response = service.users().messages().list(userId)
+                .setLabelIds(labelIds).execute();
+
+        List<Message> messages = new ArrayList<Message>();
+        while (response.getMessages() != null) {
+            messages.addAll(response.getMessages());
+            if (response.getNextPageToken() != null) {
+                String pageToken = response.getNextPageToken();
+                response = service.users().messages().list(userId).setLabelIds(labelIds)
+                        .setPageToken(pageToken).execute();
+            } else {
+                break;
+            }
+        }
+
+        for (Message message : messages) {
+            System.out.println(message.toPrettyString());
+        }
+
+        return messages;
     }
 
     /**
