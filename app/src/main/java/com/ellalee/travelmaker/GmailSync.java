@@ -1,5 +1,6 @@
 package com.ellalee.travelmaker;
 
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -10,6 +11,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecovera
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.Base64;
 import com.google.api.client.util.ExponentialBackOff;
 
 import com.google.api.services.gmail.Gmail;
@@ -40,6 +42,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +51,7 @@ import java.util.Properties;
 
 import javax.mail.MessagingException;
 import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -66,7 +70,7 @@ public class GmailSync extends Activity implements EasyPermissions.PermissionCal
 
     private static final String BUTTON_TEXT = "Call Gmail API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { GmailScopes.GMAIL_LABELS };
+    private static final String[] SCOPES = { "https://www.googleapis.com/auth/gmail.send"};
 
     /**
      * Create the main activity.
@@ -448,7 +452,6 @@ public class GmailSync extends Activity implements EasyPermissions.PermissionCal
     private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
         private com.google.api.services.gmail.Gmail mService = null;
         private Exception mLastError = null;
-
         MakeRequestTask(GoogleAccountCredential credential) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
@@ -527,6 +530,33 @@ public class GmailSync extends Activity implements EasyPermissions.PermissionCal
             } else {
                 mOutputText.setText("Request cancelled.");
             }
+        }
+        private Message MimeMessage2Message(MimeMessage msg) throws MessagingException, IOException
+        {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            msg.writeTo(baos);
+            String encodedEmail = Base64.encodeBase64URLSafeString(baos.toByteArray());
+            Message message = new Message();
+            message.setRaw(encodedEmail);
+            return message;
+        }
+
+        private void sendMail() throws IOException
+        {
+            Properties props = System.getProperties();
+            Session session = Session.getDefaultInstance(props, null);
+            MimeMessage mimeMessage = new MimeMessage(session);
+            Message msg = null;
+            try{
+                mimeMessage.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress("받는사람이메일"));
+                mimeMessage.setSubject("mail 제목");
+                mimeMessage.setText("mail 내용");
+                msg = MimeMessage2Message(mimeMessage);
+            }
+            catch (Exception e){
+                return;
+            }
+            mService.users().messages().send("me", msg ).execute();
         }
     }
 }

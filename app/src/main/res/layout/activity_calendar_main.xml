@@ -1,34 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@color/white" >
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="50dp"
+        android:background="@drawable/calendar_label_background">
             <TextView
                 android:id="@+id/tv_date"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@drawable/calendar_label_background"
-                android:gravity="center_vertical"
-                android:textColor="@color/white"
-                android:textSize="25sp" />
-            <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text = "back"
+                android:layout_centerInParent="true"
                 android:textColor="@color/white"
-                android:gravity="center"
-                android:layout_toLeftOf="@+id/tv_date"/>
+                android:textSize="25dp" />
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text = "next"
-                android:textColor = "@color/white"
-                android:gravity="center"
+                android:id = "@+id/calendar_month_back"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:background="@drawable/calendar_button_back"
+                android:gravity="center_horizontal"
+                android:layout_toLeftOf="@+id/tv_date"
+                android:layout_marginRight="10dp"
+                android:layout_centerInParent="true" />
+            <Button
+                android:id="@+id/calendar_month_next"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/calendar_button_next"
                 android:layout_toRightOf="@+id/tv_date"/>
     </RelativeLayout>
 
