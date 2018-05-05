@@ -4,12 +4,11 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Travel-Maker.iml" filepath="$PROJECT_DIR$/Travel-Maker.iml" />
       <module fileurl="file://C:\Users\jiwon\MP_project\Travel-Maker\Travel-Maker.iml" filepath="C:\Users\jiwon\MP_project\Travel-Maker\Travel-Maker.iml" />
-<<<<<<< HEAD
       <module fileurl="file://E:\Travel-Maker\Travel-Maker.iml" filepath="E:\Travel-Maker\Travel-Maker.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://E:\Travel-Maker\app\app.iml" filepath="E:\Travel-Maker\app\app.iml" />
       <module fileurl="file://C:\Users\jiwon\MP_project\Travel-Maker\app\app.iml" filepath="C:\Users\jiwon\MP_project\Travel-Maker\app\app.iml" />
-=======
+
       <module fileurl="file://D:\18_1\Travel-Maker\Travel-Maker.iml" filepath="D:\18_1\Travel-Maker\Travel-Maker.iml" />
       <module fileurl="file://E:\Travel-Maker\Travel-Maker.iml" filepath="E:\Travel-Maker\Travel-Maker.iml" />
       <module fileurl="file://C:\Users\jiwon\Travel-Maker\Travel-Maker.iml" filepath="C:\Users\jiwon\Travel-Maker\Travel-Maker.iml" />
@@ -18,7 +17,6 @@
       <module fileurl="file://C:\Users\jiwon\MP_project\Travel-Maker\app\app.iml" filepath="C:\Users\jiwon\MP_project\Travel-Maker\app\app.iml" />
       <module fileurl="file://D:\18_1\Travel-Maker\app\app.iml" filepath="D:\18_1\Travel-Maker\app\app.iml" />
       <module fileurl="file://C:\Users\jiwon\Travel-Maker\app\app.iml" filepath="C:\Users\jiwon\Travel-Maker\app\app.iml" />
->>>>>>> caed520d53b908c0df4256c679e37834ad7735a7
     </modules>
   </component>
 </project>
