@@ -444,7 +444,20 @@ public class GmailSync extends Activity implements EasyPermissions.PermissionCal
 
         return messages;
     }
+    public static MimeMessage getMimeMessage(Gmail service, String userId, String messageId)
+            throws IOException, MessagingException {
+        Message message = service.users().messages().get(userId, messageId).setFormat("raw").execute();
 
+        Base64 base64Url = new Base64();
+        byte[] emailBytes = base64Url.decodeBase64(message.getRaw());
+
+        Properties props = new Properties();
+        Session session = Session.getDefaultInstance(props, null);
+
+        MimeMessage email = new MimeMessage(session, new ByteArrayInputStream(emailBytes));
+
+        return email;
+    }
     /**
      * An asynchronous task that handles the Gmail API call.
      * Placing the API calls in their own task ensures the UI stays responsive.
