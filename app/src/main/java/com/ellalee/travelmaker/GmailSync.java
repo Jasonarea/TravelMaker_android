@@ -396,7 +396,7 @@ public class GmailSync extends Activity implements EasyPermissions.PermissionCal
                             + mLastError.getMessage());
                 }
             } else {
-                mOutputText.setText("Request cancelled.");
+                mOutputText.setText("Request cancellation.");
             }
         }
     }
