@@ -1,5 +1,6 @@
 package com.ellalee.travelmaker;
 
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -10,11 +11,14 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecovera
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.Base64;
 import com.google.api.client.util.ExponentialBackOff;
 
+import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.GmailScopes;
 
 import com.google.api.services.gmail.model.*;
+import com.google.api.services.gmail.model.Thread;
 
 import android.Manifest;
 import android.accounts.AccountManager;
@@ -31,16 +35,25 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
+
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -59,6 +72,7 @@ public class GmailSync extends Activity implements EasyPermissions.PermissionCal
     private static final String BUTTON_TEXT = "Call Gmail API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = { GmailScopes.GMAIL_LABELS };
+    private static final String TAG = "HomeCare";
 
     /**
      * Create the main activity.
@@ -378,7 +392,29 @@ public class GmailSync extends Activity implements EasyPermissions.PermissionCal
                 mOutputText.setText(TextUtils.join("\n", output));
             }
         }
+        public List<Message> listMessagesMatchingQuery(Gmail service, String userId,
+                                                       String query) throws IOException {
+            ListMessagesResponse response = service.users().messages().list(userId).setQ(query).execute();
 
+            List<Message> messages = new ArrayList<Message>();
+            while (response.getMessages() != null) {
+                messages.addAll(response.getMessages());
+                if (response.getNextPageToken() != null) {
+                    String pageToken = response.getNextPageToken();
+                    response = service.users().messages().list(userId).setQ(query)
+                            .setPageToken(pageToken).execute();
+                } else {
+                    break;
+                }
+            }
+
+            for (Message message : messages) {
+                Log.d(TAG, "Message Matching");
+                Log.d(TAG, message.toString());
+            }
+
+            return messages;
+        }
         @Override
         protected void onCancelled() {
             mProgress.hide();
@@ -396,7 +432,7 @@ public class GmailSync extends Activity implements EasyPermissions.PermissionCal
                             + mLastError.getMessage());
                 }
             } else {
-                mOutputText.setText("Request cancellation.");
+                mOutputText.setText("Request cancelled.");
             }
         }
     }
