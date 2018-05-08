@@ -35,6 +35,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -70,7 +71,8 @@ public class GmailSync extends Activity implements EasyPermissions.PermissionCal
 
     private static final String BUTTON_TEXT = "Call Gmail API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { "https://www.googleapis.com/auth/gmail.send"};
+    private static final String[] SCOPES = { GmailScopes.GMAIL_LABELS };
+    private static final String TAG = "HomeCare";
 
     /**
      * Create the main activity.
@@ -122,7 +124,6 @@ public class GmailSync extends Activity implements EasyPermissions.PermissionCal
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
-
     }
 
 
@@ -326,132 +327,13 @@ public class GmailSync extends Activity implements EasyPermissions.PermissionCal
     }
 
     /**
-     * List all Messages of the user's mailbox matching the query.
-     *
-     * @param service Authorized Gmail API instance.
-     * @param userId User's email address. The special value "me"
-     * can be used to indicate the authenticated user.
-     * @param query String used to filter the Messages listed.
-     * @throws IOException
-     */
-    public static List<Message> listMessagesMatchingQuery(Gmail service, String userId,
-                                                          String query) throws IOException {
-        ListMessagesResponse response = service.users().messages().list(userId).setQ(query).execute();
-
-        List<Message> messages = new ArrayList<Message>();
-        while (response.getMessages() != null) {
-            messages.addAll(response.getMessages());
-            if (response.getNextPageToken() != null) {
-                String pageToken = response.getNextPageToken();
-                response = service.users().messages().list(userId).setQ(query)
-                        .setPageToken(pageToken).execute();
-            } else {
-                break;
-            }
-        }
-
-        for (Message message : messages) {
-            System.out.println(message.toPrettyString());
-        }
-
-        return messages;
-    }
-    /**
-     * List all Threads of the user's mailbox matching the query.
-     *
-     * @param service Authorized Gmail API instance.
-     * @param userId User's email address. The special value "me"
-     * can be used to indicate the authenticated user.
-     * @param query String used to filter the Threads listed.
-     * @throws IOException
-     */
-    public static void listThreadsMatchingQuery (Gmail service, String userId,
-                                                 String query) throws IOException {
-        ListThreadsResponse response = service.users().threads().list(userId).setQ(query).execute();
-        List<Thread> threads = new ArrayList<Thread>();
-        while(response.getThreads() != null) {
-            threads.addAll(response.getThreads());
-            if(response.getNextPageToken() != null) {
-                String pageToken = response.getNextPageToken();
-                response = service.users().threads().list(userId).setQ(query).setPageToken(pageToken).execute();
-            } else {
-                break;
-            }
-        }
-
-        for(Thread thread : threads) {
-            System.out.println(thread.toPrettyString());
-        }
-    }
-
-    /**
-     * List all Threads of the user's mailbox with labelIds applied.
-     *
-     * @param service Authorized Gmail API instance.
-     * @param userId User's email address. The special value "me"
-     * can be used to indicate the authenticated user.
-     * @param labelIds String used to filter the Threads listed.
-     * @throws IOException
-     */
-    public static void listThreadsWithLabels (Gmail service, String userId,
-                                              List<String> labelIds) throws IOException {
-        ListThreadsResponse response = service.users().threads().list(userId).setLabelIds(labelIds).execute();
-        List<Thread> threads = new ArrayList<Thread>();
-        while(response.getThreads() != null) {
-            threads.addAll(response.getThreads());
-            if(response.getNextPageToken() != null) {
-                String pageToken = response.getNextPageToken();
-                response = service.users().threads().list(userId).setLabelIds(labelIds)
-                        .setPageToken(pageToken).execute();
-            } else {
-                break;
-            }
-        }
-
-        for(Thread thread : threads) {
-            System.out.println(thread.toPrettyString());
-        }
-    }
-    /**
-     * List all Messages of the user's mailbox with labelIds applied.
-     *
-     * @param service Authorized Gmail API instance.
-     * @param userId User's email address. The special value "me"
-     * can be used to indicate the authenticated user.
-     * @param labelIds Only return Messages with these labelIds applied.
-     * @throws IOException
-     */
-    public static List<Message> listMessagesWithLabels(Gmail service, String userId,
-                                                       List<String> labelIds) throws IOException {
-        ListMessagesResponse response = service.users().messages().list(userId)
-                .setLabelIds(labelIds).execute();
-
-        List<Message> messages = new ArrayList<Message>();
-        while (response.getMessages() != null) {
-            messages.addAll(response.getMessages());
-            if (response.getNextPageToken() != null) {
-                String pageToken = response.getNextPageToken();
-                response = service.users().messages().list(userId).setLabelIds(labelIds)
-                        .setPageToken(pageToken).execute();
-            } else {
-                break;
-            }
-        }
-
-        for (Message message : messages) {
-            System.out.println(message.toPrettyString());
-        }
-
-        return messages;
-    }
-
-    /**
      * An asynchronous task that handles the Gmail API call.
      * Placing the API calls in their own task ensures the UI stays responsive.
      */
     private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
         private com.google.api.services.gmail.Gmail mService = null;
         private Exception mLastError = null;
+
         MakeRequestTask(GoogleAccountCredential credential) {
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
@@ -510,7 +392,29 @@ public class GmailSync extends Activity implements EasyPermissions.PermissionCal
                 mOutputText.setText(TextUtils.join("\n", output));
             }
         }
+        public List<Message> listMessagesMatchingQuery(Gmail service, String userId,
+                                                       String query) throws IOException {
+            ListMessagesResponse response = service.users().messages().list(userId).setQ(query).execute();
 
+            List<Message> messages = new ArrayList<Message>();
+            while (response.getMessages() != null) {
+                messages.addAll(response.getMessages());
+                if (response.getNextPageToken() != null) {
+                    String pageToken = response.getNextPageToken();
+                    response = service.users().messages().list(userId).setQ(query)
+                            .setPageToken(pageToken).execute();
+                } else {
+                    break;
+                }
+            }
+
+            for (Message message : messages) {
+                Log.d(TAG, "Message Matching");
+                Log.d(TAG, message.toString());
+            }
+
+            return messages;
+        }
         @Override
         protected void onCancelled() {
             mProgress.hide();
@@ -530,33 +434,6 @@ public class GmailSync extends Activity implements EasyPermissions.PermissionCal
             } else {
                 mOutputText.setText("Request cancelled.");
             }
-        }
-        private Message MimeMessage2Message(MimeMessage msg) throws MessagingException, IOException
-        {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            msg.writeTo(baos);
-            String encodedEmail = Base64.encodeBase64URLSafeString(baos.toByteArray());
-            Message message = new Message();
-            message.setRaw(encodedEmail);
-            return message;
-        }
-
-        private void sendMail() throws IOException
-        {
-            Properties props = System.getProperties();
-            Session session = Session.getDefaultInstance(props, null);
-            MimeMessage mimeMessage = new MimeMessage(session);
-            Message msg = null;
-            try{
-                mimeMessage.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress("받는사람이메일"));
-                mimeMessage.setSubject("mail 제목");
-                mimeMessage.setText("mail 내용");
-                msg = MimeMessage2Message(mimeMessage);
-            }
-            catch (Exception e){
-                return;
-            }
-            mService.users().messages().send("me", msg ).execute();
         }
     }
 }
