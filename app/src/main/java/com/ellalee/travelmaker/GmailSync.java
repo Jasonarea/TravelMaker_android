@@ -51,6 +51,11 @@ import java.util.List;
 import java.util.Properties;
 
 
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -67,7 +72,7 @@ public class GmailSync extends Activity implements EasyPermissions.PermissionCal
 
     private static final String BUTTON_TEXT = "Call Gmail API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { GmailScopes.GMAIL_LABELS };
+    private static final String[] SCOPES = { "https://www.googleapis.com/auth/gmail.send" };
 
     /**
      * Create the main activity.
@@ -340,12 +345,14 @@ public class GmailSync extends Activity implements EasyPermissions.PermissionCal
 
         /**
          * Background task to call Gmail API.
+         *
          * @param params no parameters needed for this task.
          */
         @Override
         protected List<String> doInBackground(Void... params) {
             try {
-                return getDataFromApi();
+                sendMail();
+                return null;
             } catch (Exception e) {
                 mLastError = e;
                 cancel(true);
@@ -355,6 +362,7 @@ public class GmailSync extends Activity implements EasyPermissions.PermissionCal
 
         /**
          * Fetch a list of Gmail labels attached to the specified account.
+         *
          * @return List of Strings labels.
          * @throws IOException
          */
@@ -409,6 +417,30 @@ public class GmailSync extends Activity implements EasyPermissions.PermissionCal
             }
         }
 
+        private Message MimeMessage2Message(MimeMessage msg) throws MessagingException, IOException {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            msg.writeTo(baos);
+            String encodedEmail = Base64.encodeBase64URLSafeString(baos.toByteArray());
+            Message message = new Message();
+            message.setRaw(encodedEmail);
+            return message;
+        }
+
+        private void sendMail() throws IOException {
+            Properties props = System.getProperties();
+            Session session = Session.getDefaultInstance(props, null);
+            MimeMessage mimeMessage = new MimeMessage(session);
+            Message msg = null;
+            try {
+                mimeMessage.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress("받는사람이메일"));
+                mimeMessage.setSubject("mail 제목");
+                mimeMessage.setText("mail 내용");
+                msg = MimeMessage2Message(mimeMessage);
+            } catch (Exception e) {
+                return;
+            }
+            mService.users().messages().send("me", msg).execute();
+        }
     }
     /**
      * Get Message with given ID.
