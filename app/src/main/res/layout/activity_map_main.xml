@@ -20,7 +20,12 @@
         android:layout_height="wrap_content"
         android:id="@+id/btnAddRoute"
         android:text="Route"
-        android:onClick="AddRoute"/>
+        android:onClick="editRoute"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Place"
+        android:onClick="editMarker"/>
 
     <fragment
         android:id="@+id/map"
