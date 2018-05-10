@@ -15,5 +15,4 @@ public class MainActivity extends AppCompatActivity {
     public void mapMain(View v){
         startActivity(new Intent(getApplicationContext(),MapMain.class));
     }
-
 }
