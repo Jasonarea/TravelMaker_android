@@ -5,12 +5,16 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
+import android.provider.ContactsContract;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,16 +44,21 @@ import java.util.List;
 public class MapMain extends FragmentActivity implements OnMapReadyCallback,GoogleMap.OnMarkerClickListener{
 
     private int edit_mode = 0; // 1:editMarker 2: editRoute
+    private int routeIndex=0; // day 1,2 ....
     private Geocoder geocoder;
     private EditText editAddress;
     private GoogleMap googleMap;
     private Button btnSearch;
-    private Button btnAddRoute;
+    private Button btnRoute;
+    private Button btnPlace;
 
-    private PolylineOptions polylineOptions;
-    private ArrayList<Marker> markerPoints = new ArrayList<>();
-    private ArrayList<LatLng> markerLatLng;
-    private Polyline line;
+    private PolylineOptions polylineOptions; //1개
+//    private ArrayList<Marker> newMarker = new ArrayList<>(); //여러개
+    private ArrayList<ArrayList<Marker>> markerPoint = new ArrayList<ArrayList<Marker>>();
+
+    private ArrayList<LatLng> markerLatLng; //1개
+    private ContextMenu contextMenu;
+    private ArrayList<Polyline> line = new ArrayList<>(); //여러개
 
 //    private int DEFAULT_ZOOM_LEVEL = 13;
 
@@ -61,7 +70,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         geocoder = new Geocoder(this);
         editAddress = findViewById(R.id.editAddress);
         btnSearch = findViewById(R.id.btnSearch);
-        btnAddRoute = findViewById(R.id.btnAddRoute);
+        btnRoute = findViewById(R.id.btnRoute);
+        btnPlace = findViewById(R.id.btnPlace);
 
         FragmentManager fragmentManager = getFragmentManager();
         MapFragment mapFragment = (MapFragment) fragmentManager.findFragmentById(R.id.map);
@@ -123,8 +133,18 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 
             @Override
             public void onMarkerDragEnd(Marker marker) {
-                line.remove();
-                DrawPolyRoute(Color.BLUE);
+                //-----------------------------------------> Marker가 포함된 line을 찾아 해당 라인 지우기, 마커가 여러 루트에 포함될 경우를 고려해 루트 모두 검색
+
+                Iterator<ArrayList<Marker>> route_iterator = markerPoint.iterator(); //route iterator
+                int index = markerPoint.indexOf(route_iterator);
+                while(route_iterator.hasNext()){
+                    ArrayList<Marker> marker_iterator = route_iterator.next(); //marker iterator
+
+                    if(marker_iterator.remove(marker)){                           //이번 route에 해당마커가 있다면 지우기
+                        Toast.makeText(MapMain.this, marker.getTitle()+" removed", Toast.LENGTH_SHORT).show();
+                        line.get(index).setPoints(toLatLng(markerPoint.get(index)));
+                    }
+                }
             }
         });
 
@@ -138,39 +158,104 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     @Override
     public boolean onMarkerClick(Marker marker) {
 
-        if(edit_mode==1){
+        if(edit_mode==1){  //marker 지우기
             marker.remove();
+
+            Iterator<ArrayList<Marker>> route_iterator = markerPoint.iterator(); //route iterator
+            int index= markerPoint.indexOf(route_iterator); //current index
+            while(route_iterator.hasNext()){
+                ArrayList<Marker> marker_iterator = route_iterator.next(); //marker iterator
+
+                if(marker_iterator.remove(marker)){                           //route에 해당마커가 있다면 지우기
+                    Toast.makeText(this, marker.getTitle()+" removed" , Toast.LENGTH_SHORT).show();
+                    line.get(index).setPoints(toLatLng(markerPoint.get(index)));
+                }
+            }
+        //  line.remove();
+            // DrawPolyRoute(Color.RED);
         }
-        else if(edit_mode==2) {
-            markerPoints.add(marker);
-            DrawPolyRoute(Color.BLACK);
+        else if(edit_mode==2) {  // marker 추가하기
+            Toast.makeText(this, "Fine!", Toast.LENGTH_SHORT).show();
+            markerPoint.get(routeIndex).add(marker);
+//수정      line.get(routeIndex).setPoints(toLatLng(markerPoint.get(routeIndex)));
+//잠깐            line.add(routeIndex,DrawPolyRoute(routeIndex));
         }
         return false;
     }
+/*
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        contextMenu = menu;
+        menu.add(0,0,0,"add another day");
+        menu.add(0,routeIndex,0,"Day"+routeIndex);
+    }
 
-    void DrawPolyRoute(int color){
-        Iterator<Marker> iterator = markerPoints.iterator();
-        markerLatLng = new ArrayList<>();
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case 0:
+                onPrepareOptionsMenu(contextMenu);
+                return true;
+            default:
 
-        while(iterator.hasNext()){
-            markerLatLng.add(iterator.next().getPosition());
         }
+        return super.onContextItemSelected(item);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        return super.onPrepareOptionsMenu(menu);
+        //  -------------> menu 추가 만들기
+    }
+*/
+    void setPolylineOptions(int index, ArrayList<LatLng> markerLatLng){
         polylineOptions = new PolylineOptions();
-        polylineOptions.color(color);
+        switch (index){
+            case 1:
+                polylineOptions.color(Color.BLUE);
+                break;
+            case 2:
+                polylineOptions.color(Color.RED);
+                break;
+            case 3:
+                polylineOptions.color(Color.GREEN);
+                break;
+        }
         polylineOptions.width(10);
         polylineOptions.addAll(markerLatLng);
-        line = googleMap.addPolyline(polylineOptions);
+    }
+
+    ArrayList<LatLng> toLatLng(ArrayList<Marker> markers){
+        Iterator<Marker> iterator = markers.iterator();
+        ArrayList<LatLng> LatLngs = new ArrayList<>();
+
+        while(iterator.hasNext()){
+            LatLngs.add(iterator.next().getPosition());
+        }
+        return LatLngs;
+    }
+
+    Polyline DrawPolyRoute(int routeIdx){
+        setPolylineOptions(routeIdx,toLatLng(markerPoint.get(routeIdx)));
+
+        //맨 처음으로 루트 설정 시 - BLUE
+        polylineOptions.color(Color.BLUE);
+
+        Polyline curPolyline = googleMap.addPolyline(polylineOptions);
+        return curPolyline;
     }
 
     public void editMarker(View v){
         if(edit_mode!= 1){
-            btnAddRoute.setTextColor(Color.RED);
+            btnPlace.setTextColor(Color.RED);
+            btnRoute.setTextColor(Color.BLACK);
             Toast.makeText(this,"remove a marker",Toast.LENGTH_SHORT).show();
             edit_mode = 1;
         }
         else if(edit_mode==1){
-            //DrawPolyRoute();
-            btnAddRoute.setTextColor(Color.BLACK);
+            btnPlace.setTextColor(Color.BLACK);
+            btnRoute.setTextColor(Color.BLACK);
             Toast.makeText(this,"Done",Toast.LENGTH_SHORT).show();
             edit_mode = 0;
         }
@@ -178,16 +263,24 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 
     public void editRoute(View v){
         if(edit_mode!=2){
-            btnAddRoute.setTextColor(Color.RED);
             Toast.makeText(this,"Make a route",Toast.LENGTH_SHORT).show();
             edit_mode = 2;
+            //route_index 바꾸는것 추가하기
+            btnRoute.setTextColor(Color.RED);
+            btnPlace.setTextColor(Color.BLACK);
         }
         else if(edit_mode==2){
             //DrawPolyRoute();
-            btnAddRoute.setTextColor(Color.BLACK);
+            btnRoute.setTextColor(Color.BLACK);
+            btnPlace.setTextColor(Color.BLACK);
             Toast.makeText(this,"Show the route",Toast.LENGTH_SHORT).show();
             edit_mode = 0;
+
+  /*          if(line.get(routeIndex) == null) //처음 만들때
+                line.add(routeIndex,DrawPolyRoute(routeIndex));
+            else{ //두번째 만들때
+   */
+//잠깐1            line.get(routeIndex).setPoints(toLatLng(markerPoint.get(routeIndex)));
         }
-        //*************버튼 색 변경하는 것 추가하기 !!
     }
 }
