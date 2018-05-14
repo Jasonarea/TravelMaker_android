@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:id="@+id/relativeLayout_main"
     tools:context="com.ellalee.travelmaker.MainActivity"
     android:background="@drawable/calendar_label_background">
