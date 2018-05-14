@@ -6,11 +6,11 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <Button
+   <Button
         android:id="@+id/greet_me_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="받은메일함 보기"
+        android:text="메일 보기"
         android:onClick="greetTheUser"/>
 
     <ProgressBar
@@ -34,5 +34,4 @@
         android:layout_weight="1"
         android:textSize="18sp"
         android:paddingTop="16dp"/>
-
 </LinearLayout>
