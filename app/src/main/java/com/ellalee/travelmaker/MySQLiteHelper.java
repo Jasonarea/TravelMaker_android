@@ -1,8 +1,5 @@
 package com.ellalee.travelmaker;
 
-/**
- * Created by hyeon on 2018-05-10.
- */
 
 import android.content.ContentValues;
 import android.content.Context;
