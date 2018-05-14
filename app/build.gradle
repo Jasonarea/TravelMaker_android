@@ -37,10 +37,8 @@ dependencies {
     //google map api
     implementation 'com.google.android.gms:play-services-maps:15.0.0'
     implementation 'com.google.android.gms:play-services-location:15.0.0'
-
     //google places
     implementation 'com.google.android.gms:play-services-places:15.0.0'
-
     implementation 'com.google.android.gms:play-services-auth:15.0.0'
     implementation 'pub.devrel:easypermissions:0.3.0'
     implementation('com.google.api-client:google-api-client-android:1.23.0') {
@@ -52,7 +50,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    implementation files('C:/Users/jiwon/Travel-Maker/libs/mail.jar')
-    implementation files('C:/Users/jiwon/Travel-Maker/libs/additionnal.jar')
-    implementation files('C:/Users/jiwon/Travel-Maker/libs/activation.jar')
+    implementation files('D:/18_1/Travel-Maker/libs/mail.jar')
+    implementation files('D:/18_1/Travel-Maker/libs/additionnal.jar')
+    implementation files('D:/18_1/Travel-Maker/libs/activation.jar')
 }
