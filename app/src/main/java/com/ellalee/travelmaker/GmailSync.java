@@ -99,7 +99,6 @@ public class GmailSync extends Activity {
         }
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, l );
 
-
         mOut = (TextView) findViewById(R.id.message);
         lView = (ListView) findViewById(R.id.listView);
 
@@ -406,7 +405,7 @@ public class GmailSync extends Activity {
             }
 
             GoogleCredential credential = new GoogleCredential().setAccessToken(token);
-            JsonFactory jsonFactory = new JacksonFactory();
+                      JsonFactory jsonFactory = new JacksonFactory();
             HttpTransport httpTransport = new NetHttpTransport();
 
             Gmail service = new Gmail.Builder(httpTransport, jsonFactory, credential).setApplicationName("GmailApiTP").build();
@@ -474,26 +473,28 @@ public class GmailSync extends Activity {
 
                 for( MessagePartHeader h : messageHeader) {
                     if(h.getName().equals("Subject")){
-                        sub = h.getValue();
-                        l.add(h.getValue());
-                        subs.add(h.getValue());
-                        mActivity.list(l);
-                        break;
+                        if(h.getValue().contains("Voucher") || h.getValue().contains("바우처") || h.getValue().contains("itinerary") ||
+                                h.getValue().contains("e-ticket") || h.getValue().contains("이티켓") || h.getValue().contains("The Log")) {
+                            sub = h.getValue();
+                            l.add(h.getValue());
+                            subs.add(h.getValue());
+                            mActivity.list(l);
+                            break;
+                        }
                     }else if(h.getName().equals("Date")){
                         emailDate = getDate(h.getValue());
                     }else if(h.getName().equals("From")){
                         author = h.getValue();
                     }
                 }
-                db.addBook(new Email(sub,bod,author,emailDate[0],emailDate[1],emailDate[2],1));
 
+                db.addBook(new Email(sub,bod,author,emailDate[0],emailDate[1],emailDate[2],1));
             }
 
 
             mActivity.list(l);
             mActivity.setItemListener(body, subs);
             mActivity.hideSpinner();
-
         }
 
         public int[] getDate(String time){

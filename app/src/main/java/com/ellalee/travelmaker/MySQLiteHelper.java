@@ -1,8 +1,5 @@
 package com.ellalee.travelmaker;
 
-/**
- * Created by hyeon on 2018-05-10.
- */
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -67,11 +64,11 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String[] COLUMNS = {KEY_ID,KEY_SUBJECT,KEY_BODY,KEY_AUTHOR,KEY_DAY,KEY_MONTH,KEY_YEAR,KEY_URGENCY};
 
     public void addBook(Email email){
-        Log.d("addBook", email.toString());
         // 1. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
 
         // 2. create ContentValues to add key "column"/value
+
         ContentValues values = new ContentValues();
         values.put(KEY_SUBJECT, email.getSubject());
         values.put(KEY_BODY, email.getBody());
@@ -81,14 +78,17 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(KEY_YEAR, email.getYear());
         values.put(KEY_URGENCY, email.getUrgency());
 
-
         // 3. insert
+        Log.d("addBook", email.getSubject());
         db.insert(TABLE_BOOKS, // table
                 null, //nullColumnHack
                 values); // key/value -> keys = column names/ values = column values
-
-        // 4. close
+            // 4. close
         db.close();
+
+
+
+
     }
 
     public Email getBook(int id){
@@ -140,6 +140,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
         // 3. go over each row, build book and add it to list
         Email email = null;
+        int count = 0;
         if (cursor.moveToFirst()) {
             do {
                 email = new Email();
@@ -156,7 +157,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 emails.add(email);
             } while (cursor.moveToNext());
         }
-
         Log.d("getAllBooks()", emails.toString());
 
         // return books
