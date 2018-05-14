@@ -18,13 +18,14 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btnAddRoute"
+        android:id="@+id/btnRoute"
         android:text="Route"
         android:onClick="editRoute"/>
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Place"
+        android:id="@+id/btnPlace"
         android:onClick="editMarker"/>
 
     <fragment
