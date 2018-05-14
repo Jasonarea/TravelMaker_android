@@ -12,8 +12,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
-    public void mapMain(View v){
+   /* public void mapMain(View v){
         startActivity(new Intent(getApplicationContext(),MapMain.class));
     }
+    */
 
 }
