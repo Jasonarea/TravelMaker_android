@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,7 +45,7 @@ import java.util.List;
 public class MapMain extends FragmentActivity implements OnMapReadyCallback,GoogleMap.OnMarkerClickListener{
 
     private int edit_mode = 0; // 1:editMarker 2: editRoute
-    private int routeIndex=0; // day 1,2 ....
+    private int routeIndex = 0; // day 1,2 ....
     private Geocoder geocoder;
     private EditText editAddress;
     private GoogleMap googleMap;
@@ -52,13 +53,70 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     private Button btnRoute;
     private Button btnPlace;
 
-    private PolylineOptions polylineOptions; //1개
-//    private ArrayList<Marker> newMarker = new ArrayList<>(); //여러개
-    private ArrayList<ArrayList<Marker>> markerPoint = new ArrayList<ArrayList<Marker>>();
+    //private PolylineOptions polylineOptions; //1개
+    //private ArrayList<Marker> markersList = new ArrayList<>(); //여러개
+    //private ArrayList<ArrayList<Marker>> routesList = new ArrayList<ArrayList<Marker>>();
 
     private ArrayList<LatLng> markerLatLng; //1개
     private ContextMenu contextMenu;
-    private ArrayList<Polyline> line = new ArrayList<>(); //여러개
+    private ArrayList<Route> routes = new ArrayList<>(); //여러개
+    //private Polyline polyline;
+
+
+    private class Route{
+        public int index;
+        public PolylineOptions polylineOptions = new PolylineOptions();
+        public ArrayList<Marker> markerList;
+        public Polyline polyline;
+
+        Route(int idx){
+            index = idx;
+            markerList = new ArrayList<>();
+            setPolylineOptions();
+            polyline = googleMap.addPolyline(polylineOptions);
+            polyline.setClickable(true);
+        }
+        boolean add(Marker marker){
+            return markerList.add(marker);
+        }
+        boolean remove(Marker marker){
+            return markerList.remove(marker);
+        }
+        boolean contains(Marker marker){
+            Iterator iterator = markerList.iterator();
+            while(iterator.hasNext()){
+                if(iterator.equals(marker))
+                    return true;
+            }
+            return false;
+        }
+        public void setMarkerList(ArrayList<Marker> markerList) {
+            this.markerList = markerList;
+        }
+        public void setPolylineOptions(){
+            switch (this.index){
+                case 0:
+                    polylineOptions.color(Color.RED);
+                case 1:
+                    polylineOptions.color(Color.BLUE);
+                    break;
+                case 2:
+                    polylineOptions.color(Color.YELLOW);
+                    break;
+                case 3:
+                    polylineOptions.color(Color.GREEN);
+                    break;
+            }
+            this.polylineOptions.width(10);
+            this.polylineOptions.addAll(toLatLng(this.markerList));
+        }
+        public void setPoints(ArrayList<LatLng> latLng){
+            polyline.setPoints(latLng);
+        }
+        public void setPoints(){
+            polyline.setPoints(toLatLng(markerList));
+        }
+    }
 
 //    private int DEFAULT_ZOOM_LEVEL = 13;
 
@@ -78,11 +136,13 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         mapFragment.getMapAsync(this);
     }
 
-
     @Override
     public void onMapReady(final GoogleMap map) {
         googleMap = map;
         geocoder = new Geocoder(this);
+
+        Route day1= new Route(routeIndex);
+        routes.add(routeIndex,day1);
 
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,12 +168,12 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 
                         LatLng SearchPoint = new LatLng(latitude, longitude);
 
-                        MarkerOptions mOptions2 = new MarkerOptions();
-                        mOptions2.title(str);
-                        mOptions2.draggable(true);
-                        mOptions2.position(SearchPoint);
+                        MarkerOptions mOptions = new MarkerOptions();
+                        mOptions.title(str);
+                        mOptions.draggable(true);
+                        mOptions.position(SearchPoint);
                         // 마커 추가
-                        googleMap.addMarker(mOptions2);
+                        googleMap.addMarker(mOptions);
                         // 해당 좌표로 화면 줌
                         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SearchPoint, 15));
 
@@ -134,16 +194,11 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             @Override
             public void onMarkerDragEnd(Marker marker) {
                 //-----------------------------------------> Marker가 포함된 line을 찾아 해당 라인 지우기, 마커가 여러 루트에 포함될 경우를 고려해 루트 모두 검색
-
-                Iterator<ArrayList<Marker>> route_iterator = markerPoint.iterator(); //route iterator
-                int index = markerPoint.indexOf(route_iterator);
-                while(route_iterator.hasNext()){
-                    ArrayList<Marker> marker_iterator = route_iterator.next(); //marker iterator
-
-                    if(marker_iterator.remove(marker)){                           //이번 route에 해당마커가 있다면 지우기
-                        Toast.makeText(MapMain.this, marker.getTitle()+" removed", Toast.LENGTH_SHORT).show();
-                        line.get(index).setPoints(toLatLng(markerPoint.get(index)));
-                    }
+                Iterator<Route> route_iterator = routes.iterator(); //route iterator
+                Route cur;
+                while (route_iterator.hasNext()) {
+                    cur = route_iterator.next();
+                    cur.setPoints();
                 }
             }
         });
@@ -160,25 +215,42 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 
         if(edit_mode==1){  //marker 지우기
             marker.remove();
+            /*
 
-            Iterator<ArrayList<Marker>> route_iterator = markerPoint.iterator(); //route iterator
-            int index= markerPoint.indexOf(route_iterator); //current index
+            //Iterator<ArrayList<Marker>> route_iterator = routesList.iterator(); //route iterator
+            int index= routesList.indexOf(route_iterator); //current index
             while(route_iterator.hasNext()){
                 ArrayList<Marker> marker_iterator = route_iterator.next(); //marker iterator
 
                 if(marker_iterator.remove(marker)){                           //route에 해당마커가 있다면 지우기
                     Toast.makeText(this, marker.getTitle()+" removed" , Toast.LENGTH_SHORT).show();
-                    line.get(index).setPoints(toLatLng(markerPoint.get(index)));
+                    lines.get(index).setPoints(toLatLng(routesList.get(index)));
                 }
             }
-        //  line.remove();
-            // DrawPolyRoute(Color.RED);
+            */
+
+            Iterator<Route> route_iterator = routes.iterator();
+            Route cur;
+            marker.remove();
+
+            while (route_iterator.hasNext()){
+                cur = route_iterator.next();
+                if(cur.remove(marker))
+                    cur.setPoints();
+            }
         }
         else if(edit_mode==2) {  // marker 추가하기
-            Toast.makeText(this, "Fine!", Toast.LENGTH_SHORT).show();
-            markerPoint.get(routeIndex).add(marker);
-//수정      line.get(routeIndex).setPoints(toLatLng(markerPoint.get(routeIndex)));
-//잠깐            line.add(routeIndex,DrawPolyRoute(routeIndex));
+            /*
+            routesList.add(markersList); //init
+            routesList.get(routeIndex).add(marker);
+
+            setPolylineOptions(routeIndex,toLatLng(markersList));
+            polyline = googleMap.addPolyline(polylineOptions);
+
+            lines.add(routeIndex,polyline);
+            */
+            routes.get(routeIndex).add(marker);
+            routes.get(routeIndex).setPoints();
         }
         return false;
     }
@@ -208,24 +280,25 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         return super.onPrepareOptionsMenu(menu);
         //  -------------> menu 추가 만들기
     }
-*/
-    void setPolylineOptions(int index, ArrayList<LatLng> markerLatLng){
-        polylineOptions = new PolylineOptions();
+
+    PolylineOptions setPolylineOptions(int index, ArrayList<LatLng> markerLatLng){
+        PolylineOptions polylineOption = new PolylineOptions();
         switch (index){
             case 1:
-                polylineOptions.color(Color.BLUE);
+                polylineOption.color(Color.BLUE);
                 break;
             case 2:
-                polylineOptions.color(Color.RED);
+                polylineOption.color(Color.RED);
                 break;
             case 3:
-                polylineOptions.color(Color.GREEN);
+                polylineOption.color(Color.GREEN);
                 break;
         }
-        polylineOptions.width(10);
-        polylineOptions.addAll(markerLatLng);
+        polylineOption.width(10);
+        polylineOption.addAll(markerLatLng);
+        return polylineOption;
     }
-
+*/
     ArrayList<LatLng> toLatLng(ArrayList<Marker> markers){
         Iterator<Marker> iterator = markers.iterator();
         ArrayList<LatLng> LatLngs = new ArrayList<>();
@@ -235,9 +308,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         }
         return LatLngs;
     }
-
+/*
     Polyline DrawPolyRoute(int routeIdx){
-        setPolylineOptions(routeIdx,toLatLng(markerPoint.get(routeIdx)));
+        setPolylineOptions(routeIdx,toLatLng(routesList.get(routeIdx)));
 
         //맨 처음으로 루트 설정 시 - BLUE
         polylineOptions.color(Color.BLUE);
@@ -245,7 +318,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         Polyline curPolyline = googleMap.addPolyline(polylineOptions);
         return curPolyline;
     }
-
+*/
     public void editMarker(View v){
         if(edit_mode!= 1){
             btnPlace.setTextColor(Color.RED);
