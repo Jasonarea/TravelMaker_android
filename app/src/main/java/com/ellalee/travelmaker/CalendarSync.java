@@ -16,6 +16,7 @@ import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.client.util.DateTime;
 
 import com.google.api.services.calendar.model.*;
+import com.google.api.services.gmail.Gmail;
 
 import android.Manifest;
 import android.accounts.AccountManager;
@@ -37,6 +38,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,6 +53,7 @@ public class CalendarSync extends Activity
     GoogleAccountCredential mCredential;
     private TextView mOutputText;
     private Button mCallApiButton;
+    private Button mSynchronization;
     ProgressDialog mProgress;
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
@@ -69,7 +72,7 @@ public class CalendarSync extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LinearLayout activityLayout = new LinearLayout(this);
+        final LinearLayout activityLayout = new LinearLayout(this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
@@ -82,6 +85,7 @@ public class CalendarSync extends Activity
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 
         mCallApiButton = new Button(this);
+
         mCallApiButton.setText(BUTTON_TEXT);
         mCallApiButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,7 +97,18 @@ public class CalendarSync extends Activity
             }
         });
         activityLayout.addView(mCallApiButton);
+        mSynchronization = new Button(this);
+        mSynchronization.setText("Mail Sync");
 
+        mSynchronization.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                GmailSync gmails = new GmailSync();
+
+                Toast.makeText(getApplicationContext(), "Email Searching Complete", Toast.LENGTH_LONG).show();
+            }
+        });
+        activityLayout.addView(mSynchronization);
         mOutputText = new TextView(this);
         mOutputText.setLayoutParams(tlp);
         mOutputText.setPadding(16, 16, 16, 16);
