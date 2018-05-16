@@ -473,14 +473,12 @@ public class GmailSync extends Activity {
 
                 for( MessagePartHeader h : messageHeader) {
                     if(h.getName().equals("Subject")){
-                        if(h.getValue().contains("Voucher") || h.getValue().contains("바우처") || h.getValue().contains("itinerary") ||
-                                h.getValue().contains("e-ticket") || h.getValue().contains("이티켓") || h.getValue().contains("The Log")) {
                             sub = h.getValue();
                             l.add(h.getValue());
                             subs.add(h.getValue());
                             mActivity.list(l);
                             break;
-                        }
+
                     }else if(h.getName().equals("Date")){
                         emailDate = getDate(h.getValue());
                     }else if(h.getName().equals("From")){
