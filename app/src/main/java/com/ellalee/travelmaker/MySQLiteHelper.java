@@ -65,7 +65,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String KEY_URGENCY = "urgency";
 
     private static final String[] COLUMNS = {KEY_ID,KEY_SUBJECT,KEY_BODY,KEY_AUTHOR,KEY_DAY,KEY_MONTH,KEY_YEAR,KEY_URGENCY};
-
     public void addBook(Email email){
         // 1. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
@@ -88,10 +87,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 values); // key/value -> keys = column names/ values = column values
             // 4. close
         db.close();
-
-
-
-
     }
 
     public Email getBook(int id){

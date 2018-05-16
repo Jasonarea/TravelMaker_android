@@ -76,7 +76,7 @@ public class GmailSync extends Activity {
     static final int REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR = 1002;
     public static final String PREFS_NAME = "PrimeFile";
     private String mEmail;
-
+    public static int count = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -473,21 +473,20 @@ public class GmailSync extends Activity {
 
                 for( MessagePartHeader h : messageHeader) {
                     if(h.getName().equals("Subject")){
-                        if(h.getValue().contains("Voucher") || h.getValue().contains("바우처") || h.getValue().contains("itinerary") ||
-                                h.getValue().contains("e-ticket") || h.getValue().contains("이티켓") || h.getValue().contains("The Log")) {
-                            sub = h.getValue();
-                            l.add(h.getValue());
-                            subs.add(h.getValue());
-                            mActivity.list(l);
-                            break;
-                        }
+                        sub = h.getValue();
+                        l.add(h.getValue());
+                        subs.add(h.getValue());
+                        mActivity.list(l);
+                        break;
+
                     }else if(h.getName().equals("Date")){
                         emailDate = getDate(h.getValue());
                     }else if(h.getName().equals("From")){
                         author = h.getValue();
                     }
                 }
-
+                ++count;
+                Log.d("count", String.valueOf(count));
                 db.addBook(new Email(sub,bod,author,emailDate[0],emailDate[1],emailDate[2],1));
             }
 
@@ -500,7 +499,7 @@ public class GmailSync extends Activity {
         public int[] getDate(String time){
             int day[] = {0,0,0};
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-                    "EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
+                    "EEE, d MMM yyyy HH:mm:ss Z", Locale.KOREA);
             Date date = null;
             try {
                 date = simpleDateFormat.parse(time);
