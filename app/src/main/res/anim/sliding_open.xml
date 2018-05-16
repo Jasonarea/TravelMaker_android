@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillAfter="true"
+    android:interpolator="@android:anim/accelerate_decelerate_interpolator">
+    <!--Move from bottom to top for 0.5 seconds-->
+    <translate
+        android:fromYDelta="100%p"
+        android:toYDelta="0%"
+        android:duration="500"
+        android:repeatCount="0"/>
+</set>

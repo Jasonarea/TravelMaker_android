@@ -18,9 +18,13 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.SlidingDrawer;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -46,7 +50,7 @@ import java.util.List;
 
 public class MapMain extends FragmentActivity implements OnMapReadyCallback,GoogleMap.OnMarkerClickListener{
 
-    private int edit_mode = 0; // 1:editMarker 2: editRoute
+    private int edit_mode = 0; // 0:onlyView 1:editMarker 2: editRoute
     private int routeIndex = 0; // day 1,2 ....
     private int newIndex;
     private Geocoder geocoder;
@@ -56,60 +60,36 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     private Button btnRoute;
     private Button btnPlace;
 
-    //private PolylineOptions polylineOptions; // single
-    //private ArrayList<Marker> markersList = new ArrayList<>(); // multi
-    //private ArrayList<ArrayList<Marker>> routesList = new ArrayList<ArrayList<Marker>>();
-
     private ArrayList<LatLng> markerLatLng; //single
     private ContextMenu contextMenu;
-    private ArrayList<Route> routes = new ArrayList<>(); //multi
 
+    private ArrayList<Route> routes = new ArrayList<>(); //multi
     String[] routeColor;
 
-    private class Route{
-        public int index;
-        public PolylineOptions polylineOptions = new PolylineOptions();
-        public ArrayList<Marker> markerList;
-        public Polyline polyline;
+    Animation slidingOpen;
+    Animation slidingClose;
+    LinearLayout slidingLayout;
+    boolean openPage=false;
 
-        Route(int idx){
-            index = idx;
-            markerList = new ArrayList<>();
-            setPolylineOptions();
-            polyline = googleMap.addPolyline(polylineOptions);
-            polyline.setClickable(true);
-        }
-        boolean add(Marker marker){
-            return markerList.add(marker);
-        }
-        boolean remove(Marker marker){
-            return markerList.remove(marker);
-        }
-        boolean contains(Marker marker){
-            Iterator<Marker> iterator = markerList.iterator();
-            while(iterator.hasNext()){
-                if(iterator.equals(marker))
-                    return true;
+    private class SlidingPageAnimationListener implements Animation.AnimationListener{
+        @Override
+        public void onAnimationStart(Animation animation) {}
+
+        @Override
+        public void onAnimationRepeat(Animation animation) {}
+
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            if(openPage){ //currently open -> close
+                slidingLayout.setVisibility(View.INVISIBLE);
+                openPage=false;
             }
-            return false;
+            else{ //currently close -> open
+                openPage=true;
+            }
         }
-        public void setMarkerList(ArrayList<Marker> markerList) {
-            this.markerList = markerList;
-        }
-        public void setPolylineOptions(){
-            polylineOptions.color(Color.parseColor(routeColor[index]));
 
-            this.polylineOptions.width(10);
-            this.polylineOptions.addAll(toLatLng(this.markerList));
-        }
-        public void setPoints(ArrayList<LatLng> latLng){
-            polyline.setPoints(latLng);
-        }
-        public void setPoints(){
-            polyline.setPoints(toLatLng(markerList));
-        }
     }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,6 +104,14 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         routeColor = getResources().getStringArray(R.array.routeColor);
         registerForContextMenu(btnRoute);
 
+        slidingLayout = findViewById(R.id.slidingLayout);
+        slidingOpen = AnimationUtils.loadAnimation(this,R.anim.sliding_open);
+        slidingClose = AnimationUtils.loadAnimation(this,R.anim.sliding_close);
+
+        SlidingPageAnimationListener animationListener = new SlidingPageAnimationListener();
+        slidingOpen.setAnimationListener(animationListener);
+        slidingClose.setAnimationListener(animationListener);
+
         FragmentManager fragmentManager = getFragmentManager();
         MapFragment mapFragment = (MapFragment) fragmentManager.findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -134,14 +122,13 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         googleMap = map;
         geocoder = new Geocoder(this);
 
-        Route day1= new Route(routeIndex);
-        Route day2 = new Route(1);
-        Route day3 = new Route(2);
+        Route day1= new Route(routeIndex,routeColor[routeIndex],googleMap);
+        Route day2 = new Route(1,routeColor[1],googleMap);
+        Route day3 = new Route(2,routeColor[2],googleMap);
 
         routes.add(routeIndex,day1);
         routes.add(1,day2);
         routes.add(2,day3);
-
 
         LatLng SEOUL = new LatLng(37.56, 126.97);
         //************modify to get position point from main activity
@@ -220,8 +207,32 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         googleMap.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
             @Override
             public void onPolylineClick(Polyline polyline) {
-                SlidingDrawer routeDrawer = findViewById(R.id.slidingDrawer);
-                routeDrawer.animateOpen();
+                if(edit_mode==2){ //if the edit_mode is on
+                    editRoute(btnRoute); //turn off the edit mode
+                }
+                TextView title = findViewById(R.id.slidingTitle);
+
+                if(polyline.getWidth()==30){ //currently page is opened
+                    slidingLayout.startAnimation(slidingClose);
+                    polyline.setWidth(10); //highlight
+                }
+                else{
+                    slidingLayout.setVisibility(View.VISIBLE);
+                    polyline.setWidth(30); //normal
+                    Iterator<Route> iterator = routes.iterator();
+                    Route cur;
+                    while(iterator.hasNext()){
+                        cur=iterator.next();
+                        if(cur.contains(polyline)!=-1){
+                            title.setText("Route info of Day "+cur.contains(polyline));
+                            //*********DrawRoutInfo(cur.index);
+                        }else{
+                            cur.polyline.setWidth(10);
+                        }
+                    }
+                    slidingLayout.startAnimation(slidingOpen);
+                }
+
             }
         });
     }
@@ -252,8 +263,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         }
         return false;
     }
-
-
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -292,16 +301,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         return super.onPrepareOptionsMenu(menu);
     }
 
-    ArrayList<LatLng> toLatLng(ArrayList<Marker> markers){
-        Iterator<Marker> iterator = markers.iterator();
-        ArrayList<LatLng> LatLngs = new ArrayList<>();
-
-        while(iterator.hasNext()){
-            LatLngs.add(iterator.next().getPosition());
-        }
-        return LatLngs;
-    }
-
     public void editMarker(View v){
         if(edit_mode!= 1){
             btnPlace.setTextColor(Color.RED);
@@ -333,12 +332,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             btnPlace.setTextColor(Color.BLACK);
             Toast.makeText(this,"Show the route",Toast.LENGTH_SHORT).show();
             edit_mode = 0;
-
-  /*          if(line.get(routeIndex) == null) //처음 만들
-                line.add(routeIndex,DrawPolyRoute(routeIndex));
-            else{ //�번�만들
-   */
-//�깐1            line.get(routeIndex).setPoints(toLatLng(markerPoint.get(routeIndex)));
         }
     }
 }
