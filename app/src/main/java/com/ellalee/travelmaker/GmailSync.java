@@ -472,12 +472,13 @@ public class GmailSync extends Activity {
                 }
 
                 for( MessagePartHeader h : messageHeader) {
+                    Log.d("name", h.getName());
                     if(h.getName().equals("Subject")){
-                            Log.d("Value", h.getValue());
-                            sub = h.getValue();
-                            l.add(h.getValue());
-                            subs.add(h.getValue());
-                            mActivity.list(l);
+                        Log.d("Value", h.getValue());
+                        sub = h.getValue();
+                        l.add(h.getValue());
+                        subs.add(h.getValue());
+                        mActivity.list(l);
                         break;
                     }else if(h.getName().equals("Date")){
                         emailDate = getDate(h.getValue());
@@ -497,7 +498,7 @@ public class GmailSync extends Activity {
         public int[] getDate(String time){
             int day[] = {0,0,0};
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(
-                    "EEE, d MMM yyyy HH:mm:ss Z", Locale.US);
+                    "EEE, d MMM yyyy HH:mm:ss Z", Locale.KOREA);
             Date date = null;
             try {
                 date = simpleDateFormat.parse(time);
