@@ -1,38 +1,49 @@
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:id="@+id/layout">
 
-    <EditText
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.MapFragment"
+        class="com.google.android.gms.maps.MapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/editAddress"
-        android:hint="주소"/>
+        android:orientation="horizontal"
+        android:gravity="center_horizontal">
+
+        <EditText
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/editAddress"
+            android:hint="Address"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnSearch"
+            android:text="Search"/>
+    </LinearLayout>
+
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnSearch"
-        android:text="검색"/>
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:id="@+id/btnRoute"
-        android:text="Route"
-        android:onClick="editRoute"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:onClick="editRoute"
+        android:text="Route" />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Place"
         android:id="@+id/btnPlace"
-        android:onClick="editMarker"/>
+        android:onClick="editMarker"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"/>
 
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.MapFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="com.google.android.gms.maps.MapFragment"/>
-
-</LinearLayout>
+</RelativeLayout>

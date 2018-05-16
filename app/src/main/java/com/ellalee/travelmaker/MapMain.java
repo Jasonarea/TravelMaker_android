@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SlidingDrawer;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -55,13 +56,13 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     private Button btnRoute;
     private Button btnPlace;
 
-    //private PolylineOptions polylineOptions; //1�
-    //private ArrayList<Marker> markersList = new ArrayList<>(); //�러�
+    //private PolylineOptions polylineOptions; // single
+    //private ArrayList<Marker> markersList = new ArrayList<>(); // multi
     //private ArrayList<ArrayList<Marker>> routesList = new ArrayList<ArrayList<Marker>>();
 
-    private ArrayList<LatLng> markerLatLng; //1�
+    private ArrayList<LatLng> markerLatLng; //single
     private ContextMenu contextMenu;
-    private ArrayList<Route> routes = new ArrayList<>(); //�러�
+    private ArrayList<Route> routes = new ArrayList<>(); //multi
 
     String[] routeColor;
 
@@ -142,9 +143,15 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         routes.add(2,day3);
 
 
+        LatLng SEOUL = new LatLng(37.56, 126.97);
+        //************modify to get position point from main activity
+
+        map.moveCamera(CameraUpdateFactory.newLatLng(SEOUL));
+        map.animateCamera(CameraUpdateFactory.zoomTo(10));
+
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {    // 검�해마커추�
+            public void onClick(View v) {    // add a marker
                 String str = editAddress.getText().toString();
                 List<Address> list = null;
                 double latitude, longitude;
@@ -170,13 +177,23 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                         mOptions.title(str);
                         mOptions.draggable(true);
                         mOptions.position(SearchPoint);
-                        // 마커 추�
+                        //add marker
                         googleMap.addMarker(mOptions);
-                        // �당 좌표롔면 �
+                        //zoom camera view
                         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SearchPoint, 15));
 
                     }
                 }
+            }
+        });
+        googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng latLng) { //adding a marker by longclick
+                MarkerOptions option =new MarkerOptions();
+                option.draggable(true);
+                option.position(latLng);
+                googleMap.addMarker(option);
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
             }
         });
 
@@ -191,7 +208,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 
             @Override
             public void onMarkerDragEnd(Marker marker) {
-                //Marker가 �함line� �당 �인 지�기, 마커가 �러 루트�함경우�고려루트 모두 검
+                //find every route which include the marker
                 Iterator<Route> route_iterator = routes.iterator(); //route iterator
                 Route cur;
                 while (route_iterator.hasNext()) {
@@ -200,18 +217,19 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                 }
             }
         });
-
-        LatLng SEOUL = new LatLng(37.56, 126.97);
-        //main activity �서 �시�름 받아�동�도롘정�기
-
-        map.moveCamera(CameraUpdateFactory.newLatLng(SEOUL));
-        map.animateCamera(CameraUpdateFactory.zoomTo(10));
+        googleMap.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
+            @Override
+            public void onPolylineClick(Polyline polyline) {
+                SlidingDrawer routeDrawer = findViewById(R.id.slidingDrawer);
+                routeDrawer.animateOpen();
+            }
+        });
     }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
 
-        if(edit_mode==1){  //marker 지�기
+        if(edit_mode==1){  //remove a marker
             marker.remove();
 
             Iterator<Route> route_iterator = routes.iterator();
@@ -220,16 +238,22 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 
             while (route_iterator.hasNext()){
                 cur = route_iterator.next();
-                if(cur.remove(marker))
+                if(cur.remove(marker)){
                     cur.setPoints();
+                    if(cur.markerList.size()<2){
+                        cur.markerList.clear();
+                    }
+                }
             }
         }
-        else if(edit_mode==2) {  // marker 추�기
+        else if(edit_mode==2) {  //add a marker
             routes.get(routeIndex).add(marker);
             routes.get(routeIndex).setPoints();
         }
         return false;
     }
+
+
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -245,7 +269,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     @Override
     public boolean onContextItemSelected(MenuItem item) {
 
-        if(routes.get(routeIndex).markerList.size()<2){ //route가 �그�진 marker�나지�기
+        if(routes.get(routeIndex).markerList.size()<2){ //didnt draw any route
             routes.get(routeIndex).markerList.clear();
         }
 
@@ -253,38 +277,19 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         Toast.makeText(this, "Color:"+routeColor[routeIndex], Toast.LENGTH_SHORT).show();
 
         btnRoute.setTextColor(Color.parseColor(routeColor[routeIndex]));
-        edit_mode=2; //context메뉴루트륌러�도 루트�정 모드 on
-        btnPlace.setTextColor(Color.BLACK); //placebtn deactivate;
+        edit_mode=2; //route edit mode on through the context menu
+        btnPlace.setTextColor(Color.BLACK); //placebtn deactivated;
 
         return super.onContextItemSelected(item);
     }
 
-
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        //  -------------> menu 추� 만들�
+        //  -------------> add dynamic creating menu button
 //        for (int i=0;i<=routeIndex;i++){
 //            menu.add(0,i,i,"Day"+i);
 //        }
         return super.onPrepareOptionsMenu(menu);
-    }
-
-    PolylineOptions setPolylineOptions(int index, ArrayList<LatLng> markerLatLng){
-        PolylineOptions polylineOption = new PolylineOptions();
-        switch (index){
-            case 1:
-                polylineOption.color(Color.BLUE);
-                break;
-            case 2:
-                polylineOption.color(Color.RED);
-                break;
-            case 3:
-                polylineOption.color(Color.GREEN);
-                break;
-        }
-        polylineOption.width(10);
-        polylineOption.addAll(markerLatLng);
-        return polylineOption;
     }
 
     ArrayList<LatLng> toLatLng(ArrayList<Marker> markers){
@@ -296,17 +301,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         }
         return LatLngs;
     }
-/*
-    Polyline DrawPolyRoute(int routeIdx){
-        setPolylineOptions(routeIdx,toLatLng(routesList.get(routeIdx)));
 
-        //�처음�로 루트 �정 - BLUE
-        polylineOptions.color(Color.BLUE);
-
-        Polyline curPolyline = googleMap.addPolyline(polylineOptions);
-        return curPolyline;
-    }
-*/
     public void editMarker(View v){
         if(edit_mode!= 1){
             btnPlace.setTextColor(Color.RED);
@@ -341,9 +336,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 
   /*          if(line.get(routeIndex) == null) //처음 만들
                 line.add(routeIndex,DrawPolyRoute(routeIndex));
-            else{ //�번�만들
+            else{ //�번�만들
    */
-//�깐1            line.get(routeIndex).setPoints(toLatLng(markerPoint.get(routeIndex)));
+//�깐1            line.get(routeIndex).setPoints(toLatLng(markerPoint.get(routeIndex)));
         }
     }
 }

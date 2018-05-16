@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SlidingDrawer
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:background="@color/colorSlidingDrawer"
+    android:id="@+id/slidingDrawer"
+    android:allowSingleTap="true"
+    android:animateOnClick="true"
+    android:orientation="vertical"
+    android:content="@id/slidingLayout"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/slidingLayout"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Route info"
+            android:id="@+id/slidingTitle"/>
+    </LinearLayout>
+</SlidingDrawer>
