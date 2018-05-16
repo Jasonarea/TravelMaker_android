@@ -57,8 +57,15 @@ dependencies {
 
     androidTestImplementation 'com.android.support.test:runner:+'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:+'
+<<<<<<< HEAD
     implementation files('E:/Travel-Maker/libs/mail.jar')
     implementation files('E:/Travel-Maker/libs/additionnal.jar')
     implementation files('E:/Travel-Maker/libs/activation.jar')
 
+=======
+
+    implementation files('D:/18_1/Travel-Maker/libs/mail.jar')
+    implementation files('D:/18_1/Travel-Maker/libs/additionnal.jar')
+    implementation files('D:/18_1/Travel-Maker/libs/activation.jar')
+>>>>>>> 777c132d346ff86491bfca3f0b5a593c8ebef29b
 }
