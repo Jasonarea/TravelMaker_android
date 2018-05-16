@@ -76,7 +76,7 @@ public class GmailSync extends Activity {
     static final int REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR = 1002;
     public static final String PREFS_NAME = "PrimeFile";
     private String mEmail;
-
+    public static int count = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -486,10 +486,10 @@ public class GmailSync extends Activity {
                         author = h.getValue();
                     }
                 }
+                ++count;
+                Log.d("count", String.valueOf(count));
                 db.addBook(new Email(sub,bod,author,emailDate[0],emailDate[1],emailDate[2],1));
             }
-
-
             mActivity.list(l);
             mActivity.setItemListener(body, subs);
             mActivity.hideSpinner();
