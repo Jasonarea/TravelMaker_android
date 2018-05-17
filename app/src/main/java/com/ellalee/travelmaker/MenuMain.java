@@ -21,7 +21,7 @@ public class MenuMain extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_menu_main);
+        setContentView(R.layout.activity_main);
 
         menuPage = (LinearLayout)findViewById(R.id.menuPage);
         translateRight = AnimationUtils.loadAnimation(this, R.anim.translate_left);
