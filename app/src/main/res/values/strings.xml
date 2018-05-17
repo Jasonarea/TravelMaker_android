@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">TravelMaker</string>
+    <string name="editText_hint"><font color="@color/white" size="15">Where do you want to go?</font></string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 </resources>
