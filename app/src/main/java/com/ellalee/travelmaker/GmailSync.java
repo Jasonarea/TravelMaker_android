@@ -61,9 +61,9 @@ public class GmailSync extends Activity {
 
     private static final String TAG = "PlayHelloActivity";
 
-    private final static String GMAIL_SCOPE
+    protected final static String GMAIL_SCOPE
             = "https://www.googleapis.com/auth/gmail.readonly";
-    private final static String SCOPE
+    protected final static String SCOPE
             = "oauth2:" +  GMAIL_SCOPE;
 
     private TextView mOut;
@@ -75,8 +75,9 @@ public class GmailSync extends Activity {
     static final int REQUEST_CODE_RECOVER_FROM_AUTH_ERROR = 1001;
     static final int REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR = 1002;
     public static final String PREFS_NAME = "PrimeFile";
-    private String mEmail;
+    protected String mEmail;
     public static int count = 0;
+    MySQLiteHelper db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,8 +89,8 @@ public class GmailSync extends Activity {
             Log.d("Email2", mEmail);
         }
 
-
-        MySQLiteHelper db = new MySQLiteHelper(this);
+        Log.d("createGmail", "Create GmailSync");
+        db = new MySQLiteHelper(this);
         l = new ArrayList<String>();
         b = new ArrayList<String>();
         List<Email> list = db.getAllBooks();
@@ -178,7 +179,7 @@ public class GmailSync extends Activity {
     /** Attempt to get the user name. If the email address isn't known yet,
      * then call pickUserAccount() method so the user can pick an account.
      */
-    private void getUsername() {
+    protected void getUsername() {
         if (mEmail == null) {
             pickUserAccount();
         } else {
@@ -304,7 +305,7 @@ public class GmailSync extends Activity {
      * Note: This approach is for demo purposes only. Clients would normally not get tokens in the
      * background from a Foreground activity.
      */
-    private GetNameTask getTask(
+    protected GetNameTask getTask(
             GmailSync activity, String email, String scope) {
 
         return new GetNameTask(activity, email, scope);
@@ -394,11 +395,11 @@ public class GmailSync extends Activity {
          * @throws IOException if communication with user info server failed.
          * @throws JSONException if the response from the server could not be parsed.
          */
-        private void fetchNameFromProfileServer() throws IOException, JSONException {
+        protected void fetchNameFromProfileServer() throws IOException, JSONException {
             MySQLiteHelper db = new MySQLiteHelper(mActivity);
             db.deleteEverything();
-            mActivity.showSpinner();
-            mActivity.show("Getting emails...");
+            //mActivity.showSpinner();
+            //mActivity.show("Getting emails...");
             String token = fetchToken();
             if (token == null) {
                 return;
@@ -476,7 +477,7 @@ public class GmailSync extends Activity {
                         sub = h.getValue();
                         l.add(h.getValue());
                         subs.add(h.getValue());
-                        mActivity.list(l);
+                        //mActivity.list(l);
                         break;
 
                     }else if(h.getName().equals("Date")){
@@ -491,9 +492,9 @@ public class GmailSync extends Activity {
             }
 
 
-            mActivity.list(l);
-            mActivity.setItemListener(body, subs);
-            mActivity.hideSpinner();
+            //mActivity.list(l);
+            //mActivity.setItemListener(body, subs);
+            //mActivity.hideSpinner();
         }
 
         public int[] getDate(String time){

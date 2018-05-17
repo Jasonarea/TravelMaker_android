@@ -41,6 +41,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,9 +56,11 @@ public class CalendarSync extends Activity
     GoogleAccountCredential mCredential;
     private TextView mOutputText;
     private Button mCallApiButton;
+    private Button helloMail;
     ProgressDialog mProgress;
     boolean createOneSchedule = true;
-
+    boolean getMailOnce = true;
+    GmailSync getMail = new GmailSync();
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
@@ -73,7 +77,7 @@ public class CalendarSync extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LinearLayout activityLayout = new LinearLayout(this);
+        final LinearLayout activityLayout = new LinearLayout(this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
@@ -97,7 +101,21 @@ public class CalendarSync extends Activity
             }
         });
         activityLayout.addView(mCallApiButton);
-
+        helloMail = new Button(this);
+        helloMail.setText("Get Mail From Gmail");
+        helloMail.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                try {
+                    new GmailSync.GetNameTask(getMail, "hyeonsuns123@gmail.com", getMail.SCOPE).fetchNameFromProfileServer();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        activityLayout.addView(helloMail);
         mOutputText = new TextView(this);
         mOutputText.setLayoutParams(tlp);
         mOutputText.setPadding(16, 16, 16, 16);
