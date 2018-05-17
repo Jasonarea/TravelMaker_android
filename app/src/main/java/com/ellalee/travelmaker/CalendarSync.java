@@ -94,21 +94,10 @@ public class CalendarSync extends Activity
                 mOutputText.setText("");
                 getResultsFromApi();
                 mCallApiButton.setEnabled(true);
+
             }
         });
-        activityLayout.addView(mCallApiButton);
-        mSynchronization = new Button(this);
-        mSynchronization.setText("Mail Sync");
-
-        mSynchronization.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                GmailSync gmails = new GmailSync();
-
-                Toast.makeText(getApplicationContext(), "Email Searching Complete", Toast.LENGTH_LONG).show();
-            }
-        });
-        activityLayout.addView(mSynchronization);
+        activityLayout.addView(mCallApiButton); 
         mOutputText = new TextView(this);
         mOutputText.setLayoutParams(tlp);
         mOutputText.setPadding(16, 16, 16, 16);
@@ -118,10 +107,12 @@ public class CalendarSync extends Activity
                 "Click the \'" + BUTTON_TEXT +"\' button to test the API.");
         activityLayout.addView(mOutputText);
 
-        mProgress = new ProgressDialog(this);
-        mProgress.setMessage("Calling Google Calendar API ...");
 
         setContentView(activityLayout);
+        //createEvent(mCredential);
+
+        mProgress = new ProgressDialog(this);
+        mProgress.setMessage("Calling Google Calendar API ...");
 
         // Initialize credentials and service object.
         mCredential = GoogleAccountCredential.usingOAuth2(

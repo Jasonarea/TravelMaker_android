@@ -130,7 +130,9 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         List<Email> emails = new LinkedList<Email>();
 
         // 1. build the query
-        String query = "SELECT  * FROM " + TABLE_BOOKS;
+        String query = "SELECT * FROM " + TABLE_BOOKS + " WHERE " + KEY_BODY + " LIKE '%Airbnb%' OR " +
+                KEY_BODY + " LIKE '%e-ticket%' OR " + KEY_BODY + " LIKE '%e-티켓%' OR " + KEY_BODY +
+                " LIKE '%VOUCHER%' OR " + KEY_BODY + " LIKE '%체크인%' OR " + KEY_BODY  + " LIKE '%Check-in%'";
 
         // 2. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
@@ -150,7 +152,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 email.setMonth(cursor.getInt(5));
                 email.setYear(cursor.getInt(6));
                 email.setUrgency(cursor.getInt(7));
-
+                Log.d("Airbnb", cursor.getString(1));
                 // Add book to books
                 emails.add(email);
             } while (cursor.moveToNext());
