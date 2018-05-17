@@ -1,63 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/relativeLayout_main"
-    tools:context="com.ellalee.travelmaker.MainActivity"
     android:background="@drawable/calendar_label_background">
 
     <EditText
-        android:layout_width="230dp"
+        android:id="@+id/EditWhereToGo"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:id="@+id/EditWhereToGo" />
-
+        android:layout_gravity = "center"
+        android:hint="Where do you want to go?"/>
     <Button
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_centerInParent="true"
+        android:id="@+id/searchButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_toRightOf="@+id/EditWhereToGo"
-        android:background="@drawable/search_icon"/>
+        android:layout_alignBaseline="@+id/EditWhereToGo" />
 
-    <ImageButton
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_centerHorizontal= "true"
-        android:layout_above="@+id/calendar_text"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/calendar_icon"
-        android:id="@+id/calendar_action_button"/>
-    <TextView
-        android:id="@+id/calendar_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal= "true"
-        android:text="Calendar"
-        android:textSize="18dp"
-        android:textColor="@color/white"/>
-
-    <ImageButton
-        android:id="@+id/plan_action_button"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="10dp"
-        android:layout_above= "@+id/plan_text"
-        android:layout_toLeftOf="@+id/calendar_action_button"
-        android:layout_marginRight="60dp"
-        android:background="@drawable/plan_icon"/>
-
-    <TextView
-        android:id="@+id/plan_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/calendar_action_button"
-        android:layout_marginRight="60dp"
-        android:text="My plan"
-        android:textSize="18dp"
-        android:textColor="@color/white"/>
 </RelativeLayout>
