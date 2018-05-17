@@ -77,6 +77,7 @@ public class GmailSync extends Activity {
     public static final String PREFS_NAME = "PrimeFile";
     private String mEmail;
     public static int count = 0;
+    MySQLiteHelper db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,7 +90,7 @@ public class GmailSync extends Activity {
         }
 
 
-        MySQLiteHelper db = new MySQLiteHelper(this);
+        db = new MySQLiteHelper(this);
         l = new ArrayList<String>();
         b = new ArrayList<String>();
         List<Email> list = db.getAllBooks();
@@ -178,7 +179,7 @@ public class GmailSync extends Activity {
     /** Attempt to get the user name. If the email address isn't known yet,
      * then call pickUserAccount() method so the user can pick an account.
      */
-    private void getUsername() {
+    protected void getUsername() {
         if (mEmail == null) {
             pickUserAccount();
         } else {
