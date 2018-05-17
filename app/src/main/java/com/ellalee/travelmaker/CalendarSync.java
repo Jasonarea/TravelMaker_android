@@ -6,6 +6,7 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
+import com.google.api.services.calendar.model.Event;
 
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -16,52 +17,34 @@ import com.google.api.services.calendar.CalendarScopes;
 import com.google.api.client.util.DateTime;
 
 import com.google.api.services.calendar.model.*;
-import com.google.api.services.gmail.Gmail;
 
 import android.Manifest;
 import android.accounts.AccountManager;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.ContentResolver;
-import android.content.ContentUris;
-import android.content.ContentValues;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Calendar;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -71,19 +54,17 @@ public class CalendarSync extends Activity
     GoogleAccountCredential mCredential;
     private TextView mOutputText;
     private Button mCallApiButton;
-    private Button mAddSchedule;
     ProgressDialog mProgress;
+    boolean createOneSchedule = true;
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
-    private static final int MY_PERMISSIONS_REQUEST_WRITE_CALENDAR = 1001;
 
     private static final String BUTTON_TEXT = "Call Google Calendar API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { CalendarScopes.CALENDAR_READONLY };
-    ListView listView;
+    private static final String[] SCOPES = { "https://www.googleapis.com/auth/calendar" };
 
     /**
      * Create the main activity.
@@ -92,7 +73,7 @@ public class CalendarSync extends Activity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final LinearLayout activityLayout = new LinearLayout(this);
+        LinearLayout activityLayout = new LinearLayout(this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
@@ -105,7 +86,6 @@ public class CalendarSync extends Activity
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 
         mCallApiButton = new Button(this);
-
         mCallApiButton.setText(BUTTON_TEXT);
         mCallApiButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -114,19 +94,10 @@ public class CalendarSync extends Activity
                 mOutputText.setText("");
                 getResultsFromApi();
                 mCallApiButton.setEnabled(true);
-
             }
         });
         activityLayout.addView(mCallApiButton);
 
-        mAddSchedule = new Button(this);
-        mAddSchedule.setText("Add Travel Schedule");
-        mAddSchedule.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
         mOutputText = new TextView(this);
         mOutputText.setLayoutParams(tlp);
         mOutputText.setPadding(16, 16, 16, 16);
@@ -136,12 +107,10 @@ public class CalendarSync extends Activity
                 "Click the \'" + BUTTON_TEXT +"\' button to test the API.");
         activityLayout.addView(mOutputText);
 
-
-        setContentView(activityLayout);
-        //createEvent(mCredential);
-
         mProgress = new ProgressDialog(this);
         mProgress.setMessage("Calling Google Calendar API ...");
+
+        setContentView(activityLayout);
 
         // Initialize credentials and service object.
         mCredential = GoogleAccountCredential.usingOAuth2(
@@ -149,7 +118,47 @@ public class CalendarSync extends Activity
                 .setBackOff(new ExponentialBackOff());
     }
 
+    private void createEvent(com.google.api.services.calendar.Calendar mService) throws IOException {
+        Event event = new Event()
+                .setSummary("Google I/O 2018")
+                .setLocation("800 Howard St., San Francisco, CA 94103")
+                .setDescription("A chance to hear more about Google's developer products.");
 
+        DateTime startDateTime = new DateTime("2018-05-28T09:00:00-07:00");
+        EventDateTime start = new EventDateTime()
+                .setDateTime(startDateTime)
+                .setTimeZone("America/Los_Angeles");
+        event.setStart(start);
+
+        DateTime endDateTime = new DateTime("2018-05-28T17:00:00-07:00");
+        EventDateTime end = new EventDateTime()
+                .setDateTime(endDateTime)
+                .setTimeZone("America/Los_Angeles");
+        event.setEnd(end);
+
+        String[] recurrence = new String[] {"RRULE:FREQ=DAILY;COUNT=2"};
+        event.setRecurrence(Arrays.asList(recurrence));
+
+        EventAttendee[] attendees = new EventAttendee[] {
+                new EventAttendee().setEmail("lpage@example.com"),
+                new EventAttendee().setEmail("sbrin@example.com"),
+        };
+        event.setAttendees(Arrays.asList(attendees));
+
+        EventReminder[] reminderOverrides = new EventReminder[] {
+                new EventReminder().setMethod("email").setMinutes(24 * 60),
+                new EventReminder().setMethod("popup").setMinutes(10),
+        };
+        Event.Reminders reminders = new Event.Reminders()
+                .setUseDefault(false)
+                .setOverrides(Arrays.asList(reminderOverrides));
+        event.setReminders(reminders);
+
+        String calendarId = "primary";
+
+        event = mService.events().insert(calendarId, event).execute();
+        Log.d("create", "Event created : " + event.getHtmlLink());
+    }
 
     /**
      * Attempt to call the API, after verifying that all the preconditions are
@@ -408,9 +417,12 @@ public class CalendarSync extends Activity
                 eventStrings.add(
                         String.format("%s (%s)", event.getSummary(), start));
             }
+            if(createOneSchedule) {
+                createEvent(mService);
+                createOneSchedule = false;
+            }
             return eventStrings;
         }
-
 
         @Override
         protected void onPreExecute() {
