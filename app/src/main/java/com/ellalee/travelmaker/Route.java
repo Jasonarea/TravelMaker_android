@@ -3,10 +3,12 @@ package com.ellalee.travelmaker;
 import android.graphics.Color;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.Cap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.RoundCap;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,6 +27,7 @@ public class Route{
         setPolylineOptions();
         polyline = map.addPolyline(polylineOptions);
         polyline.setClickable(true);
+        polyline.setTag(index);
     }
     boolean add(Marker marker){
         return markerList.add(marker);
@@ -61,8 +64,9 @@ public class Route{
     }
     public void setPolylineOptions(){
         polylineOptions.color(Color.parseColor(routeColor));
-
         this.polylineOptions.width(10);
+        this.polylineOptions.startCap(new RoundCap());
+        this.polylineOptions.endCap(new RoundCap());
         this.polylineOptions.addAll(toLatLng(this.markerList));
     }
     public void setPoints(ArrayList<LatLng> latLng){
@@ -70,11 +74,5 @@ public class Route{
     }
     public void setPoints(){
         polyline.setPoints(toLatLng(markerList));
-    }
-    public void highlightPolyline(){
-        polylineOptions.width(20);
-    }
-    public void normalPolyline(){
-        polylineOptions.width(10);
     }
 }
