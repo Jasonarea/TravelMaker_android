@@ -58,15 +58,47 @@
         android:id="@+id/slidingLayout"
         android:orientation="vertical"
         android:visibility="gone"
-        android:background="@color/colorSlidingDrawer"
+        android:background="#313d9c"
         android:layout_marginTop="500dp">
 
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:text="Route info"
             android:textSize="20dp"
             android:id="@+id/slidingTitle"/>
+<!--
+        <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:orientation="horizontal">
+
+        <com.ellalee.travelmaker.RouteInfoSliding
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"/>
+        </LinearLayout>
+-->
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="#df154145"
+            android:scrollIndicators="bottom"
+            android:fadeScrollbars="false">
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:orientation="horizontal">
+
+                <com.ellalee.travelmaker.RouteInfoSliding
+                    android:layout_width="wrap_content"
+                    android:layout_height="fill_parent"/>
+
+            </LinearLayout>
+
+        </HorizontalScrollView>
+
     </LinearLayout>
 
 </FrameLayout>

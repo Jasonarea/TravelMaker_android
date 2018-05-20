@@ -14,11 +14,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class Route{
-    public int index;
-    public PolylineOptions polylineOptions = new PolylineOptions();
-    public ArrayList<Marker> markerList;
-    public Polyline polyline;
-    public String routeColor = new String();
+    private int index;
+    private PolylineOptions polylineOptions = new PolylineOptions();
+    private ArrayList<Marker> markerList;
+    private Polyline polyline;
+    private String routeColor = new String();
+
 
     Route(int idx,String color, GoogleMap map){
         index = idx;
@@ -35,6 +36,15 @@ public class Route{
     boolean remove(Marker marker){
         return markerList.remove(marker);
     }
+    int getIndex(){
+        return index;
+    }
+    ArrayList<Marker> getMarkerList(){
+        return markerList;
+    }
+    String getRouteColor(){
+        return routeColor;
+    }
     boolean contains(Marker marker){
         Iterator<Marker> iterator = markerList.iterator();
         while(iterator.hasNext()){
@@ -49,6 +59,11 @@ public class Route{
         }
         else return -1;
     }
+
+    public void setPolylineWidth(float width){
+        polyline.setWidth(width);
+    }
+
     public void setMarkerList(ArrayList<Marker> markerList) {
         this.markerList = markerList;
     }
