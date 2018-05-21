@@ -6,10 +6,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.view.ScrollingView;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,7 +20,7 @@ import com.google.android.gms.maps.model.Marker;
 
 import java.util.ArrayList;
 
-public class RouteInfoSliding extends View {
+public class RouteInfoSliding extends View{
     /*    private int index;
         private ArrayList<Marker> markerList;
         private String routeColor = new String();

@@ -85,18 +85,18 @@
             android:scrollIndicators="bottom"
             android:fadeScrollbars="false">
 
-
+<!--
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:orientation="horizontal">
-
+-->
                 <com.ellalee.travelmaker.RouteInfoSliding
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"/>
 
-            </LinearLayout>
-
+  <!--          </LinearLayout>
+-->
         </HorizontalScrollView>
 
     </LinearLayout>
