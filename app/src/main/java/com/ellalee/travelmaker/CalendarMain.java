@@ -1,5 +1,6 @@
 package com.ellalee.travelmaker;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import java.text.SimpleDateFormat;
@@ -18,6 +19,7 @@ import android.app.Activity;
 
 import android.content.Context;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
 
 import android.view.View;
@@ -28,8 +30,8 @@ import android.widget.BaseAdapter;
 
 import android.widget.GridView;
 
+import android.widget.LinearLayout;
 import android.widget.TextView;
-
 
 public class CalendarMain extends Activity {
 
@@ -55,7 +57,7 @@ public class CalendarMain extends Activity {
 
      */
 
-    private ArrayList<String> dayList;
+    private ArrayList<DayVo> dayList;
 
     /**
 
@@ -72,7 +74,6 @@ public class CalendarMain extends Activity {
      */
 
     private Calendar mCal;
-
 
     @Override
 
@@ -107,25 +108,10 @@ public class CalendarMain extends Activity {
 
         //gridview 요일 표시
 
-        dayList = new ArrayList<String>();
+        dayList = new ArrayList<DayVo>();
 
-        dayList.add("SUN");
-
-        dayList.add("MON");
-
-        dayList.add("TUE");
-
-        dayList.add("WED");
-
-        dayList.add("THU");
-
-        dayList.add("FRI");
-
-        dayList.add("SAT");
 
         mCal = Calendar.getInstance();
-
-
 
 
         //이번달 1일 무슨요일인지 판단 mCal.set(Year,Month,Day)
@@ -137,14 +123,35 @@ public class CalendarMain extends Activity {
         //1일 - 요일 매칭 시키기 위해 공백 add
 
         for (int i = 1; i < dayNum; i++) {
+            DayVo vo = new DayVo();
+            vo.setDay("");
+            dayList.add(vo);
+        }
 
-            dayList.add("");
+        ArrayList<DayVo> scheduleList = getSchedule();
+        for(DayVo schedule : scheduleList) {
+            int sDay = Integer.parseInt(schedule.getDay());
 
+            for(DayVo vo : dayList) {
+                int day;
+                try {
+                    day = Integer.parseInt(vo.getDay());
+                }catch(NumberFormatException e) {
+                    continue;
+                }
+                if(sDay == day) {
+                    vo.setScheduleList(new ArrayList<ScheduleVo>());
+                    for(int i = 0; i < schedule.getScheduleList().size(); i++) {
+                        ScheduleVo sv = schedule.getScheduleList().get(i);
+                        vo.getScheduleList().add(sv);
+                    }
+                }
+            }
         }
 
         setCalendarDate(mCal.get(Calendar.MONTH) + 1);
 
-        gridAdapter = new GridAdapter(getApplicationContext(), dayList);
+        gridAdapter = new GridAdapter(getApplicationContext(),dayList);
 
         gridView.setAdapter(gridAdapter);
     }
@@ -164,9 +171,17 @@ public class CalendarMain extends Activity {
 
         for (int i = 0; i < mCal.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
 
-            dayList.add("" + (i + 1));
+            DayVo vo = new DayVo();
+            vo.setDay(String.valueOf(i+1));
+            dayList.add(vo);
 
         }
+    }
+
+    private ArrayList<DayVo> getSchedule() {
+        ArrayList<DayVo> list = new ArrayList<>();
+        /* 스케줄 읽어오는 부분 */
+        return list;
     }
 
 
@@ -180,7 +195,7 @@ public class CalendarMain extends Activity {
 
     private class GridAdapter extends BaseAdapter {
 
-        private final List<String> list;
+        private final ArrayList<DayVo> list;
         private final LayoutInflater inflater;
 
         /**
@@ -195,7 +210,7 @@ public class CalendarMain extends Activity {
 
          */
 
-        public GridAdapter(Context context, List<String> list) {
+        public GridAdapter(Context context, ArrayList<DayVo> list) {
 
             this.list = list;
 
@@ -213,7 +228,7 @@ public class CalendarMain extends Activity {
 
         @Override
 
-        public String getItem(int position) {
+        public Object getItem(int position) {
 
             return list.get(position);
 
@@ -248,7 +263,11 @@ public class CalendarMain extends Activity {
 
             }
 
+            DayVo vo = dayList.get(position);
             holder.tvItemGridView.setText("" + getItem(position));
+            if(vo.getDay().equals("")) {
+                convertView.setClickable(false);
+            }
 
             //해당 날짜 텍스트 컬러,배경 변경
 
@@ -266,6 +285,30 @@ public class CalendarMain extends Activity {
 
             }
 
+            if(vo.getScheduleList() != null) {
+                LinearLayout linearLayout = (LinearLayout)convertView;
+                int scheduleCnt = vo.getScheduleList().size();
+                for(int i = 0; i < scheduleCnt; i++) {
+                    ScheduleVo sv = vo.getScheduleList().get(i);
+                    TextView scheduleTv = new TextView(convertView.getContext());
+                    scheduleTv.setGravity(Gravity.CENTER_VERTICAL);
+
+                    if(i == 2) {
+                        scheduleTv.setText("TOTAL: " + String.valueOf(scheduleCnt+1));
+                        break;
+                    }
+                    scheduleTv.setTextColor(Color.WHITE);
+                    scheduleTv.setSingleLine();
+
+                    if(sv.getType().equals("PM")) {
+                        scheduleTv.setBackgroundColor(Color.parseColor("@color/babypink"));
+                    }else if(sv.getType().equals("BM")) {
+                        scheduleTv.setBackgroundColor(Color.parseColor("@color/violetblue"));
+                    }
+                    scheduleTv.setText(sv.getName());
+                }
+            }
+
             return convertView;
 
         }
@@ -276,6 +319,48 @@ public class CalendarMain extends Activity {
 
         TextView tvItemGridView;
 
+    }
+
+    private class DayVo {
+        private String day;
+        private ArrayList<ScheduleVo> scheduleList;
+
+        public String getDay() {
+            return day;
+        }
+
+        public void setDay(String day) {
+            this.day = day;
+        }
+
+        public ArrayList<ScheduleVo>getScheduleList() {
+            return scheduleList;
+        }
+
+        public void setScheduleList(ArrayList<ScheduleVo>scheduleList) {
+            this.scheduleList = scheduleList;
+        }
+    }
+
+    private class ScheduleVo {
+        private String schedule_name;
+        private String type;
+
+        public String getName() {
+            return schedule_name;
+        }
+
+        public void setName(String sName) {
+            schedule_name = sName;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String sType) {
+            type = sType;
+        }
     }
 
 }
