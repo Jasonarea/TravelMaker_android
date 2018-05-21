@@ -50,9 +50,9 @@ import java.util.List;
 
 public class MapMain extends FragmentActivity implements OnMapReadyCallback,GoogleMap.OnMarkerClickListener{
 
-    private int edit_mode = 0; // 0:onlyView 1:editMarker 2: editRoute
+    private int edit_mode = 0;  // 0:onlyView 1:editMarker 2: editRoute
     private int routeIndex = 0; // day 1,2 ....
-    private int newIndex;
+    private int newIndex = 0;   // recently added index
     private Geocoder geocoder;
     private EditText editAddress;
     private GoogleMap googleMap;
@@ -60,7 +60,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     private Button btnRoute;
     private Button btnPlace;
 
-    private ArrayList<LatLng> markerLatLng; //single
     private ContextMenu contextMenu;
 
     private ArrayList<Route> routes = new ArrayList<>(); //multi
@@ -69,6 +68,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     Animation slidingOpen;
     Animation slidingClose;
     LinearLayout slidingLayout;
+//    RouteInfoSliding infoSliding;
     boolean openPage=false;
 
     private class SlidingPageAnimationListener implements Animation.AnimationListener{
@@ -105,6 +105,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         registerForContextMenu(btnRoute);
 
         slidingLayout = findViewById(R.id.slidingLayout);
+  //      infoSliding = new RouteInfoSliding(this);
         slidingOpen = AnimationUtils.loadAnimation(this,R.anim.sliding_open);
         slidingClose = AnimationUtils.loadAnimation(this,R.anim.sliding_close);
 
@@ -122,13 +123,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         googleMap = map;
         geocoder = new Geocoder(this);
 
-        Route day1= new Route(routeIndex,routeColor[routeIndex],googleMap);
-        Route day2 = new Route(1,routeColor[1],googleMap);
-        Route day3 = new Route(2,routeColor[2],googleMap);
-
-        routes.add(routeIndex,day1);
-        routes.add(1,day2);
-        routes.add(2,day3);
+        //initial route setting (default route)
+        Route day1= new Route(0,routeColor[0],googleMap);
+        routes.add(0,day1);
 
         LatLng SEOUL = new LatLng(37.56, 126.97);
         //************modify to get position point from main activity
@@ -173,14 +170,16 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                 }
             }
         });
+
+        //adding a marker by longclick
         googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
-            public void onMapLongClick(LatLng latLng) { //adding a marker by longclick
+            public void onMapLongClick(LatLng latLng) {
                 MarkerOptions option =new MarkerOptions();
                 option.draggable(true);
                 option.position(latLng);
                 googleMap.addMarker(option);
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
+                //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
             }
         });
 
@@ -225,14 +224,14 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                         cur=iterator.next();
                         if(cur.contains(polyline)!=-1){
                             title.setText("Route info of Day "+cur.contains(polyline));
+                            //infoSliding.setRoute(routes.get(cur.contains(polyline)));
                             //*********DrawRoutInfo(cur.index);
                         }else{
-                            cur.polyline.setWidth(10);
+                            cur.setPolylineWidth(10);
                         }
                     }
                     slidingLayout.startAnimation(slidingOpen);
                 }
-
             }
         });
     }
@@ -251,8 +250,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                 cur = route_iterator.next();
                 if(cur.remove(marker)){
                     cur.setPoints();
-                    if(cur.markerList.size()<2){
-                        cur.markerList.clear();
+                    if(cur.getMarkerList().size()==1){
+                        cur.getMarkerList().clear();
                     }
                 }
             }
@@ -267,38 +266,46 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        //menu.add(0,-1,0,"add another day");
-//        menu.add(0,routeIndex,0,"Day"+routeIndex);
+        contextMenu = menu;
 
+        menu.add(0,-1,0,"New Day");
         menu.add(0,0,0,"Day1");
-        menu.add(0,1,1,"Day2");
-        menu.add(0,2,2,"Day3");
+
+        int day;
+        for (int i=1;i<=newIndex;i++){
+            day= i+1;
+            contextMenu.add(0,i,0,"Day"+day);
+        }
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
 
-        if(routes.get(routeIndex).markerList.size()<2){ //didnt draw any route
-            routes.get(routeIndex).markerList.clear();
+        if (routes.get(routeIndex).getMarkerList().size()==1) { //didnt draw any route
+            routes.get(routeIndex).getMarkerList().clear();
         }
+        if (item.getItemId() == -1) {
 
-        routeIndex=item.getItemId();
-        Toast.makeText(this, "Color:"+routeColor[routeIndex], Toast.LENGTH_SHORT).show();
+            //maximum route number is 20
+            if(newIndex<20) {
+                newIndex = routes.size();
+                Route route = new Route(newIndex, routeColor[newIndex], googleMap);
+                routes.add(newIndex, route);
 
-        btnRoute.setTextColor(Color.parseColor(routeColor[routeIndex]));
-        edit_mode=2; //route edit mode on through the context menu
-        btnPlace.setTextColor(Color.BLACK); //placebtn deactivated;
+                openContextMenu(btnRoute); //show reorganized context menu
+            }else{
+                Toast.makeText(this, "It's a max route number", Toast.LENGTH_SHORT).show();
+            }
+        }
+        else {
+            routeIndex = item.getItemId();
+            Toast.makeText(this, "Color:" + routeColor[routeIndex], Toast.LENGTH_SHORT).show();
 
+            btnRoute.setTextColor(Color.parseColor(routeColor[routeIndex]));
+            edit_mode = 2;  //route edit mode on through the context menu
+            btnPlace.setTextColor(Color.BLACK);  //deactivate placebtn
+        }
         return super.onContextItemSelected(item);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        //  -------------> add dynamic creating menu button
-//        for (int i=0;i<=routeIndex;i++){
-//            menu.add(0,i,i,"Day"+i);
-//        }
-        return super.onPrepareOptionsMenu(menu);
     }
 
     public void editMarker(View v){
@@ -317,6 +324,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     }
 
     public void editRoute(View v){
+
         if(edit_mode!=2){
             Toast.makeText(this,"Make a route",Toast.LENGTH_SHORT).show();
             edit_mode = 2;
@@ -324,10 +332,11 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             btnPlace.setTextColor(Color.BLACK);
         }
         else if(edit_mode==2){
-            //DrawPolyRoute();
-            if(routes.get(routeIndex).markerList.size()<2){
-                routes.get(routeIndex).markerList.clear();
+
+            if(routes.get(routeIndex).getMarkerList().size()==1){
+                routes.get(routeIndex).getMarkerList().clear();
             }
+
             btnRoute.setTextColor(Color.BLACK);
             btnPlace.setTextColor(Color.BLACK);
             Toast.makeText(this,"Show the route",Toast.LENGTH_SHORT).show();

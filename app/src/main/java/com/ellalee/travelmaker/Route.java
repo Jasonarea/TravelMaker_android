@@ -3,20 +3,23 @@ package com.ellalee.travelmaker;
 import android.graphics.Color;
 
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.Cap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.RoundCap;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
 public class Route{
-    public int index;
-    public PolylineOptions polylineOptions = new PolylineOptions();
-    public ArrayList<Marker> markerList;
-    public Polyline polyline;
-    public String routeColor = new String();
+    private int index;
+    private PolylineOptions polylineOptions = new PolylineOptions();
+    private ArrayList<Marker> markerList;
+    private Polyline polyline;
+    private String routeColor = new String();
+
 
     Route(int idx,String color, GoogleMap map){
         index = idx;
@@ -25,12 +28,22 @@ public class Route{
         setPolylineOptions();
         polyline = map.addPolyline(polylineOptions);
         polyline.setClickable(true);
+        polyline.setTag(index);
     }
     boolean add(Marker marker){
         return markerList.add(marker);
     }
     boolean remove(Marker marker){
         return markerList.remove(marker);
+    }
+    int getIndex(){
+        return index;
+    }
+    ArrayList<Marker> getMarkerList(){
+        return markerList;
+    }
+    String getRouteColor(){
+        return routeColor;
     }
     boolean contains(Marker marker){
         Iterator<Marker> iterator = markerList.iterator();
@@ -46,6 +59,11 @@ public class Route{
         }
         else return -1;
     }
+
+    public void setPolylineWidth(float width){
+        polyline.setWidth(width);
+    }
+
     public void setMarkerList(ArrayList<Marker> markerList) {
         this.markerList = markerList;
     }
@@ -61,8 +79,9 @@ public class Route{
     }
     public void setPolylineOptions(){
         polylineOptions.color(Color.parseColor(routeColor));
-
         this.polylineOptions.width(10);
+        this.polylineOptions.startCap(new RoundCap());
+        this.polylineOptions.endCap(new RoundCap());
         this.polylineOptions.addAll(toLatLng(this.markerList));
     }
     public void setPoints(ArrayList<LatLng> latLng){
@@ -70,11 +89,5 @@ public class Route{
     }
     public void setPoints(){
         polyline.setPoints(toLatLng(markerList));
-    }
-    public void highlightPolyline(){
-        polylineOptions.width(20);
-    }
-    public void normalPolyline(){
-        polylineOptions.width(10);
     }
 }
