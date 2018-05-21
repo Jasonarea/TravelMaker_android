@@ -22,7 +22,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.SlidingDrawer;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,9 +70,14 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     Animation slidingOpen;
     Animation slidingClose;
     LinearLayout slidingLayout;
-//    RouteInfoSliding infoSliding;
-    boolean openPage=false;
+    LinearLayout routeInfoContainer;
+    RouteInfoSliding infoSliding;
+    HorizontalScrollView routeHS;
+    RouteInfoSliding routeInfoDraw;
 
+
+    boolean openPage=false;
+/*
     private class SlidingPageAnimationListener implements Animation.AnimationListener{
         @Override
         public void onAnimationStart(Animation animation) {}
@@ -82,14 +89,40 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         public void onAnimationEnd(Animation animation) {
             if(openPage){ //currently open -> close
                 slidingLayout.setVisibility(View.INVISIBLE);
+                routeInfoDraw.setVisibility(View.INVISIBLE);
+                routeHS.setVisibility(View.INVISIBLE);
+
                 openPage=false;
             }
             else{ //currently close -> open
                 openPage=true;
             }
         }
-
     }
+    */
+    private class SlidingPageAnimationListener implements Animation.AnimationListener{
+    @Override
+    public void onAnimationStart(Animation animation) {
+        Log.d("page state: ",openPage+"**********************");
+    }
+
+    @Override
+    public void onAnimationRepeat(Animation animation) {}
+
+    @Override
+    public void onAnimationEnd(Animation animation) {
+        slidingLayout.setVisibility(View.INVISIBLE);
+        routeInfoDraw.setVisibility(View.INVISIBLE);
+        routeHS.setVisibility(View.INVISIBLE);
+
+        if(openPage){
+            slidingLayout.setVisibility(View.VISIBLE);
+            routeInfoDraw.setVisibility(View.VISIBLE);
+            routeHS.setVisibility(View.VISIBLE);
+        }
+       }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,7 +138,11 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         registerForContextMenu(btnRoute);
 
         slidingLayout = findViewById(R.id.slidingLayout);
-  //      infoSliding = new RouteInfoSliding(this);
+        infoSliding = new RouteInfoSliding(this);
+//        routeInfoContainer = findViewById(R.id.routeInfoContainer);
+        routeHS = findViewById(R.id.routeInfoHorizontalScroll);
+        routeInfoDraw = findViewById(R.id.routeInfoDraw);
+
         slidingOpen = AnimationUtils.loadAnimation(this,R.anim.sliding_open);
         slidingClose = AnimationUtils.loadAnimation(this,R.anim.sliding_close);
 
@@ -212,24 +249,30 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                 TextView title = findViewById(R.id.slidingTitle);
 
                 if(polyline.getWidth()==30){ //currently page is opened
+                    openPage=false;
                     slidingLayout.startAnimation(slidingClose);
-                    polyline.setWidth(10); //highlight
+                    polyline.setWidth(10); //normal
                 }
                 else{
-                    slidingLayout.setVisibility(View.VISIBLE);
-                    polyline.setWidth(30); //normal
+//                    slidingLayout.setVisibility(View.VISIBLE);
+//                    routeInfoDraw.setVisibility(View.VISIBLE);
+//                    routeHS.setVisibility(View.VISIBLE);
+
+                    polyline.setWidth(30); //highlight
                     Iterator<Route> iterator = routes.iterator();
                     Route cur;
                     while(iterator.hasNext()){
                         cur=iterator.next();
                         if(cur.contains(polyline)!=-1){
                             title.setText("Route info of Day "+cur.contains(polyline));
-                            //infoSliding.setRoute(routes.get(cur.contains(polyline)));
+                            RouteInfoSliding indicator = findViewById(R.id.routeInfoDraw);
+                            indicator.setRoute(cur);
                             //*********DrawRoutInfo(cur.index);
                         }else{
                             cur.setPolylineWidth(10);
                         }
                     }
+                    openPage=true;
                     slidingLayout.startAnimation(slidingOpen);
                 }
             }
