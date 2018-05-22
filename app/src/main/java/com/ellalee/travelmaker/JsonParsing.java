@@ -92,6 +92,7 @@ public class JsonParsing extends Activity
                 mOutputText.setText("");
                 getResultsFromApi();
                 mCallApiButton.setEnabled(true);
+                
             }
         });
         activityLayout.addView(mCallApiButton);
