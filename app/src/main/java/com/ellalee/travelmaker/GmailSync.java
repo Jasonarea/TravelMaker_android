@@ -161,17 +161,16 @@ public class GmailSync implements Runnable {
 
             final String finalBod = bod;
             final String finalSub = sub;
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if(finalBod.contains("Airbnb") || finalBod.contains("예약") || finalBod.contains("E-ticket") ||
-                            finalBod.contains("항공권") || finalBod.contains("The Log"))
+            if(finalBod.contains("E-ticket") || finalBod.contains("항공권") || finalBod.contains("VOUCHER") ||
+                    finalBod.contains("에어비앤비")) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
                         ticket.append(finalSub + '\n');
-                }
-            });
-
-            db.addBook(new Email(sub, bod, author, emailDate[0], emailDate[1], emailDate[2], 1));
-
+                    }
+                });
+                db.addBook(new Email(sub, bod, author, emailDate[0], emailDate[1], emailDate[2], 1));
+            }
         }
     }
 

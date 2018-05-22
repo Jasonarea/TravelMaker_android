@@ -106,7 +106,7 @@ public class CalendarSync extends Activity
         });
         activityLayout.addView(mCallApiButton);
         ticketReservation = new TextView(this);
-        ticketReservation.setText("");
+        ticketReservation.setText("<The Flight and Hotel Reservation Mail List> \n");
         activityLayout.addView(ticketReservation);
 
         mOutputText = new TextView(this);
