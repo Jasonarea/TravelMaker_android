@@ -13,24 +13,18 @@ import android.widget.TextView;
 /**
  * Created by User on 4/29/2015.
  */
-public class InfoActivity extends Activity {
+public class InfoActivity extends Thread {
 
     TextView header;
     TextView body;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_info);
-        header = (TextView)findViewById(R.id.header);
-        body = (TextView)findViewById(R.id.body);
+    public InfoActivity() {
         String s = "";
         String b = "";
-        Bundle extras = getIntent().getExtras();
+        /*Bundle extras = getIntent().getExtras();
         if (extras != null) {
             b = extras.getString("body");
             s = extras.getString("subject");
-        }
+        }*/
 
         body.setText(b);
         header.setText(s);
