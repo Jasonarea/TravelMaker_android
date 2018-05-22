@@ -54,7 +54,7 @@ public class CalendarMain extends Activity {
     /**
      * 스케줄 저장되어있는 리스트
      */
-    private List<String> dolist;
+    private List<String> doList;
     private int count = 0;
 
     @Override
@@ -94,7 +94,7 @@ public class CalendarMain extends Activity {
         //gridview 요일 표시
 
         dayList = new ArrayList<Day>();
-        dolist = new ArrayList();
+        doList = new ArrayList();
 
         Day sun = new Day();
         sun.setDay("일");
@@ -174,13 +174,12 @@ public class CalendarMain extends Activity {
 
     private void setSchedulDate(Day d) {
         count = 0;
-            for (int i = 0; i < dolist.size(); i++) {
-                if (dolist.get(i).contains(d.getDay())) {
+            for (int i = 0; i < doList.size(); i++) {
+                if (doList.get(i).contains(d.getDay())) {
                     count += 1;
-                    d.setSche(dolist.get(i));
+                    d.setSche(doList.get(i));
                 }
             }
-            d.setCount(count);
     }
 
 
@@ -216,7 +215,6 @@ public class CalendarMain extends Activity {
         }
 
 
-
         @Override
 
         public int getCount() {
@@ -245,13 +243,13 @@ public class CalendarMain extends Activity {
             }
         }*/
 
-        public String getScheItem(int position) {
-            return daylist.get(position).getSche();
+        public ArrayList<String> getScheItem(int position) {
+                return daylist.get(position).getSche();
         }
 
 
-        public int getScheTotal() {
-            return count;
+        public int getScheTotal(int position) {
+            return daylist.get(position).getSche().size();
         }
 
 
@@ -263,7 +261,6 @@ public class CalendarMain extends Activity {
             return position;
 
         }
-
 
 
         @Override
@@ -296,10 +293,11 @@ public class CalendarMain extends Activity {
             }
 
             holder.tvItemGridView.setText("" + getItem(position));
-            holder.firScheGridView.setText(""+ getScheItem(position));
-            holder.secScheGridView.setText("" + getScheItem(position));
-            if(count > 0)
-                holder.totalScheGridView.setText("Total: " + getScheTotal());
+            //if(!daylist.get(position).getSche().equals(""))
+                holder.firScheGridView.setText(""+ getScheItem(position));
+            holder.secScheGridView.setText("" + getScheItem(position+1));
+            //if(getScheTotal(position)> 0)
+             //   holder.totalScheGridView.setText("Total: " + getScheTotal(position));
 
 
 
@@ -325,8 +323,6 @@ public class CalendarMain extends Activity {
 
     }
 
-
-
     private class ViewHolder {
 
         TextView tvItemGridView;
@@ -338,12 +334,8 @@ public class CalendarMain extends Activity {
     private class Day {
         private String day;
         private ArrayList<String> sche;
-        private int sche_count = 0;
         private int count = 0;
 
-        public void setCount(int c) {
-            count = c;
-        }
         public void setDay(String d) {
             day = d;
         }
@@ -356,9 +348,10 @@ public class CalendarMain extends Activity {
             return day;
         }
 
-        public String getSche() {
-            return sche.get(sche_count);
+        public ArrayList<String> getSche() {
+            return sche;
         }
     }
+
 }
 
