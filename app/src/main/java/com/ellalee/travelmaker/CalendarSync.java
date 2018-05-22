@@ -55,6 +55,7 @@ public class CalendarSync extends Activity
     private TextView mOutputText;
     private Button mCallApiButton;
     private Button mMailBox;
+    private TextView mEmailView;
     private HttpTransport transport;
     private JsonFactory jsonFactory;
     ProgressDialog mProgress;

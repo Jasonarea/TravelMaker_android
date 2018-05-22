@@ -1,17 +1,24 @@
 package com.ellalee.travelmaker;
 
+import android.app.Activity;
+import android.os.Bundle;
+
+import com.kakao.kakaolink.KakaoLink;
+import com.kakao.kakaolink.v2.KakaoLinkResponse;
+import com.kakao.kakaolink.v2.KakaoLinkService;
+import com.kakao.message.template.ButtonObject;
+import com.kakao.message.template.ContentObject;
+import com.kakao.message.template.FeedTemplate;
+import com.kakao.message.template.LinkObject;
+import com.kakao.message.template.SocialObject;
+import com.kakao.network.ErrorResult;
+import com.kakao.network.callback.ResponseCallback;
+import com.kakao.util.helper.log.Logger;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
 
-import android.app.Activity;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.os.Bundle;
-import android.view.View;
-
-import com.kakao.KakaoLink;
-import com.kakao.KakaoParameterException;
-import com.kakao.Session;
 /**
  * Copyright 2012 Kakao Crop. All rights reserved.
  *
@@ -26,77 +33,38 @@ public class Sharing extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_kakao_link);
+
     }
 
-    /**
-     * Send URL
-     * @throws NameNotFoundException
-     */
-    public void sendUrlLink(View v) throws NameNotFoundException {
-        // Recommended: Use application context for parameter.
-        KakaoLink kakaoLink = null;
-        try {
-            kakaoLink = KakaoLink.getKakaoLink((getApplicationContext()));
-        } catch (KakaoParameterException e) {
-            e.printStackTrace();
-        }
+    public void kakaoLink() {
+        FeedTemplate params = FeedTemplate
+                .newBuilder(ContentObject.newBuilder("디저트 사진",
+                        "http://mud-kage.kakao.co.kr/dn/NTmhS/btqfEUdFAUf/FjKzkZsnoeE4o19klTOVI1/openlink_640x640s.jpg",
+                        LinkObject.newBuilder().setWebUrl("https://developers.kakao.com")
+                                .setMobileWebUrl("https://developers.kakao.com").build())
+                        .setDescrption("아메리카노, 빵, 케익")
+                        .build())
+                .setSocial(SocialObject.newBuilder().setLikeCount(10).setCommentCount(20)
+                        .setSharedCount(30).setViewCount(40).build())
+                .addButton(new ButtonObject("웹에서 보기", LinkObject.newBuilder().setWebUrl("'https://developers.kakao.com").setMobileWebUrl("'https://developers.kakao.com").build()))
+                .addButton(new ButtonObject("앱에서 보기", LinkObject.newBuilder()
+                        .setWebUrl("'https://developers.kakao.com")
+                        .setMobileWebUrl("'https://developers.kakao.com")
+                        .setAndroidExecutionParams("key1=value1")
+                        .setIosExecutionParams("key1=value1")
+                        .build()))
+                .build();
+        KakaoLinkService.getInstance().sendDefault(this,params, new ResponseCallback<KakaoLinkResponse>() {
+            @Override
+            public void onFailure(ErrorResult errorResult) {
+                Logger.e(errorResult.toString());
+            }
 
-        /**
-         * @param activity
-         * @param url
-         * @param message
-         * @param appId
-         * @param appVer
-         * @param appName
-         * @param encoding
-         */
-        kakaoLink.createKakaoTalkLinkMessageBuilder();
-    }
+            @Override
+            public void onSuccess(KakaoLinkResponse result) {
 
-    /**
-     * Send App data
-     */
-    public void sendAppData(View v) throws NameNotFoundException {
-        ArrayList<Map<String, String>> metaInfoArray = new ArrayList<Map<String, String>>();
-
-        // If application is support Android platform.
-        Map<String, String> metaInfoAndroid = new Hashtable<String, String>(1);
-        metaInfoAndroid.put("os", "android");
-        metaInfoAndroid.put("devicetype", "phone");
-        metaInfoAndroid.put("installurl", "market://details?id=com.kakao.talk");
-        metaInfoAndroid.put("executeurl", "kakaoLinkTest://starActivity");
-
-        // If application is support ios platform.
-        Map<String, String> metaInfoIOS = new Hashtable<String, String>(1);
-        metaInfoIOS.put("os", "ios");
-        metaInfoIOS.put("devicetype", "phone");
-        metaInfoIOS.put("installurl", "your iOS app install url");
-        metaInfoIOS.put("executeurl", "kakaoLinkTest://starActivity");
-
-        // add to array
-        metaInfoArray.add(metaInfoAndroid);
-        metaInfoArray.add(metaInfoIOS);
-
-        // Recommended: Use application context for parameter.
-        KakaoLink kakaoLink = null;
-        try {
-            kakaoLink = KakaoLink.getKakaoLink(getApplicationContext());
-        } catch (KakaoParameterException e) {
-            e.printStackTrace();
-        }
-
-
-        /**
-         * @param activity
-         * @param url
-         * @param message
-         * @param appId
-         * @param appVer
-         * @param appName
-         * @param encoding
-         * @param metaInfoArray
-         */
-        kakaoLink.createKakaoTalkLinkMessageBuilder();
+            }
+        });
     }
 
 }

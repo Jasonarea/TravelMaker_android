@@ -4,14 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
-    tools:context="com.example.windosws7.kakaolinkpractice.MainActivity">
-
-    <EditText
-        android:id="@+id/main_edit_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="공유할 내용을 쓰세요" />
+    android:padding="16dp">
 
     <Button
         android:id="@+id/main_button1"
@@ -20,19 +13,8 @@
         android:layout_gravity="end"
         android:layout_marginTop="20dp"
         android:backgroundTint="#000000"
-        android:onClick="shareKakao"
         android:text="kakao "
-        android:textColor="#ffffff" />
-
-    <Button
-        android:id="@+id/main_button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="#000000"
-        android:text="faceBook"
-        android:textColor="#ffffff" />
-
+        android:textColor="#ffffff"
+        android:onClick = "kakaoLink"/>
 
 </LinearLayout>

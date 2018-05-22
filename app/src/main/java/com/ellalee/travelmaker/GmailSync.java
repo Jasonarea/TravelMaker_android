@@ -2,6 +2,7 @@ package com.ellalee.travelmaker;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.util.Log;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -28,9 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-
 public class GmailSync extends java.lang.Thread {
-
     private static final String TAG = "PlayHelloActivity";
 
     protected final static String GMAIL_SCOPE
@@ -49,6 +48,7 @@ public class GmailSync extends java.lang.Thread {
         this.mJsonFactory = mJasonfact;
         this.mCredential = mCredential;
         Log.d("Gmail Sync access", "Gmail Sync Access Complete");
+
     }
 
     public void run() {
@@ -131,7 +131,6 @@ public class GmailSync extends java.lang.Thread {
                     subs.add(h.getValue());
                     //mActivity.list(l);
                     break;
-
                 } else if (h.getName().equals("Date")) {
                     emailDate = getDate(h.getValue());
                 } else if (h.getName().equals("From")) {
@@ -151,7 +150,6 @@ public class GmailSync extends java.lang.Thread {
         Date date = null;
         try {
             date = simpleDateFormat.parse(time);
-
             Calendar fDate = Calendar.getInstance();
             fDate.setTime(date);
 
