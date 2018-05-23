@@ -19,7 +19,7 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final String[] navItems = {"Gmail Login", "Budget", "Dark Olive Green"};
+    private final String[] navItems = {"Gmail Login", "Budget"};
     private ListView lvNavList;
     private FrameLayout flContainer;
     private DrawerLayout dlDrawer;
@@ -101,12 +101,6 @@ public class MainActivity extends AppCompatActivity {
                 case 1:
 
                     flContainer.setBackgroundColor(Color.parseColor("#5F9EA0"));
-
-                    break;
-
-                case 2:
-
-                    flContainer.setBackgroundColor(Color.parseColor("#556B2F"));
 
                     break;
 

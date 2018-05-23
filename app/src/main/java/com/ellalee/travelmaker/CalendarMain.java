@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Locale;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +40,11 @@ public class CalendarMain extends Activity {
      */
     private ArrayList<Day> dayList;
 
+    /**
+     * 스케줄 저장되어있는 리스트
+     */
+    private List<String> doList;
+
 
     /**
      * 그리드뷰
@@ -51,10 +58,6 @@ public class CalendarMain extends Activity {
     private Calendar mCal;
 
 
-    /**
-     * 스케줄 저장되어있는 리스트
-     */
-    private List<String> doList;
     private int count = 0;
 
     @Override
@@ -124,6 +127,12 @@ public class CalendarMain extends Activity {
         sat.setDay("토");
         dayList.add(sat);
 
+        doList.add("TM presentation (2018-05-24)");
+        doList.add("Okinawa (2018-05-29");
+        doList.add("Okinawa (2018-05-30");
+        doList.add("Okinawa (2018-05-31");
+        doList.add("Hotel (2018-05-29)");
+        doList.add("Hotel (2018-05-30");
         mCal = Calendar.getInstance();
 
 
@@ -166,20 +175,17 @@ public class CalendarMain extends Activity {
 
         for (int i = 0; i < mCal.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
             Day d = new Day();
+            count  = 0;
             d.setDay("" + String.valueOf(i + 1));
-            setSchedulDate(d);
-            dayList.add(d);
-        }
-    }
 
-    private void setSchedulDate(Day d) {
-        count = 0;
-            for (int i = 0; i < doList.size(); i++) {
-                if (doList.get(i).contains(d.getDay())) {
+            for (int j = 0; j < doList.size(); j++) {
+                if (doList.get(j).substring(doList.get(j).indexOf("(")+9, doList.get(j).indexOf("(")+11).equals(d.getDay().toString())) {
                     count += 1;
-                    d.setSche(doList.get(i));
+                    d.setSche(doList.get(j).substring(0, doList.get(j).indexOf("(")-1));
                 }
             }
+            dayList.add(d);
+        }
     }
 
 
@@ -197,8 +203,6 @@ public class CalendarMain extends Activity {
         /**
 
          * 생성자
-
-         *
 
          * @param context
 
@@ -233,26 +237,17 @@ public class CalendarMain extends Activity {
         }
 
 
-  /*      public void setScheItem(int position) {
-            count = 0;
-            for(int i = 0; i< dolist.size(); i++) {
-                if(dolist.get(i).contains(daylist.get(position).getDay())) {
-                    count += 1;
-                    daylist.get(position).setSche(dolist.get(i));
-                }
-            }
-        }*/
-
-        public ArrayList<String> getScheItem(int position) {
-                return daylist.get(position).getSche();
+        public String getScheItem(int day, int position) {
+            if(daylist.size() > day)
+                return daylist.get(day).getSche().get(position).toString();
+            else
+                return "";
         }
 
 
         public int getScheTotal(int position) {
             return daylist.get(position).getSche().size();
         }
-
-
 
         @Override
 
@@ -293,11 +288,18 @@ public class CalendarMain extends Activity {
             }
 
             holder.tvItemGridView.setText("" + getItem(position));
-            //if(!daylist.get(position).getSche().equals(""))
-                holder.firScheGridView.setText(""+ getScheItem(position));
-            holder.secScheGridView.setText("" + getScheItem(position+1));
-            //if(getScheTotal(position)> 0)
-             //   holder.totalScheGridView.setText("Total: " + getScheTotal(position));
+            if(daylist.get(position).getSche().size() != 0) {
+                holder.firScheGridView.setText("" + getScheItem(position, 0));
+                holder.firScheGridView.setBackgroundColor(Color.parseColor("#fbc2eb"));
+                holder.firScheGridView.setSingleLine();
+            }
+            if(daylist.get(position).getSche().size() > 1) {
+                holder.secScheGridView.setText("" + getScheItem(position, 1));
+                holder.secScheGridView.setBackgroundColor(Color.parseColor("#c2e9fb"));
+                holder.secScheGridView.setSingleLine();
+            }
+            if(getScheTotal(position)> 0)
+                holder.totalScheGridView.setText("Total: " + getScheTotal(position));
 
 
 
@@ -333,7 +335,7 @@ public class CalendarMain extends Activity {
 
     private class Day {
         private String day;
-        private ArrayList<String> sche;
+        private ArrayList<String> sche = new ArrayList<String>();
         private int count = 0;
 
         public void setDay(String d) {
