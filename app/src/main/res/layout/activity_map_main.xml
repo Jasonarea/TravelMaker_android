@@ -58,7 +58,7 @@
         android:id="@+id/slidingLayout"
         android:orientation="vertical"
         android:visibility="gone"
-        android:background="#313d9c"
+        android:background="@color/colorSlidingDrawer"
         android:layout_marginTop="500dp">
 
         <TextView
@@ -72,7 +72,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/routeInfoHorizontalScroll"
-            android:background="#ffffff"
+            android:background="@color/colorRouteInfo"
             android:visibility="gone">
 
             <com.ellalee.travelmaker.RouteInfoSliding

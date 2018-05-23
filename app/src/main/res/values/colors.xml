@@ -8,15 +8,18 @@
     <color name="gray">#7F7F7F7F</color>
     <color name="babypink">#fbc2eb</color>
     
-    <color name="colorSlidingDrawer">#FFFFFFFF</color>
+    <color name="colorSlidingDrawer">#FFFFFF</color>
+    <color name="colorRouteInfo">#FFFFFF</color>
+    <color name="colorRouteInfoPlace">#ecf4a632</color>
+    <color name="colorRouteInfoText">#000000</color>
 
     <!--add 20 routes color info later!!-->
     <string-array  name="routeColor">
-        <item>#dde91616</item>
-        <item>#dd0c24f9</item>
-        <item>#259c49</item>
-        <item>#dde91616</item>
-        <item>#dd0c24f9</item>
+        <item>#3C989E</item>
+        <item>#fcc244</item>
+        <item>#2e98d1</item>
+        <item>#ED5276</item>
+        <item>#F4CDA5</item>
         <item>#259c49</item>
         <item>#dde91616</item>
         <item>#dd0c24f9</item>

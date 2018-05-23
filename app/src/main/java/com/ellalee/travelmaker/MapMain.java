@@ -36,6 +36,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -198,6 +199,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                         mOptions.title(str);
                         mOptions.draggable(true);
                         mOptions.position(SearchPoint);
+                        mOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.heart));
                         //add marker
                         googleMap.addMarker(mOptions);
                         //zoom camera view
@@ -215,6 +217,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                 MarkerOptions option =new MarkerOptions();
                 option.draggable(true);
                 option.position(latLng);
+                option.title(" ");
+                option.icon(BitmapDescriptorFactory.fromResource(R.drawable.heart));
                 googleMap.addMarker(option);
                 //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
             }
@@ -222,16 +226,23 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 
         googleMap.setOnMarkerClickListener(this);
         googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+            float alpha;
 
             @Override
-            public void onMarkerDragStart(Marker marker) {}
+            public void onMarkerDragStart(Marker marker) {
+                alpha = marker.getAlpha();
+            }
 
             @Override
-            public void onMarkerDrag(Marker marker) { }
+            public void onMarkerDrag(Marker marker) {
+                marker.setAlpha(10);
+            }
 
             @Override
             public void onMarkerDragEnd(Marker marker) {
                 //find every route which include the marker
+                marker.setAlpha(alpha);
+
                 Iterator<Route> route_iterator = routes.iterator(); //route iterator
                 Route cur;
                 while (route_iterator.hasNext()) {
@@ -267,7 +278,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                             title.setText("Route info of Day "+cur.contains(polyline));
                             RouteInfoSliding indicator = findViewById(R.id.routeInfoDraw);
                             indicator.setRoute(cur);
-                            //*********DrawRoutInfo(cur.index);
+                            cur.setMarkerList(indicator.getModified()); //get the modified route info
+
                         }else{
                             cur.setPolylineWidth(10);
                         }
@@ -300,8 +312,13 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             }
         }
         else if(edit_mode==2) {  //add a marker
-            routes.get(routeIndex).add(marker);
-            routes.get(routeIndex).setPoints();
+            if(routes.get(routeIndex).isLastMarker(marker)){ //avoid duplication
+                Toast.makeText(this, "This place was just added.", Toast.LENGTH_SHORT).show();
+            }else{
+                routes.get(routeIndex).add(marker);
+                routes.get(routeIndex).setPoints();
+            }
+
         }
         return false;
     }

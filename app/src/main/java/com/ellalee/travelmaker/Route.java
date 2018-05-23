@@ -33,18 +33,23 @@ public class Route{
     boolean add(Marker marker){
         return markerList.add(marker);
     }
+
     boolean remove(Marker marker){
         return markerList.remove(marker);
     }
+
     int getIndex(){
         return index;
     }
+
     ArrayList<Marker> getMarkerList(){
         return markerList;
     }
+
     String getRouteColor(){
         return routeColor;
     }
+
     boolean contains(Marker marker){
         Iterator<Marker> iterator = markerList.iterator();
         while(iterator.hasNext()){
@@ -58,6 +63,17 @@ public class Route{
             return index;
         }
         else return -1;
+    }
+    boolean isLastMarker(Marker m){
+        if(markerList.size()==0)
+            return false;
+
+        Iterator<Marker> iterator = markerList.iterator();
+        Marker cur=null;
+        while(iterator.hasNext()){
+            cur=iterator.next();
+        }
+        return cur.equals(m);
     }
 
     public void setPolylineWidth(float width){
