@@ -62,7 +62,9 @@ public class JsonParsing extends Activity
 
     private static final String BUTTON_TEXT = "Call Google Apps Script API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { "https://www.googleapis.com/auth/script.projects" };
+    private static final String[] SCOPES = { "https://www.googleapis.com/auth/script.projects", "https://www.googleapis.com/auth/drive",
+            "https://www.googleapis.com/auth/script.scriptapp", "https://www.googleapis.com/auth/script.external_request",
+            "https://www.googleapis.com/auth/script.send_mail"};
 
     /**
      * Create the main activity.

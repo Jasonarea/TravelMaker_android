@@ -1,70 +1,53 @@
 package com.ellalee.travelmaker;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
+import com.ellalee.travelmaker.R;
 import com.kakao.kakaolink.KakaoLink;
-import com.kakao.kakaolink.v2.KakaoLinkResponse;
-import com.kakao.kakaolink.v2.KakaoLinkService;
-import com.kakao.message.template.ButtonObject;
-import com.kakao.message.template.ContentObject;
-import com.kakao.message.template.FeedTemplate;
-import com.kakao.message.template.LinkObject;
-import com.kakao.message.template.SocialObject;
-import com.kakao.network.ErrorResult;
-import com.kakao.network.callback.ResponseCallback;
-import com.kakao.util.helper.log.Logger;
+import com.kakao.kakaolink.KakaoTalkLinkMessageBuilder;
+import com.kakao.util.KakaoParameterException;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Map;
+public class Sharing extends AppCompatActivity {
 
-/**
- * Copyright 2012 Kakao Crop. All rights reserved.
- *
- * @author kakaolink@kakao.com
- */
-public class Sharing extends Activity {
-
-    // Recommened Charset UTF-8
-    private String encoding = "UTF-8";
+    private KakaoLink kakaoLink;
+    private KakaoTalkLinkMessageBuilder kakaoTalkLinkMessageBuilder;
+    private EditText mEditText;
+    private Button mSendBtn;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_kakao_link);
+        setContentView(R.layout.activity_main);
 
-    }
+        try {
+            kakaoLink = KakaoLink.getKakaoLink(getApplicationContext());
+            kakaoTalkLinkMessageBuilder = kakaoLink.createKakaoTalkLinkMessageBuilder();
+        } catch (KakaoParameterException e) {
+            e.getMessage();
+        }
 
-    public void kakaoLink() {
-        FeedTemplate params = FeedTemplate
-                .newBuilder(ContentObject.newBuilder("디저트 사진",
-                        "http://mud-kage.kakao.co.kr/dn/NTmhS/btqfEUdFAUf/FjKzkZsnoeE4o19klTOVI1/openlink_640x640s.jpg",
-                        LinkObject.newBuilder().setWebUrl("https://developers.kakao.com")
-                                .setMobileWebUrl("https://developers.kakao.com").build())
-                        .setDescrption("아메리카노, 빵, 케익")
-                        .build())
-                .setSocial(SocialObject.newBuilder().setLikeCount(10).setCommentCount(20)
-                        .setSharedCount(30).setViewCount(40).build())
-                .addButton(new ButtonObject("웹에서 보기", LinkObject.newBuilder().setWebUrl("'https://developers.kakao.com").setMobileWebUrl("'https://developers.kakao.com").build()))
-                .addButton(new ButtonObject("앱에서 보기", LinkObject.newBuilder()
-                        .setWebUrl("'https://developers.kakao.com")
-                        .setMobileWebUrl("'https://developers.kakao.com")
-                        .setAndroidExecutionParams("key1=value1")
-                        .setIosExecutionParams("key1=value1")
-                        .build()))
-                .build();
-        KakaoLinkService.getInstance().sendDefault(this,params, new ResponseCallback<KakaoLinkResponse>() {
+        mEditText = (EditText) findViewById(R.id.editText);
+        mSendBtn = (Button) findViewById(R.id.btnSend);
+        mSendBtn.setOnClickListener(new Button.OnClickListener() {
             @Override
-            public void onFailure(ErrorResult errorResult) {
-                Logger.e(errorResult.toString());
-            }
-
-            @Override
-            public void onSuccess(KakaoLinkResponse result) {
-
+            public void onClick(View v) {
+                sendLink();
             }
         });
     }
 
+    private void sendLink(){
+        try {
+            kakaoTalkLinkMessageBuilder.addText(mEditText.getText().toString());
+            final String linkContents = kakaoTalkLinkMessageBuilder.build();
+            //kakaoLink.sendMessage(linkContents, this);
+        } catch (KakaoParameterException e) {
+            e.getMessage();
+        }
+    }
 }
