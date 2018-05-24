@@ -9,8 +9,7 @@
     <color name="gray">#7F7F7F7F</color>
     <color name = "dark_gray">#4C4C4C</color>
     <color name="babypink">#fbc2eb</color>
-<<<<<<< HEAD
-    
+
     <color name="colorSlidingDrawer">#FFFFFF</color>
     <color name="colorRouteInfo">#FFFFFF</color>
     <color name="colorRouteInfoPlace">#ecf4a632</color>
@@ -28,8 +27,6 @@
         <item>#dd0c24f9</item>
         <item>#259c49</item>
     </string-array>
-=======
     <color name="violetblue">#516AE8</color>
->>>>>>> UIDesign
 </resources>
 

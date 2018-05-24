@@ -3,13 +3,11 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Widget.AppCompat.EditText">
         <!-- Customize your theme here. -->
-<<<<<<< HEAD
-=======
+
         <item name="colorAccent">@color/colorAccent</item>
         <item name = "android:textColorHint">@color/ivory</item>
         <item name = "android:textViewStyle">@style/CustomTextView</item>
         <item name="android:actionBarStyle">@style/CustomActionBar</item>
->>>>>>> UIDesign
     </style>
 
     <style name="CustomTextView" parent="@android:style/Widget.DeviceDefault.TextView">

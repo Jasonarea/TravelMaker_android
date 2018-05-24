@@ -11,14 +11,10 @@ android {
     }
     defaultConfig {
         applicationId "com.ellalee.travelmaker"
-<<<<<<< HEAD
+
         minSdkVersion 14
         targetSdkVersion 25
 
-=======
-        minSdkVersion 16
-        targetSdkVersion 26
->>>>>>> UIDesign
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -49,15 +45,9 @@ android {
     }
 }
 
-
-
-
-
-
-
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:25.0.1'
+    implementation 'com.android.support:appcompat-v7:27.0.1'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     //google map api
     implementation 'com.google.android.gms:play-services-maps:15.0.0'
@@ -78,7 +68,6 @@ dependencies {
     implementation('com.google.apis:google-api-services-gmail:v1-rev86-1.23.0') {
         exclude group: 'org.apache.httpcomponents'
     }
-<<<<<<< HEAD
     implementation 'com.squareup.picasso:picasso:2.5.2'
     // 카카오 링크를 사용하기 위해 필요.
     implementation group: project.KAKAO_SDK_GROUP, name: 'kakaolink', version: project.KAKAO_SDK_VERSION
@@ -91,35 +80,25 @@ dependencies {
 
     implementation 'com.google.api-client:google-api-client:1.22.0'
     implementation 'com.google.oauth-client:google-oauth-client-jetty:1.22.0'
-=======
-    implementation 'com.android.support:design:26.1.0'
-    implementation 'com.android.support:support-vector-drawable:26.1.0'
->>>>>>> UIDesign
+
+    implementation 'com.android.support:design:27.1.0'
+    implementation 'com.android.support:support-vector-drawable:27.1.0'
     testImplementation 'junit:junit:4.12'
 
     androidTestImplementation 'com.android.support.test:runner:+'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:+'
-<<<<<<< HEAD
-    implementation files('E:/Travel-Maker/libs/mail.jar')
-    implementation files('E:/Travel-Maker/libs/additionnal.jar')
-    implementation files('E:/Travel-Maker/libs/activation.jar')
+//    implementation files('E:/Travel-Maker/libs/mail.jar')
+//    implementation files('E:/Travel-Maker/libs/additionnal.jar')
+//    implementation files('E:/Travel-Maker/libs/activation.jar')
 
-=======
 
-<<<<<<< HEAD
     implementation files('D:/18_1/Travel-Maker/libs/mail.jar')
     implementation files('D:/18_1/Travel-Maker/libs/additionnal.jar')
     implementation files('D:/18_1/Travel-Maker/libs/activation.jar')
->>>>>>> 777c132d346ff86491bfca3f0b5a593c8ebef29b
-=======
-    implementation files('E:/Travel-Maker/libs/mail.jar')
-    implementation files('E:/Travel-Maker/libs/additionnal.jar')
-    implementation files('E:/Travel-Maker/libs/activation.jar')
-    implementation 'com.android.support:design:23.3.0'
 
-    //implementation files('D:/18_1/Travel-Maker/libs/mail.jar')
-    //implementation files('D:/18_1/Travel-Maker/libs/additionnal.jar')
-    //implementation files('D:/18_1/Travel-Maker/libs/activation.jar')
-    //implementation 'com.android.support:design:23.3.0'
->>>>>>> 82d5af5018127f4abba9d2ee73102b229218b719
+//    implementation files('E:/Travel-Maker/libs/mail.jar')
+//    implementation files('E:/Travel-Maker/libs/additionnal.jar')
+//    implementation files('E:/Travel-Maker/libs/activation.jar')
+
+//    implementation 'com.android.support:design:23.3.0'
 }
