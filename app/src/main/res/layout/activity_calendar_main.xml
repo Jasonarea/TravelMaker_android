@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@drawable/calendar_label_background">
+<<<<<<< HEAD
             <TextView
                 android:id="@+id/tv_date"
                 android:layout_width="wrap_content"
@@ -33,6 +34,32 @@
                 android:layout_marginLeft="10dp"
                 android:background="@drawable/calendar_button_next"
                 android:layout_toRightOf="@+id/tv_date"/>
+=======
+        <TextView
+            android:id="@+id/tv_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="@color/white"
+            android:textSize="25dp" />
+        <Button
+            android:id = "@+id/calendar_month_back"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@drawable/calendar_button_back"
+            android:gravity="center_horizontal"
+            android:layout_toLeftOf="@+id/tv_date"
+            android:layout_marginRight="10dp"
+            android:layout_centerInParent="true" />
+        <Button
+            android:id="@+id/calendar_month_next"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="10dp"
+            android:background="@drawable/calendar_button_next"
+            android:layout_toRightOf="@+id/tv_date"/>
+>>>>>>> UIDesign
     </RelativeLayout>
 
     <GridView
@@ -42,7 +69,6 @@
         android:layout_height="0dp"
         android:layout_width="match_parent"
         android:numColumns="7"
-        android:listSelector="@color/gray"
-        >
+        android:listSelector = "@color/gray">
     </GridView>
 </LinearLayout>

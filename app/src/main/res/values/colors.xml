@@ -5,8 +5,11 @@
     <color name="colorAccent">#FF4081</color>
     <color name = "black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name = "ivory">#F6F6F6</color>
     <color name="gray">#7F7F7F7F</color>
+    <color name = "dark_gray">#4C4C4C</color>
     <color name="babypink">#fbc2eb</color>
+<<<<<<< HEAD
     
     <color name="colorSlidingDrawer">#FFFFFFFF</color>
 
@@ -22,5 +25,8 @@
         <item>#dd0c24f9</item>
         <item>#259c49</item>
     </string-array>
+=======
+    <color name="violetblue">#516AE8</color>
+>>>>>>> UIDesign
 </resources>
 
