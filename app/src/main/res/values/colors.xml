@@ -10,7 +10,14 @@
     
     <color name="colorSlidingDrawer">#FFFFFFFF</color>
 
+    <!--add 20 routes color info later!!-->
     <string-array  name="routeColor">
+        <item>#dde91616</item>
+        <item>#dd0c24f9</item>
+        <item>#259c49</item>
+        <item>#dde91616</item>
+        <item>#dd0c24f9</item>
+        <item>#259c49</item>
         <item>#dde91616</item>
         <item>#dd0c24f9</item>
         <item>#259c49</item>

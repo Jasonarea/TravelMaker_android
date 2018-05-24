@@ -6,24 +6,24 @@ import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
-import com.google.api.services.calendar.model.Event;
-
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.ExponentialBackOff;
 
-import com.google.api.services.calendar.CalendarScopes;
-import com.google.api.client.util.DateTime;
 
-import com.google.api.services.calendar.model.*;
+
+import com.google.android.gms.auth.GoogleAuthException;
+import com.google.api.services.script.model.*;
+import java.util.Map;
 
 import android.Manifest;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -34,7 +34,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -49,25 +48,21 @@ import java.util.List;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class CalendarSync extends Activity
+public class JsonParsing extends Activity
         implements EasyPermissions.PermissionCallbacks {
     GoogleAccountCredential mCredential;
     private TextView mOutputText;
     private Button mCallApiButton;
-    private Button mMailBox;
-    private HttpTransport transport;
-    private JsonFactory jsonFactory;
     ProgressDialog mProgress;
-    boolean createOneSchedule = true;
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
 
-    private static final String BUTTON_TEXT = "Call Google Calendar API";
+    private static final String BUTTON_TEXT = "Call Google Apps Script API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { "https://www.googleapis.com/auth/calendar" };
+    private static final String[] SCOPES = { "https://www.googleapis.com/auth/script.projects" };
 
     /**
      * Create the main activity.
@@ -101,16 +96,6 @@ public class CalendarSync extends Activity
         });
         activityLayout.addView(mCallApiButton);
 
-        mMailBox = new Button(this);
-        mMailBox.setText("Access Gmail Inbox");
-        mMailBox.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                GmailSync gmailThread = new GmailSync(getApplicationContext(), transport, jsonFactory, mCredential);
-                gmailThread.start();
-            }
-        });
-        activityLayout.addView(mMailBox);
         mOutputText = new TextView(this);
         mOutputText.setLayoutParams(tlp);
         mOutputText.setPadding(16, 16, 16, 16);
@@ -121,7 +106,7 @@ public class CalendarSync extends Activity
         activityLayout.addView(mOutputText);
 
         mProgress = new ProgressDialog(this);
-        mProgress.setMessage("Calling Google Calendar API ...");
+        mProgress.setMessage("Calling Google Apps Script API ...");
 
         setContentView(activityLayout);
 
@@ -131,46 +116,27 @@ public class CalendarSync extends Activity
                 .setBackOff(new ExponentialBackOff());
     }
 
-    private void createEvent(com.google.api.services.calendar.Calendar mService) throws IOException {
-        Event event = new Event()
-                .setSummary("Google I/O 2018")
-                .setLocation("800 Howard St., San Francisco, CA 94103")
-                .setDescription("A chance to hear more about Google's developer products.");
-
-        DateTime startDateTime = new DateTime("2018-05-28T09:00:00-07:00");
-        EventDateTime start = new EventDateTime()
-                .setDateTime(startDateTime)
-                .setTimeZone("America/Los_Angeles");
-        event.setStart(start);
-
-        DateTime endDateTime = new DateTime("2018-05-28T17:00:00-07:00");
-        EventDateTime end = new EventDateTime()
-                .setDateTime(endDateTime)
-                .setTimeZone("America/Los_Angeles");
-        event.setEnd(end);
-
-        String[] recurrence = new String[] {"RRULE:FREQ=DAILY;COUNT=2"};
-        event.setRecurrence(Arrays.asList(recurrence));
-
-        EventAttendee[] attendees = new EventAttendee[] {
-                new EventAttendee().setEmail("lpage@example.com"),
-                new EventAttendee().setEmail("sbrin@example.com"),
+    /**
+     * Extend the given HttpRequestInitializer (usually a credentials object)
+     * with additional initialize() instructions.
+     *
+     * @param requestInitializer the initializer to copy and adjust; typically
+     *         a credential object.
+     * @return an initializer with an extended read timeout.
+     */
+    private static HttpRequestInitializer setHttpTimeout(
+            final HttpRequestInitializer requestInitializer) {
+        return new HttpRequestInitializer() {
+            @Override
+            public void initialize(HttpRequest httpRequest)
+                    throws java.io.IOException {
+                requestInitializer.initialize(httpRequest);
+                // This allows the API to call (and avoid timing out on)
+                // functions that take up to 6 minutes to complete (the maximum
+                // allowed script run time), plus a little overhead.
+                httpRequest.setReadTimeout(380000);
+            }
         };
-        event.setAttendees(Arrays.asList(attendees));
-
-        EventReminder[] reminderOverrides = new EventReminder[] {
-                new EventReminder().setMethod("email").setMinutes(24 * 60),
-                new EventReminder().setMethod("popup").setMinutes(10),
-        };
-        Event.Reminders reminders = new Event.Reminders()
-                .setUseDefault(false)
-                .setOverrides(Arrays.asList(reminderOverrides));
-        event.setReminders(reminders);
-
-        String calendarId = "primary";
-
-        event = mService.events().insert(calendarId, event).execute();
-        Log.d("create", "Event created : " + event.getHtmlLink());
     }
 
     /**
@@ -365,31 +331,31 @@ public class CalendarSync extends Activity
             final int connectionStatusCode) {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         Dialog dialog = apiAvailability.getErrorDialog(
-                CalendarSync.this,
+                JsonParsing.this,
                 connectionStatusCode,
                 REQUEST_GOOGLE_PLAY_SERVICES);
         dialog.show();
     }
 
     /**
-     * An asynchronous task that handles the Google Calendar API call.
+     * An asynchronous task that handles the Google Apps Script API call.
      * Placing the API calls in their own task ensures the UI stays responsive.
      */
     private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
-        private com.google.api.services.calendar.Calendar mService = null;
+        private com.google.api.services.script.Script mService = null;
         private Exception mLastError = null;
 
         MakeRequestTask(GoogleAccountCredential credential) {
-            transport = AndroidHttp.newCompatibleTransport();
-            jsonFactory = JacksonFactory.getDefaultInstance();
-            mService = new com.google.api.services.calendar.Calendar.Builder(
-                    transport, jsonFactory, credential)
-                    .setApplicationName("Google Calendar API Android Quickstart")
+            HttpTransport transport = AndroidHttp.newCompatibleTransport();
+            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+            mService = new com.google.api.services.script.Script.Builder(
+                    transport, jsonFactory, setHttpTimeout(credential))
+                    .setApplicationName("TravleMaker")
                     .build();
         }
 
         /**
-         * Background task to call Google Calendar API.
+         * Background task to call Google Apps Script API.
          * @param params no parameters needed for this task.
          */
         @Override
@@ -404,38 +370,91 @@ public class CalendarSync extends Activity
         }
 
         /**
-         * Fetch a list of the next 10 events from the primary calendar.
-         * @return List of Strings describing returned events.
+         * Call the API to run an Apps Script function that returns a list
+         * of folders within the user's root directory on Drive.
+         *
+         * @return list of String folder names and their IDs
          * @throws IOException
          */
-        private List<String> getDataFromApi() throws IOException {
-            // List the next 10 events from the primary calendar.
-            DateTime now = new DateTime(System.currentTimeMillis());
-            List<String> eventStrings = new ArrayList<String>();
-            Events events = mService.events().list("primary")
-                    .setMaxResults(10)
-                    .setTimeMin(now)
-                    .setOrderBy("startTime")
-                    .setSingleEvents(true)
-                    .execute();
-            List<Event> items = events.getItems();
+        private List<String> getDataFromApi()
+                throws IOException, GoogleAuthException {
+            // ID of the script to call. Acquire this from the Apps Script editor,
+            // under Publish > Deploy as API executable.
+            String scriptId = "ENTER_YOUR_SCRIPT_ID_HERE";
 
-            for (Event event : items) {
-                DateTime start = event.getStart().getDateTime();
-                if (start == null) {
-                    // All-day events don't have start times, so just use
-                    // the start date.
-                    start = event.getStart().getDate();
+            List<String> folderList = new ArrayList<String>();
+
+            // Create an execution request object.
+            ExecutionRequest request = new ExecutionRequest()
+                    .setFunction("getFoldersUnderRoot");
+
+            // Make the request.
+            Operation op =
+                    mService.scripts().run(scriptId, request).execute();
+
+            // Print results of request.
+            if (op.getError() != null) {
+                throw new IOException(getScriptError(op));
+            }
+            if (op.getResponse() != null &&
+                    op.getResponse().get("result") != null) {
+                // The result provided by the API needs to be cast into
+                // the correct type, based upon what types the Apps Script
+                // function returns. Here, the function returns an Apps
+                // Script Object with String keys and values, so must be
+                // cast into a Java Map (folderSet).
+                Map<String, String> folderSet =
+                        (Map<String, String>)(op.getResponse().get("result"));
+
+                for (String id: folderSet.keySet()) {
+                    folderList.add(
+                            String.format("%s (%s)", folderSet.get(id), id));
                 }
-                eventStrings.add(
-                        String.format("%s (%s)", event.getSummary(), start));
             }
-            if(createOneSchedule) {
-                createEvent(mService);
-                createOneSchedule = false;
-            }
-            return eventStrings;
+
+            return folderList;
         }
+
+        /**
+         * Interpret an error response returned by the API and return a String
+         * summary.
+         *
+         * @param op the Operation returning an error response
+         * @return summary of error response, or null if Operation returned no
+         *     error
+         */
+        private String getScriptError(Operation op) {
+            if (op.getError() == null) {
+                return null;
+            }
+
+            // Extract the first (and only) set of error details and cast as a Map.
+            // The values of this map are the script's 'errorMessage' and
+            // 'errorType', and an array of stack trace elements (which also need to
+            // be cast as Maps).
+            Map<String, Object> detail = op.getError().getDetails().get(0);
+            List<Map<String, Object>> stacktrace =
+                    (List<Map<String, Object>>)detail.get("scriptStackTraceElements");
+
+            java.lang.StringBuilder sb =
+                    new StringBuilder("\nScript error message: ");
+            sb.append(detail.get("errorMessage"));
+
+            if (stacktrace != null) {
+                // There may not be a stacktrace if the script didn't start
+                // executing.
+                sb.append("\nScript error stacktrace:");
+                for (Map<String, Object> elem : stacktrace) {
+                    sb.append("\n  ");
+                    sb.append(elem.get("function"));
+                    sb.append(":");
+                    sb.append(elem.get("lineNumber"));
+                }
+            }
+            sb.append("\n");
+            return sb.toString();
+        }
+
 
         @Override
         protected void onPreExecute() {
@@ -449,7 +468,7 @@ public class CalendarSync extends Activity
             if (output == null || output.size() == 0) {
                 mOutputText.setText("No results returned.");
             } else {
-                output.add(0, "Data retrieved using the Google Calendar API:");
+                output.add(0, "Data retrieved using the Google Apps Script API:");
                 mOutputText.setText(TextUtils.join("\n", output));
             }
         }
@@ -465,7 +484,7 @@ public class CalendarSync extends Activity
                 } else if (mLastError instanceof UserRecoverableAuthIOException) {
                     startActivityForResult(
                             ((UserRecoverableAuthIOException) mLastError).getIntent(),
-                            CalendarSync.REQUEST_AUTHORIZATION);
+                            JsonParsing.REQUEST_AUTHORIZATION);
                 } else {
                     mOutputText.setText("The following error occurred:\n"
                             + mLastError.getMessage());
