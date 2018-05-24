@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/option_delete"
+        android:title="remove from this route"/>
+    <item android:id="@+id/option_forward"
+        android:title="forward"/>
+    <item android:id="@+id/option_backward"
+        android:title="backward"/>
+    <item android:id="@+id/option_residence"
+        android:title="residence"/>
+    <item android:id="@+id/option_restaurant"
+        android:title="dining"/>
+    <item android:id="@+id/option_shopping"
+        android:title="shopping"/>
+
+</menu>
