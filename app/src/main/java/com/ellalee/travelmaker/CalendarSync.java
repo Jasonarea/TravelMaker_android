@@ -54,6 +54,9 @@ public class CalendarSync extends Activity
     GoogleAccountCredential mCredential;
     private TextView mOutputText;
     private Button mCallApiButton;
+    private Button mMailBox;
+    private HttpTransport transport;
+    private JsonFactory jsonFactory;
     ProgressDialog mProgress;
     boolean createOneSchedule = true;
 
@@ -98,6 +101,16 @@ public class CalendarSync extends Activity
         });
         activityLayout.addView(mCallApiButton);
 
+        mMailBox = new Button(this);
+        mMailBox.setText("Access Gmail Inbox");
+        mMailBox.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                GmailSync gmailThread = new GmailSync(getApplicationContext(), transport, jsonFactory, mCredential);
+                gmailThread.start();
+            }
+        });
+        activityLayout.addView(mMailBox);
         mOutputText = new TextView(this);
         mOutputText.setLayoutParams(tlp);
         mOutputText.setPadding(16, 16, 16, 16);
@@ -367,8 +380,8 @@ public class CalendarSync extends Activity
         private Exception mLastError = null;
 
         MakeRequestTask(GoogleAccountCredential credential) {
-            HttpTransport transport = AndroidHttp.newCompatibleTransport();
-            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+            transport = AndroidHttp.newCompatibleTransport();
+            jsonFactory = JacksonFactory.getDefaultInstance();
             mService = new com.google.api.services.calendar.Calendar.Builder(
                     transport, jsonFactory, credential)
                     .setApplicationName("Google Calendar API Android Quickstart")
