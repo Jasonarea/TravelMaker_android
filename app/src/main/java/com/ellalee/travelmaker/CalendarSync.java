@@ -49,12 +49,12 @@ import java.util.List;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class CalendarSync extends Activity
-        implements EasyPermissions.PermissionCallbacks {
+public class CalendarSync extends Activity implements EasyPermissions.PermissionCallbacks {
     GoogleAccountCredential mCredential;
     private TextView mOutputText;
     private Button mCallApiButton;
     private Button mMailBox;
+    private TextView mEmailView;
     private HttpTransport transport;
     private JsonFactory jsonFactory;
     ProgressDialog mProgress;

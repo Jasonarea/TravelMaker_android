@@ -48,8 +48,7 @@ import java.util.List;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class JsonParsing extends Activity
-        implements EasyPermissions.PermissionCallbacks {
+public class JsonParsing extends Activity implements EasyPermissions.PermissionCallbacks {
     GoogleAccountCredential mCredential;
     private TextView mOutputText;
     private Button mCallApiButton;
@@ -62,7 +61,9 @@ public class JsonParsing extends Activity
 
     private static final String BUTTON_TEXT = "Call Google Apps Script API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { "https://www.googleapis.com/auth/script.projects" };
+    private static final String[] SCOPES = { "https://www.googleapis.com/auth/script.projects", "https://www.googleapis.com/auth/drive",
+            "https://www.googleapis.com/auth/script.scriptapp", "https://www.googleapis.com/auth/script.external_request",
+            "https://www.googleapis.com/auth/script.send_mail"};
 
     /**
      * Create the main activity.
@@ -380,7 +381,7 @@ public class JsonParsing extends Activity
                 throws IOException, GoogleAuthException {
             // ID of the script to call. Acquire this from the Apps Script editor,
             // under Publish > Deploy as API executable.
-            String scriptId = "ENTER_YOUR_SCRIPT_ID_HERE";
+            String scriptId = "1EWeU0xxvF_IFKxzcUdJnWT9_RAPJXw4F4mb7UZKrvpqWHCsDV2Sj7JiJ";
 
             List<String> folderList = new ArrayList<String>();
 

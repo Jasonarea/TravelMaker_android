@@ -11,10 +11,8 @@ android {
     }
     defaultConfig {
         applicationId "com.ellalee.travelmaker"
-
         minSdkVersion 14
         targetSdkVersion 25
-
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -47,7 +45,7 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:27.0.1'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     //google map api
     implementation 'com.google.android.gms:play-services-maps:15.0.0'
@@ -57,7 +55,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:15.0.0'
     implementation 'pub.devrel:easypermissions:0.3.0'
     implementation('com.google.api-client:google-api-client-android:1.23.0') {
-        exclude group: '    org.apache.httpcomponents'
+        exclude group: 'org.apache.httpcomponents'
     }
     implementation('com.google.apis:google-api-services-script:v1-rev197-1.23.0') {
         exclude group: 'org.apache.httpcomponents'
@@ -69,25 +67,22 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
     }
     implementation 'com.squareup.picasso:picasso:2.5.2'
-    // 카카오 링크를 사용하기 위해 필요.
+    // 카카링크륬용�기 �해 �요.
     implementation group: project.KAKAO_SDK_GROUP, name: 'kakaolink', version: project.KAKAO_SDK_VERSION
 
-// 카카오톡 sdk를 사용하기 위해 필요.
+    // 카카�톡 sdk륬용�기 �해 �요.
     implementation group: project.KAKAO_SDK_GROUP, name: 'kakaotalk', version: project.KAKAO_SDK_VERSION
 
-// 사용자관리 sdk를 사용하기 위해 필요.
-    implementation group: project.KAKAO_SDK_GROUP, name: 'usermgmt', version: project.KAKAO_SDK_VERSION
 
     implementation 'com.google.api-client:google-api-client:1.22.0'
     implementation 'com.google.oauth-client:google-oauth-client-jetty:1.22.0'
-
-    implementation 'com.android.support:design:27.1.0'
-    implementation 'com.android.support:support-vector-drawable:27.1.0'
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support:support-vector-drawable:27.1.1'
     testImplementation 'junit:junit:4.12'
 
     androidTestImplementation 'com.android.support.test:runner:+'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:+'
-//    implementation files('E:/Travel-Maker/libs/mail.jar')
+
 //    implementation files('E:/Travel-Maker/libs/additionnal.jar')
 //    implementation files('E:/Travel-Maker/libs/activation.jar')
 
@@ -96,9 +91,10 @@ dependencies {
     implementation files('D:/18_1/Travel-Maker/libs/additionnal.jar')
     implementation files('D:/18_1/Travel-Maker/libs/activation.jar')
 
-//    implementation files('E:/Travel-Maker/libs/mail.jar')
-//    implementation files('E:/Travel-Maker/libs/additionnal.jar')
-//    implementation files('E:/Travel-Maker/libs/activation.jar')
+  //  implementation files('D:/18_1/Travel-Maker/libs/mail.jar')
+   // implementation files('D:/18_1/Travel-Maker/libs/additionnal.jar')
+   // implementation files('D:/18_1/Travel-Maker/libs/activation.jar')
 
-//    implementation 'com.android.support:design:23.3.0'
 }
+
+

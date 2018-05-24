@@ -27,6 +27,6 @@
         <item>#dd0c24f9</item>
         <item>#259c49</item>
     </string-array>
-    <color name="violetblue">#516AE8</color>
+    <color name="violetblue"></color>
 </resources>
 

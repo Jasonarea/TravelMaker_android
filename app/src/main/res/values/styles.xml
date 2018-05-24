@@ -3,7 +3,6 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Widget.AppCompat.EditText">
         <!-- Customize your theme here. -->
-
         <item name="colorAccent">@color/colorAccent</item>
         <item name = "android:textColorHint">@color/ivory</item>
         <item name = "android:textViewStyle">@style/CustomTextView</item>
