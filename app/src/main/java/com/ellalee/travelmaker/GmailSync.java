@@ -162,7 +162,7 @@ public class GmailSync implements Runnable {
             final String finalBod = bod;
             final String finalSub = sub;
             if(finalBod.contains("E-ticket") || finalBod.contains("항공권") || finalBod.contains("VOUCHER") ||
-                    finalBod.contains("에어비앤비")) {
+                    finalBod.contains("The Log")) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
