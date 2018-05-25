@@ -67,10 +67,10 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
     }
     implementation 'com.squareup.picasso:picasso:2.5.2'
-    // 카카오 링크를 사용하기 위해 필요.
+    // 카카링크륬용�기 �해 �요.
     implementation group: project.KAKAO_SDK_GROUP, name: 'kakaolink', version: project.KAKAO_SDK_VERSION
 
-    // 카카오톡 sdk를 사용하기 위해 필요.
+    // 카카�톡 sdk륬용�기 �해 �요.
     implementation group: project.KAKAO_SDK_GROUP, name: 'kakaotalk', version: project.KAKAO_SDK_VERSION
 
 
@@ -82,14 +82,19 @@ dependencies {
 
     androidTestImplementation 'com.android.support.test:runner:+'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:+'
-    implementation files('E:/Travel-Maker/libs/mail.jar')
-    implementation files('E:/Travel-Maker/libs/additionnal.jar')
-    implementation files('E:/Travel-Maker/libs/activation.jar')
 
+//    implementation files('E:/Travel-Maker/libs/additionnal.jar')
+//    implementation files('E:/Travel-Maker/libs/activation.jar')
+
+
+    implementation files('D:/18_1/Travel-Maker/libs/mail.jar')
+    implementation files('D:/18_1/Travel-Maker/libs/additionnal.jar')
+    implementation files('D:/18_1/Travel-Maker/libs/activation.jar')
 
   //  implementation files('D:/18_1/Travel-Maker/libs/mail.jar')
    // implementation files('D:/18_1/Travel-Maker/libs/additionnal.jar')
    // implementation files('D:/18_1/Travel-Maker/libs/activation.jar')
+
 }
 
 

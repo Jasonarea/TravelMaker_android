@@ -1,6 +1,8 @@
 package com.ellalee.travelmaker;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -21,9 +23,12 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.SlidingDrawer;
 import android.widget.TextView;
@@ -140,7 +145,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 
         slidingLayout = findViewById(R.id.slidingLayout);
         infoSliding = new RouteInfoSliding(this);
-//        routeInfoContainer = findViewById(R.id.routeInfoContainer);
         routeHS = findViewById(R.id.routeInfoHorizontalScroll);
         routeInfoDraw = findViewById(R.id.routeInfoDraw);
 
@@ -289,7 +293,55 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                 }
             }
         });
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(final Marker marker) {
+                final View innerView = getLayoutInflater().inflate(R.layout.map_pop_input,null);
+                AlertDialog.Builder popInput = new AlertDialog.Builder(getApplicationContext());
+                final RadioGroup iconOpt = innerView.findViewById(R.id.IconCategory);
+
+                if(marker.getTitle().equals(" ")){
+                    popInput.setTitle("Edit Maker");
+                }
+                else{
+                    popInput.setTitle(marker.getTitle());
+                }
+                popInput.setView(innerView);
+
+                popInput.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        marker.setTitle(innerView.findViewById(R.id.markerTitleInput).toString());
+
+                        switch (iconOpt.getCheckedRadioButtonId()){
+                            case R.id.opt_dining:
+                                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_dining));
+                                break;
+                            case R.id.opt_residence:
+                                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_residence));
+                                break;
+                            case R.id.opt_shopping:
+                                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_shopping));
+                                break;
+                            case R.id.opt_default:
+                                marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_default));
+                                break;
+                        }
+
+                    }
+                });
+                popInput.setNegativeButton("Candle", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                });
+                popInput.show();
+
+            }
+        });
     }
+
 
     @Override
     public boolean onMarkerClick(Marker marker) {
