@@ -1,9 +1,13 @@
 package com.ellalee.travelmaker;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.TextView;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.http.HttpTransport;
@@ -29,7 +33,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class GmailSync extends java.lang.Thread {
+
+public class GmailSync implements Runnable {
+
     private static final String TAG = "PlayHelloActivity";
 
     protected final static String GMAIL_SCOPE
@@ -40,20 +46,37 @@ public class GmailSync extends java.lang.Thread {
     public static int count = 0;
     HttpTransport mHttpTransport;
     JsonFactory mJsonFactory;
+    Handler handler = new Handler();
     GoogleAccountCredential mCredential;
+    TextView ticket;
+    List<Email> allMail;
+    MySQLiteHelper db;
+    ArrayList<String> sub, bod;
 
-    public GmailSync(Context mContext, HttpTransport mHttpTrans, JsonFactory mJasonfact, GoogleAccountCredential mCredential) {
+    public GmailSync(Context mContext, HttpTransport mHttpTrans, JsonFactory mJasonfact, GoogleAccountCredential mCredential, TextView ticket) {
         this.mContext = mContext;
         this.mHttpTransport = mHttpTrans;
         this.mJsonFactory = mJasonfact;
         this.mCredential = mCredential;
+        this.ticket = ticket;
         Log.d("Gmail Sync access", "Gmail Sync Access Complete");
 
     }
 
+
     public void run() {
         try {
             fetchNameFromProfileServer();
+
+
+            /*allMail = db.getAllBooks();
+            sub = new ArrayList<String>();
+            bod = new ArrayList<String>();
+            for(Email e : allMail) {
+                Log.d("sub", e.getSubject());
+                sub.add(e.getSubject());
+                bod.add(e.getBody());
+            }*/
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -61,9 +84,10 @@ public class GmailSync extends java.lang.Thread {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void fetchNameFromProfileServer() throws IOException, JSONException {
 
-        MySQLiteHelper db = new MySQLiteHelper(mContext);
+        db = new MySQLiteHelper(mContext);
         db.deleteEverything();
 
         Gmail service = new Gmail.Builder(mHttpTransport, mJsonFactory, mCredential).setApplicationName("GmailApiTP").build();
@@ -129,7 +153,6 @@ public class GmailSync extends java.lang.Thread {
                     sub = h.getValue();
                     l.add(h.getValue());
                     subs.add(h.getValue());
-                    //mActivity.list(l);
                     break;
                 } else if (h.getName().equals("Date")) {
                     emailDate = getDate(h.getValue());
@@ -139,9 +162,23 @@ public class GmailSync extends java.lang.Thread {
             }
             ++count;
             Log.d("count", String.valueOf(count));
-            db.addBook(new Email(sub, bod, author, emailDate[0], emailDate[1], emailDate[2], 1));
+
+            final String finalBod = bod;
+            final String finalSub = sub;
+            if(finalBod.contains("E-ticket") || finalBod.contains("항공권") || finalBod.contains("VOUCHER") ||
+                    finalBod.contains("The Log")) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        ticket.append(finalSub + '\n');
+                    }
+                });
+                db.addBook(new Email(sub, bod, author, emailDate[0], emailDate[1], emailDate[2], 1));
+            }
         }
     }
+
+
 
     public int[] getDate(String time) {
         int day[] = {0, 0, 0};

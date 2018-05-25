@@ -55,10 +55,12 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
     private Button mCallApiButton;
     private Button mMailBox;
     private TextView mEmailView;
+    private TextView ticketReservation;
     private HttpTransport transport;
     private JsonFactory jsonFactory;
     ProgressDialog mProgress;
     boolean createOneSchedule = true;
+    GmailSync gmailThread;
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
@@ -76,7 +78,7 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LinearLayout activityLayout = new LinearLayout(this);
+        final LinearLayout activityLayout = new LinearLayout(this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
@@ -97,20 +99,16 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
                 mOutputText.setText("");
                 getResultsFromApi();
                 mCallApiButton.setEnabled(true);
+                gmailThread = new GmailSync(getApplicationContext(), transport, jsonFactory, mCredential, ticketReservation);
+                Thread gmail = new Thread(gmailThread);
+                gmail.start();
             }
         });
         activityLayout.addView(mCallApiButton);
+        ticketReservation = new TextView(this);
+        ticketReservation.setText("<The Flight and Hotel Reservation Mail List> \n");
+        activityLayout.addView(ticketReservation);
 
-        mMailBox = new Button(this);
-        mMailBox.setText("Access Gmail Inbox");
-        mMailBox.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                GmailSync gmailThread = new GmailSync(getApplicationContext(), transport, jsonFactory, mCredential);
-                gmailThread.start();
-            }
-        });
-        activityLayout.addView(mMailBox);
         mOutputText = new TextView(this);
         mOutputText.setLayoutParams(tlp);
         mOutputText.setPadding(16, 16, 16, 16);
