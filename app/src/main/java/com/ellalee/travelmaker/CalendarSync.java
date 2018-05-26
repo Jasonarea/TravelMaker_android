@@ -30,6 +30,7 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -56,6 +57,8 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
     private Button mMailBox;
     private TextView mEmailView;
     private TextView ticketReservation;
+    private TextView ticketDate;
+    private TextView ticketPlace;
     private HttpTransport transport;
     private JsonFactory jsonFactory;
     ProgressDialog mProgress;
@@ -99,15 +102,23 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
                 mOutputText.setText("");
                 getResultsFromApi();
                 mCallApiButton.setEnabled(true);
-                gmailThread = new GmailSync(getApplicationContext(), transport, jsonFactory, mCredential, ticketReservation);
+                gmailThread = new GmailSync(getApplicationContext(), transport, jsonFactory, mCredential, ticketReservation, ticketDate, ticketPlace);
                 Thread gmail = new Thread(gmailThread);
                 gmail.start();
             }
         });
         activityLayout.addView(mCallApiButton);
         ticketReservation = new TextView(this);
-        ticketReservation.setText("<The Flight and Hotel Reservation Mail List> \n");
+        ticketReservation.setText("<The Flight and Hotel Reservation Mail List> " + "\n");
         activityLayout.addView(ticketReservation);
+
+        ticketDate = new TextView(this);
+        ticketDate.setText("");
+        activityLayout.addView(ticketDate);
+
+        ticketPlace = new TextView(this);
+        ticketPlace.setText("");
+        activityLayout.addView(ticketPlace);
 
         mOutputText = new TextView(this);
         mOutputText.setLayoutParams(tlp);
