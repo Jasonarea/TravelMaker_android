@@ -16,7 +16,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 
@@ -58,7 +60,22 @@ public class CalendarMain extends Activity {
     private Calendar mCal;
 
 
+    /*
+     * 이전달 버튼
+     */
+    private Button leftBtn;
+
+
+    /*
+     * 다음달 버튼
+     */
+    private Button rightBtn;
+
     private int count = 0;
+
+    private int back_month_count = 0;
+
+    private int back_year_count = 0;
 
     @Override
 
@@ -73,6 +90,7 @@ public class CalendarMain extends Activity {
 
         gridView = (GridView) findViewById(R.id.gridview);
 
+        leftBtn = (Button)findViewById(R.id.calendar_month_back);
 
         // 오늘에 날짜를 세팅
 
@@ -87,7 +105,6 @@ public class CalendarMain extends Activity {
         final SimpleDateFormat curMonthFormat = new SimpleDateFormat("MM", Locale.KOREA);
 
         final SimpleDateFormat curDayFormat = new SimpleDateFormat("dd", Locale.KOREA);
-
 
         //현재 날짜 텍스트뷰에 뿌려줌
 
@@ -127,12 +144,14 @@ public class CalendarMain extends Activity {
         sat.setDay("토");
         dayList.add(sat);
 
+        // 일정 리스트값이 아직 전달 안되서 임의로 값 넣음
         doList.add("TM presentation (2018-05-24)");
         doList.add("Okinawa (2018-05-29");
         doList.add("Okinawa (2018-05-30");
         doList.add("Okinawa (2018-05-31");
         doList.add("Hotel (2018-05-29)");
         doList.add("Hotel (2018-05-30");
+
         mCal = Calendar.getInstance();
 
 
@@ -141,6 +160,38 @@ public class CalendarMain extends Activity {
         mCal.set(Integer.parseInt(curYearFormat.format(date)), Integer.parseInt(curMonthFormat.format(date)) - 1, 1);
 
         int dayNum = mCal.get(Calendar.DAY_OF_WEEK);
+
+        leftBtn.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                deleteCalendarDate(mCal.get(Calendar.MONTH) + 1 - back_month_count, back_month_count);
+
+                back_month_count += 1;
+                mCal = Calendar.getInstance();
+
+                // 이전년도 캘린더 제공
+                if(Integer.parseInt(curMonthFormat.format(date)) - 1 - back_month_count < 0) {
+                    back_year_count = (int)back_month_count / 12;
+                    mCal.set(Calendar.YEAR, Integer.parseInt(curYearFormat.format(date)) - (back_year_count + 1));
+                    mCal.set(Calendar.MONTH, 13 - (back_month_count % 12));
+                }
+                else {
+                    mCal.set(Integer.parseInt(curYearFormat.format(date)), Integer.parseInt(curMonthFormat.format(date)) - 1 - back_month_count, 1);
+                }
+                int dayNum = mCal.get(Calendar.DAY_OF_WEEK);
+
+                //1일 - 요일 매칭 시키기 위해 공백 add
+                for (int i = 1; i < dayNum; i++) {
+                    Day empty = new Day();
+                    empty.setDay("");
+                    dayList.add(empty);
+                }
+                tvDate.setText(curYearFormat.format(date) + "/" + String.valueOf(Integer.parseInt(curMonthFormat.format(date)) - back_month_count));
+                setCalendarDate(mCal.get(Calendar.MONTH) + 1);
+                gridAdapter.notifyDataSetChanged();
+                gridView.setAdapter(gridAdapter);
+
+            }
+        });
 
         //1일 - 요일 매칭 시키기 위해 공백 add
 
@@ -186,6 +237,27 @@ public class CalendarMain extends Activity {
             }
             dayList.add(d);
         }
+    }
+
+    /*
+     * 기존에 캘린더에 있던 daylist 객체를 지우는 함수
+     */
+    private void deleteCalendarDate(int month, int back_count) {
+        mCal.set(Calendar.MONTH, month - 1);
+
+        int useDay = 7;
+        int dayNum = mCal.get(Calendar.DAY_OF_WEEK);
+
+        if(back_count == 1) {
+            useDay = 0;
+        }
+        if(back_count != 1) {
+            useDay = 7;
+        }
+        for(int i = mCal.getActualMaximum(Calendar.DAY_OF_MONTH) + dayNum + useDay;  i >= 7; i--) {
+            dayList.remove(i);
+        }
+
     }
 
 
@@ -336,7 +408,6 @@ public class CalendarMain extends Activity {
     private class Day {
         private String day;
         private ArrayList<String> sche = new ArrayList<String>();
-        private int count = 0;
 
         public void setDay(String d) {
             day = d;
