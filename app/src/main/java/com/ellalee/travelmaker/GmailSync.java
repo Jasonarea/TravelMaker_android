@@ -1,7 +1,9 @@
 package com.ellalee.travelmaker;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
@@ -46,34 +48,27 @@ public class GmailSync implements Runnable {
     JsonFactory mJsonFactory;
     Handler handler = new Handler();
     GoogleAccountCredential mCredential;
-    TextView ticket;
+    TextView ticket, date, place;
     List<Email> allMail;
     MySQLiteHelper db;
     ArrayList<String> sub, bod;
 
-    public GmailSync(Context mContext, HttpTransport mHttpTrans, JsonFactory mJasonfact, GoogleAccountCredential mCredential, TextView ticket) {
+    public GmailSync(Context mContext, HttpTransport mHttpTrans, JsonFactory mJasonfact, GoogleAccountCredential mCredential, TextView ticket, TextView date, TextView place) {
         this.mContext = mContext;
         this.mHttpTransport = mHttpTrans;
         this.mJsonFactory = mJasonfact;
         this.mCredential = mCredential;
         this.ticket = ticket;
+        this.date = date;
+        this.place = place;
         Log.d("Gmail Sync access", "Gmail Sync Access Complete");
+
     }
 
 
     public void run() {
         try {
             fetchNameFromProfileServer();
-
-
-            /*allMail = db.getAllBooks();
-            sub = new ArrayList<String>();
-            bod = new ArrayList<String>();
-            for(Email e : allMail) {
-                Log.d("sub", e.getSubject());
-                sub.add(e.getSubject());
-                bod.add(e.getBody());
-            }*/
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -81,6 +76,7 @@ public class GmailSync implements Runnable {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void fetchNameFromProfileServer() throws IOException, JSONException {
 
         db = new MySQLiteHelper(mContext);
@@ -161,12 +157,41 @@ public class GmailSync implements Runnable {
 
             final String finalBod = bod;
             final String finalSub = sub;
-            if(finalBod.contains("E-ticket") || finalBod.contains("항공권") || finalBod.contains("VOUCHER") ||
-                    finalBod.contains("The Log")) {
+            if(finalSub.contains("항공 결제요청") || finalBod.contains("항공 결제요청") || finalBod.contains("항공권 결제요청")) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        ticket.append(finalSub + '\n');
+                        String[] bod =  finalBod.split("\n");
+                        /*String real = "";
+                        for(int i = 0;i<bod.length;i++){
+                            if(bod[i].contains("김포") || bod[i].contains("인천")) {
+                                for(int j = 0;j<bod[i+1].length();j++)
+                                    if(Character.isDigit(bod[i+1].charAt(j))) {
+                                        continue;
+                                    } else
+                                        real += bod[i+1].charAt(j);
+                                place.setText(real);
+                                break;
+                            }
+                        }*/
+                        String total = "";
+                        for(int i = 0;i<bod.length;i++) {
+                            if (bod[i].contains("출국일자"))
+                                total += bod[i] + '\n';
+                            else if(bod[i].contains("김포") || bod[i].contains("인천")) {
+                                int isNumIndex = 0;
+                                for(int j = 1;j<bod[i - 1].length();j++) {
+                                    if (!Character.isDigit(bod[i - 1].charAt(j)) && Character.isDigit(bod[i - 1].charAt(j - 1))) {
+                                        isNumIndex = j;
+                                        break;
+                                    }
+                                }
+                                if(!bod[i-1].substring(bod[i - 1].length()-2).equals("항공"))
+                                    total += bod[i - 1].substring(isNumIndex) + '\n';
+                                //total +=  bod[i - 1] + '\n';
+                            }
+                        }
+                        date.setText(total);
                     }
                 });
                 db.addBook(new Email(sub, bod, author, emailDate[0], emailDate[1], emailDate[2], 1));
@@ -183,7 +208,6 @@ public class GmailSync implements Runnable {
         Date date = null;
         try {
             date = simpleDateFormat.parse(time);
-
             Calendar fDate = Calendar.getInstance();
             fDate.setTime(date);
 
@@ -224,4 +248,3 @@ public class GmailSync implements Runnable {
         return day;
     }
 }
-
