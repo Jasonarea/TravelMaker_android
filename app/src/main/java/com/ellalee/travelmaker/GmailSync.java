@@ -162,7 +162,7 @@ public class GmailSync implements Runnable {
                     @Override
                     public void run() {
                         String[] bod =  finalBod.split("\n");
-                        String real = "";
+                        /*String real = "";
                         for(int i = 0;i<bod.length;i++){
                             if(bod[i].contains("김포") || bod[i].contains("인천")) {
                                 for(int j = 0;j<bod[i+1].length();j++)
@@ -173,10 +173,25 @@ public class GmailSync implements Runnable {
                                 place.setText(real);
                                 break;
                             }
+                        }*/
+                        String total = "";
+                        for(int i = 0;i<bod.length;i++) {
+                            if (bod[i].contains("출국일자"))
+                                total += bod[i] + '\n';
+                            else if(bod[i].contains("김포") || bod[i].contains("인천")) {
+                                int isNumIndex = 0;
+                                for(int j = 1;j<bod[i - 1].length();j++) {
+                                    if (!Character.isDigit(bod[i - 1].charAt(j)) && Character.isDigit(bod[i - 1].charAt(j - 1))) {
+                                        isNumIndex = j;
+                                        break;
+                                    }
+                                }
+                                if(!bod[i-1].substring(bod[i - 1].length()-2).equals("항공"))
+                                    total += bod[i - 1].substring(isNumIndex) + '\n';
+                                //total +=  bod[i - 1] + '\n';
+                            }
                         }
-                        for(int i = 0;i<bod.length;i++)
-                            if(bod[i].contains("출국일자"))
-                                date.setText(bod[i]);
+                        date.setText(total);
                     }
                 });
                 db.addBook(new Email(sub, bod, author, emailDate[0], emailDate[1], emailDate[2], 1));
