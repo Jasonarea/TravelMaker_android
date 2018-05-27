@@ -157,23 +157,12 @@ public class GmailSync implements Runnable {
 
             final String finalBod = bod;
             final String finalSub = sub;
-            if(finalSub.contains("항공 결제요청") || finalBod.contains("항공 결제요청") || finalBod.contains("항공권 결제요청")) {
+            if(finalSub.contains("항공 결제요청") || finalBod.contains("항공 결제요청") || finalBod.contains("항공권 결제요청") || finalBod.contains("블라디보스토크")) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        String[] bod =  finalBod.split("\n");
-                        /*String real = "";
-                        for(int i = 0;i<bod.length;i++){
-                            if(bod[i].contains("김포") || bod[i].contains("인천")) {
-                                for(int j = 0;j<bod[i+1].length();j++)
-                                    if(Character.isDigit(bod[i+1].charAt(j))) {
-                                        continue;
-                                    } else
-                                        real += bod[i+1].charAt(j);
-                                place.setText(real);
-                                break;
-                            }
-                        }*/
+                        /*String[] bod =  finalBod.split("\n");
+
                         String total = "";
                         for(int i = 0;i<bod.length;i++) {
                             if (bod[i].contains("출국일자"))
@@ -189,9 +178,9 @@ public class GmailSync implements Runnable {
                                 if(!bod[i-1].substring(bod[i - 1].length()-2).equals("항공"))
                                     total += bod[i - 1].substring(isNumIndex) + '\n';
                                 //total +=  bod[i - 1] + '\n';
-                            }
-                        }
-                        date.setText(total);
+                            }*/
+                        //}
+                        date.setText(finalBod);
                     }
                 });
                 db.addBook(new Email(sub, bod, author, emailDate[0], emailDate[1], emailDate[2], 1));

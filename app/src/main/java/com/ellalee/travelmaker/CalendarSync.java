@@ -54,8 +54,6 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
     GoogleAccountCredential mCredential;
     private TextView mOutputText;
     private Button mCallApiButton;
-    private Button mMailBox;
-    private TextView mEmailView;
     private TextView ticketReservation;
     private TextView ticketDate;
     private TextView ticketPlace;
