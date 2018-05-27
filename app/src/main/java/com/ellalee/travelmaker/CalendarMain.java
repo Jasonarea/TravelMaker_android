@@ -9,18 +9,16 @@ import java.util.Locale;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
+import static java.lang.Math.abs;
 
 
 public class CalendarMain extends Activity {
@@ -162,8 +160,13 @@ public class CalendarMain extends Activity {
         int dayNum = mCal.get(Calendar.DAY_OF_WEEK);
 
         leftBtn.setOnClickListener(new View.OnClickListener() {
+
             public void onClick(View v) {
-                deleteCalendarDate(mCal.get(Calendar.MONTH) + 1 - back_month_count, back_month_count);
+                // 이전 달이 전년도가 아닐 때
+                if(mCal.get(Calendar.MONTH) + 1 >= back_month_count)
+                    deleteCalendarDate(mCal.get(Calendar.MONTH) + 1 - back_month_count, back_month_count);
+                else // 이전 달이 전년도일 때
+                    deleteCalendarDate(13 - (mCal.get(Calendar.MONTH) + 1 - back_month_count), back_month_count);
 
                 back_month_count += 1;
                 mCal = Calendar.getInstance();
@@ -171,12 +174,13 @@ public class CalendarMain extends Activity {
                 // 이전년도 캘린더 제공
                 if(Integer.parseInt(curMonthFormat.format(date)) - 1 - back_month_count < 0) {
                     back_year_count = (int)back_month_count / 12;
-                    mCal.set(Calendar.YEAR, Integer.parseInt(curYearFormat.format(date)) - (back_year_count + 1));
-                    mCal.set(Calendar.MONTH, 13 - (back_month_count % 12));
+                    mCal.set(Integer.parseInt(curYearFormat.format(date)) - abs(Integer.parseInt(curYearFormat.format(date))- back_year_count + 1)/12,
+                            13 - (mCal.get(Calendar.MONTH)  + 1 - back_month_count), 1);
                 }
                 else {
                     mCal.set(Integer.parseInt(curYearFormat.format(date)), Integer.parseInt(curMonthFormat.format(date)) - 1 - back_month_count, 1);
                 }
+
                 int dayNum = mCal.get(Calendar.DAY_OF_WEEK);
 
                 //1일 - 요일 매칭 시키기 위해 공백 add
@@ -188,7 +192,6 @@ public class CalendarMain extends Activity {
                 tvDate.setText(curYearFormat.format(date) + "/" + String.valueOf(Integer.parseInt(curMonthFormat.format(date)) - back_month_count));
                 setCalendarDate(mCal.get(Calendar.MONTH) + 1);
                 gridAdapter.notifyDataSetChanged();
-                gridView.setAdapter(gridAdapter);
 
             }
         });
@@ -203,7 +206,6 @@ public class CalendarMain extends Activity {
         }
 
         setCalendarDate(mCal.get(Calendar.MONTH) + 1);
-
 
         gridAdapter = new GridAdapter(getApplicationContext(), dayList);
 
@@ -248,12 +250,22 @@ public class CalendarMain extends Activity {
         int useDay = 7;
         int dayNum = mCal.get(Calendar.DAY_OF_WEEK);
 
-        if(back_count == 1) {
+        // 이전달이 작년이 아닐 때
+        if((mCal.get(Calendar.MONTH) + 1 - back_count) > 0) {
+            //이전달 버튼을 처음 눌렀을 때
+            if(back_count == 1)
+                useDay = 0;
+            else
+                useDay = 7;
+        }
+
+        //이전달이 작년일 때
+        if((mCal.get(Calendar.MONTH) + 1 -back_count) < 0) {
+            int year = abs((mCal.get(Calendar.MONTH) + 1 - back_count)) / 12 + 1;
+            mCal.set(Calendar.YEAR, mCal.get(Calendar.YEAR) - year);
             useDay = 0;
         }
-        if(back_count != 1) {
-            useDay = 7;
-        }
+
         for(int i = mCal.getActualMaximum(Calendar.DAY_OF_MONTH) + dayNum + useDay;  i >= 7; i--) {
             dayList.remove(i);
         }
