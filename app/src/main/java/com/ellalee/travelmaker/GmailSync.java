@@ -48,19 +48,15 @@ public class GmailSync implements Runnable {
     JsonFactory mJsonFactory;
     Handler handler = new Handler();
     GoogleAccountCredential mCredential;
-    TextView ticket, date, place;
     List<Email> allMail;
     MySQLiteHelper db;
     ArrayList<String> sub, bod;
 
-    public GmailSync(Context mContext, HttpTransport mHttpTrans, JsonFactory mJasonfact, GoogleAccountCredential mCredential, TextView ticket, TextView date, TextView place) {
+    public GmailSync(Context mContext, HttpTransport mHttpTrans, JsonFactory mJasonfact, GoogleAccountCredential mCredential) {
         this.mContext = mContext;
         this.mHttpTransport = mHttpTrans;
         this.mJsonFactory = mJasonfact;
         this.mCredential = mCredential;
-        this.ticket = ticket;
-        this.date = date;
-        this.place = place;
         Log.d("Gmail Sync access", "Gmail Sync Access Complete");
 
     }
@@ -178,10 +174,8 @@ public class GmailSync implements Runnable {
                                 }
                                 if(!bod[i-1].substring(bod[i - 1].length()-2).equals("항공"))
                                     total += bod[i - 1].substring(isNumIndex) + '\n';
-                                //total +=  bod[i - 1] + '\n';
                             }
                         }
-                        date.setText(total);
                     }
                 });
                 db.addBook(new Email(sub, bod, author, emailDate[0], emailDate[1], emailDate[2], 1));

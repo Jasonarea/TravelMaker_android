@@ -100,7 +100,7 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
                 mOutputText.setText("");
                 getResultsFromApi();
                 mCallApiButton.setEnabled(true);
-                gmailThread = new GmailSync(getApplicationContext(), transport, jsonFactory, mCredential, ticketReservation, ticketDate, ticketPlace);
+                gmailThread = new GmailSync(getApplicationContext(), transport, jsonFactory, mCredential);
                 Thread gmail = new Thread(gmailThread);
                 gmail.start();
             }
@@ -138,44 +138,29 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
                 .setBackOff(new ExponentialBackOff());
     }
 
-    private void createEvent(com.google.api.services.calendar.Calendar mService) throws IOException {
+    private void createEvent(com.google.api.services.calendar.Calendar mService, String startDate,
+                             String endDate, String nation) throws IOException {
         Event event = new Event()
-                .setSummary("Google I/O 2018")
-                .setLocation("800 Howard St., San Francisco, CA 94103")
-                .setDescription("A chance to hear more about Google's developer products.");
+                .setSummary("Flight to " + nation);
+        int startD = Integer.parseInt(startDate);
+        int endD = Integer.parseInt(endDate);
 
-        DateTime startDateTime = new DateTime("2018-05-28T09:00:00-07:00");
+        DateTime startDateTime = new DateTime(startD);
         EventDateTime start = new EventDateTime()
                 .setDateTime(startDateTime)
-                .setTimeZone("America/Los_Angeles");
+                .setTimeZone("Asia/Seoul");
         event.setStart(start);
 
-        DateTime endDateTime = new DateTime("2018-05-28T17:00:00-07:00");
+        DateTime endDateTime = new DateTime(endD);
         EventDateTime end = new EventDateTime()
                 .setDateTime(endDateTime)
-                .setTimeZone("America/Los_Angeles");
+                .setTimeZone("Asia/Seoul");
         event.setEnd(end);
 
         String[] recurrence = new String[] {"RRULE:FREQ=DAILY;COUNT=2"};
         event.setRecurrence(Arrays.asList(recurrence));
 
-        EventAttendee[] attendees = new EventAttendee[] {
-                new EventAttendee().setEmail("lpage@example.com"),
-                new EventAttendee().setEmail("sbrin@example.com"),
-        };
-        event.setAttendees(Arrays.asList(attendees));
-
-        EventReminder[] reminderOverrides = new EventReminder[] {
-                new EventReminder().setMethod("email").setMinutes(24 * 60),
-                new EventReminder().setMethod("popup").setMinutes(10),
-        };
-        Event.Reminders reminders = new Event.Reminders()
-                .setUseDefault(false)
-                .setOverrides(Arrays.asList(reminderOverrides));
-        event.setReminders(reminders);
-
         String calendarId = "primary";
-
         event = mService.events().insert(calendarId, event).execute();
         Log.d("create", "Event created : " + event.getHtmlLink());
     }
