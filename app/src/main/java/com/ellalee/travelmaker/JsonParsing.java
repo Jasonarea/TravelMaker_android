@@ -93,6 +93,7 @@ public class JsonParsing extends Activity implements EasyPermissions.PermissionC
                 mOutputText.setText("");
                 getResultsFromApi();
                 mCallApiButton.setEnabled(true);
+                
             }
         });
         activityLayout.addView(mCallApiButton);
@@ -350,8 +351,8 @@ public class JsonParsing extends Activity implements EasyPermissions.PermissionC
             HttpTransport transport = AndroidHttp.newCompatibleTransport();
             JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
             mService = new com.google.api.services.script.Script.Builder(
-                    transport, jsonFactory, setHttpTimeout(credential))
-                    .setApplicationName("TravleMaker")
+                    transport, jsonFactory, credential)
+                    .setApplicationName("Travel Maker")
                     .build();
         }
 
@@ -495,4 +496,5 @@ public class JsonParsing extends Activity implements EasyPermissions.PermissionC
             }
         }
     }
+
 }

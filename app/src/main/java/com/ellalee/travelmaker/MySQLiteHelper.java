@@ -78,10 +78,14 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(KEY_URGENCY, email.getUrgency());
 
         // 3. insert
-        Log.d("addBook", email.getSubject());
-        db.insert(TABLE_BOOKS, // table
-                null, //nullColumnHack
-                values); // key/value -> keys = column names/ values = column values
+        if(email.getBody().contains("이티켓") || email.getBody().contains("E-ticket") || email.getBody().contains("Hotel") ||
+                email.getBody().contains("Airbnb") || email.getBody().contains("전자항공권") || email.getBody().contains("항공권") ||
+                email.getBody().contains("The Log")) {
+            Log.d("addBook", email.getSubject());
+            db.insert(TABLE_BOOKS, // table
+                    null, //nullColumnHack
+                    values); // key/value -> keys = column names/ values = column values
+        }
             // 4. close
         db.close();
     }

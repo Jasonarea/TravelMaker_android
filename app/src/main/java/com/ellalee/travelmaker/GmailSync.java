@@ -1,9 +1,13 @@
 package com.ellalee.travelmaker;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.TextView;
+
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.http.HttpTransport;
@@ -29,7 +33,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class GmailSync extends java.lang.Thread {
+
+public class GmailSync implements Runnable {
+
     private static final String TAG = "PlayHelloActivity";
 
     protected final static String GMAIL_SCOPE
@@ -40,16 +46,25 @@ public class GmailSync extends java.lang.Thread {
     public static int count = 0;
     HttpTransport mHttpTransport;
     JsonFactory mJsonFactory;
+    Handler handler = new Handler();
     GoogleAccountCredential mCredential;
+    TextView ticket, date, place;
+    List<Email> allMail;
+    MySQLiteHelper db;
+    ArrayList<String> sub, bod;
 
-    public GmailSync(Context mContext, HttpTransport mHttpTrans, JsonFactory mJasonfact, GoogleAccountCredential mCredential) {
+    public GmailSync(Context mContext, HttpTransport mHttpTrans, JsonFactory mJasonfact, GoogleAccountCredential mCredential, TextView ticket, TextView date, TextView place) {
         this.mContext = mContext;
         this.mHttpTransport = mHttpTrans;
         this.mJsonFactory = mJasonfact;
         this.mCredential = mCredential;
+        this.ticket = ticket;
+        this.date = date;
+        this.place = place;
         Log.d("Gmail Sync access", "Gmail Sync Access Complete");
 
     }
+
 
     public void run() {
         try {
@@ -61,9 +76,10 @@ public class GmailSync extends java.lang.Thread {
         }
     }
 
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void fetchNameFromProfileServer() throws IOException, JSONException {
 
-        MySQLiteHelper db = new MySQLiteHelper(mContext);
+        db = new MySQLiteHelper(mContext);
         db.deleteEverything();
 
         Gmail service = new Gmail.Builder(mHttpTransport, mJsonFactory, mCredential).setApplicationName("GmailApiTP").build();
@@ -129,7 +145,6 @@ public class GmailSync extends java.lang.Thread {
                     sub = h.getValue();
                     l.add(h.getValue());
                     subs.add(h.getValue());
-                    //mActivity.list(l);
                     break;
                 } else if (h.getName().equals("Date")) {
                     emailDate = getDate(h.getValue());
@@ -139,9 +154,37 @@ public class GmailSync extends java.lang.Thread {
             }
             ++count;
             Log.d("count", String.valueOf(count));
-            db.addBook(new Email(sub, bod, author, emailDate[0], emailDate[1], emailDate[2], 1));
+
+            final String finalBod = bod;
+            final String finalSub = sub;
+            if(finalSub.contains("항공 결제요청") || finalBod.contains("항공 결제요청") || finalBod.contains("항공권 결제요청")) {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        String[] bod =  finalBod.split("\n");
+                        String real = "";
+                        for(int i = 0;i<bod.length;i++){
+                            if(bod[i].contains("김포") || bod[i].contains("인천")) {
+                                for(int j = 0;j<bod[i+1].length();j++)
+                                    if(Character.isDigit(bod[i+1].charAt(j))) {
+                                        continue;
+                                    } else
+                                        real += bod[i+1].charAt(j);
+                                place.setText(real);
+                                break;
+                            }
+                        }
+                        for(int i = 0;i<bod.length;i++)
+                            if(bod[i].contains("출국일자"))
+                                date.setText(bod[i]);
+                    }
+                });
+                db.addBook(new Email(sub, bod, author, emailDate[0], emailDate[1], emailDate[2], 1));
+            }
         }
     }
+
+
 
     public int[] getDate(String time) {
         int day[] = {0, 0, 0};
