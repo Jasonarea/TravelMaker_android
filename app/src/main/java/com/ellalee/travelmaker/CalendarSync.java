@@ -106,18 +106,6 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
             }
         });
         activityLayout.addView(mCallApiButton);
-        ticketReservation = new TextView(this);
-        ticketReservation.setText("<The Flight and Hotel Reservation Mail List> " + "\n");
-        activityLayout.addView(ticketReservation);
-
-        ticketDate = new TextView(this);
-        ticketDate.setText("");
-        activityLayout.addView(ticketDate);
-
-        ticketPlace = new TextView(this);
-        ticketPlace.setText("");
-        activityLayout.addView(ticketPlace);
-
         mOutputText = new TextView(this);
         mOutputText.setLayoutParams(tlp);
         mOutputText.setPadding(16, 16, 16, 16);
