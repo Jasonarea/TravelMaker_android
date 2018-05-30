@@ -5,6 +5,8 @@ import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -57,6 +59,9 @@ import java.util.Iterator;
 import java.util.List;
 
 public class MapMain extends FragmentActivity implements OnMapReadyCallback,GoogleMap.OnMarkerClickListener{
+
+    private SQLiteDatabase db;
+    private SQLiteOpenHelper helper;
 
     private int edit_mode = 0;  // 0:onlyView 1:editMarker 2: editRoute
     private int routeIndex = 0; // day 1,2 ....

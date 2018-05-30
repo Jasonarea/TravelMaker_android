@@ -37,7 +37,7 @@
                     android:layout_centerInParent = "true"
                     android:layout_toRightOf="@+id/EditWhereToGo"
                     android:background="@drawable/search_icon"
-                    android:onClick="menuMain"/>
+                    android:onClick="mapMain"/>
             </RelativeLayout>
 
             <LinearLayout

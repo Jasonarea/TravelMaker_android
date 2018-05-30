@@ -1,6 +1,8 @@
 package com.ellalee.travelmaker;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -15,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -117,6 +120,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void mapMain(View v){
-       // startActivity(new Intent(getApplicationContext(),MapMain.class));
+        startActivity(new Intent(getApplicationContext(),MapMain.class));
     }
 }
