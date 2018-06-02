@@ -31,12 +31,12 @@ public class Sharing extends AppCompatActivity {
 
         Button btnBTShare = (Button)findViewById(R.id.btnBTShare);
 
-        btnBTShare.setOnClickListener(new View.OnClickListener() {
+        /*btnBTShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 kakao();
             }
-        });
+        });*/
     }
 
     public void shareKakao(){
@@ -52,18 +52,18 @@ public class Sharing extends AppCompatActivity {
             e.printStackTrace();
         }
     }
-    public void kakao() {
+    /*public void kakao() {
         FeedTemplate params = FeedTemplate
-                .newBuilder(ContentObject.newBuilder("��진",
+                .newBuilder(ContentObject.newBuilder("��진",
                         "http://mud-kage.kakao.co.kr/dn/NTmhS/btqfEUdFAUf/FjKzkZsnoeE4o19klTOVI1/openlink_640x640s.jpg",
                         LinkObject.newBuilder().setWebUrl("https://developers.kakao.com")
                                 .setMobileWebUrl("https://developers.kakao.com").build())
-                        .setDescrption("�메리카 � 케)
+                        .setDescrption("�메리카 � 케)
                         .build())
                 .setSocial(SocialObject.newBuilder().setLikeCount(10).setCommentCount(20)
                         .setSharedCount(30).setViewCount(40).build())
-                .addButton(new ButtonObject("�에보기", LinkObject.newBuilder().setWebUrl("'https://developers.kakao.com").setMobileWebUrl("'https://developers.kakao.com").build()))
-                .addButton(new ButtonObject("�에보기", LinkObject.newBuilder()
+                .addButton(new ButtonObject("�에보기", LinkObject.newBuilder().setWebUrl("'https://developers.kakao.com").setMobileWebUrl("'https://developers.kakao.com").build()))
+                .addButton(new ButtonObject("�에보기", LinkObject.newBuilder()
                         .setWebUrl("'https://developers.kakao.com")
                         .setMobileWebUrl("'https://developers.kakao.com")
                         .setAndroidExecutionParams("key1=value1")
@@ -82,6 +82,6 @@ public class Sharing extends AppCompatActivity {
 
             }
         });
-    }
+    }*/
 }
 

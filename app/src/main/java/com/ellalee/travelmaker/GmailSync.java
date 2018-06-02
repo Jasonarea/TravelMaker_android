@@ -47,20 +47,18 @@ public class GmailSync implements Runnable {
     HttpTransport mHttpTransport;
     JsonFactory mJsonFactory;
     Handler handler = new Handler();
+    TextView test;
     GoogleAccountCredential mCredential;
-    TextView ticket, date, place;
     List<Email> allMail;
     MySQLiteHelper db;
     ArrayList<String> sub, bod;
 
-    public GmailSync(Context mContext, HttpTransport mHttpTrans, JsonFactory mJasonfact, GoogleAccountCredential mCredential, TextView ticket, TextView date, TextView place) {
+    public GmailSync(Context mContext, HttpTransport mHttpTrans, JsonFactory mJasonfact, GoogleAccountCredential mCredential, TextView test) {
         this.mContext = mContext;
         this.mHttpTransport = mHttpTrans;
         this.mJsonFactory = mJasonfact;
         this.mCredential = mCredential;
-        this.ticket = ticket;
-        this.date = date;
-        this.place = place;
+        this.test = test;
         Log.d("Gmail Sync access", "Gmail Sync Access Complete");
 
     }
@@ -78,10 +76,11 @@ public class GmailSync implements Runnable {
 
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void fetchNameFromProfileServer() throws IOException, JSONException {
-
+        int cou = 0;
         db = new MySQLiteHelper(mContext);
         db.deleteEverything();
-
+        final String[] total = new String[10];
+        for(int j = 0;j<10;j++) total[j] = "";
         Gmail service = new Gmail.Builder(mHttpTransport, mJsonFactory, mCredential).setApplicationName("GmailApiTP").build();
         String author = "";
         ListThreadsResponse threadsResponse;
@@ -105,7 +104,7 @@ public class GmailSync implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        String text = "";
         for (Thread thread : t) {
             String id = thread.getId();
             response = service.users().threads().get("me", id).execute();
@@ -157,49 +156,63 @@ public class GmailSync implements Runnable {
 
             final String finalBod = bod;
             final String finalSub = sub;
-            if(finalSub.contains("항공 결제요청") || finalBod.contains("항공 결제요청") || finalBod.contains("항공권 결제요청")) {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        String[] bod =  finalBod.split("\n");
-                        /*String real = "";
-                        for(int i = 0;i<bod.length;i++){
-                            if(bod[i].contains("김포") || bod[i].contains("인천")) {
-                                for(int j = 0;j<bod[i+1].length();j++)
-                                    if(Character.isDigit(bod[i+1].charAt(j))) {
-                                        continue;
-                                    } else
-                                        real += bod[i+1].charAt(j);
-                                place.setText(real);
+
+            if(finalSub.contains("항공 결제요청") || finalSub.contains("항공권 결제요청")) {
+
+                String[] bods =  finalBod.split("\n");
+                for(int k = 0;k<bods.length;k++) {
+                    if (bods[k].contains("출국일자")) {
+                        Log.d("cou", Integer.toString(cou));
+                        total[cou] += bods[k] + '\n';
+                    }
+                    else if(bods[k].contains("김포") || bods[k].contains("인천")) {
+                        int isNumIndex = 0;
+                        for(int j = 1;j<bods[k - 1].length();j++) {
+                            if (!Character.isDigit(bods[k - 1].charAt(j)) && Character.isDigit(bods[k - 1].charAt(j - 1))) {
+                                isNumIndex = j;
                                 break;
                             }
-                        }*/
-                        String total = "";
-                        for(int i = 0;i<bod.length;i++) {
-                            if (bod[i].contains("출국일자"))
-                                total += bod[i] + '\n';
-                            else if(bod[i].contains("김포") || bod[i].contains("인천")) {
-                                int isNumIndex = 0;
-                                for(int j = 1;j<bod[i - 1].length();j++) {
-                                    if (!Character.isDigit(bod[i - 1].charAt(j)) && Character.isDigit(bod[i - 1].charAt(j - 1))) {
-                                        isNumIndex = j;
-                                        break;
-                                    }
-                                }
-                                if(!bod[i-1].substring(bod[i - 1].length()-2).equals("항공"))
-                                    total += bod[i - 1].substring(isNumIndex) + '\n';
-                                //total +=  bod[i - 1] + '\n';
-                            }
                         }
-                        date.setText(total);
+                        if(!bods[k-1].substring(bods[k - 1].length()-2).equals("항공")) {
+                            Log.d("helloWorld", Integer.toString(cou));
+                            total[cou++] += bods[k - 1].substring(isNumIndex) + '\n';
+                            db.addBook(new Email(sub, bod, author, emailDate[0], emailDate[1], emailDate[2], 1));
+                        }
                     }
-                });
-                db.addBook(new Email(sub, bod, author, emailDate[0], emailDate[1], emailDate[2], 1));
+                }
+
+                for(int k = 0;k<total.length;k++)
+                    text += total[k] + '\n';
             }
         }
+        final String finalText = text;
+        final String[] textArray = total;
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
+        for(int j = 0;!textArray[j].equals("");j++) {
+            Log.d("TextArray", textArray[j]);
+            String[] parseData = textArray[j].split("\n");
+            String nation = parseData[1];
+            String startD = "", endD = "";
+            for(int k = 4;k<parseData[0].length()/2;k++) {
+                if(Character.isDigit(parseData[0].charAt(k)))
+                    startD += parseData[0].charAt(k);
+            }
+            for(int k = parseData[0].length()/2;k<parseData[0].length();k++)
+                if(Character.isDigit(parseData[0].charAt(k)))
+                    endD += parseData[0].charAt(k);
+            startD = startD.substring(0,4) + "-" + startD.substring(4,6) + "-" + startD.substring(6);
+            endD = endD.substring(0,4) + "-" + endD.substring(4, 6) + "-" + endD.substring(6);
+            Log.d("start end date", startD + ' ' + endD);
+            CalendarSync.createEvent(CalendarSync.mService, startD, startD, nation);
+            CalendarSync.createEvent(CalendarSync.mService, endD,endD,"Seoul");
+        }
+
     }
-
-
 
     public int[] getDate(String time) {
         int day[] = {0, 0, 0};

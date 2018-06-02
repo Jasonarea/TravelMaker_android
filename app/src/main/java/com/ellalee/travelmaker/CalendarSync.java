@@ -54,22 +54,18 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
     GoogleAccountCredential mCredential;
     private TextView mOutputText;
     private Button mCallApiButton;
-    private Button mMailBox;
-    private TextView mEmailView;
-    private TextView ticketReservation;
-    private TextView ticketDate;
-    private TextView ticketPlace;
     private HttpTransport transport;
     private JsonFactory jsonFactory;
     ProgressDialog mProgress;
     boolean createOneSchedule = true;
     GmailSync gmailThread;
+    private TextView testHandler;
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
-
+    static  com.google.api.services.calendar.Calendar mService = null;
     private static final String BUTTON_TEXT = "Call Google Calendar API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = { "https://www.googleapis.com/auth/calendar" };
@@ -102,24 +98,12 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
                 mOutputText.setText("");
                 getResultsFromApi();
                 mCallApiButton.setEnabled(true);
-                gmailThread = new GmailSync(getApplicationContext(), transport, jsonFactory, mCredential, ticketReservation, ticketDate, ticketPlace);
+                gmailThread = new GmailSync(getApplicationContext(), transport, jsonFactory, mCredential, testHandler);
                 Thread gmail = new Thread(gmailThread);
                 gmail.start();
             }
         });
         activityLayout.addView(mCallApiButton);
-        ticketReservation = new TextView(this);
-        ticketReservation.setText("<The Flight and Hotel Reservation Mail List> " + "\n");
-        activityLayout.addView(ticketReservation);
-
-        ticketDate = new TextView(this);
-        ticketDate.setText("");
-        activityLayout.addView(ticketDate);
-
-        ticketPlace = new TextView(this);
-        ticketPlace.setText("");
-        activityLayout.addView(ticketPlace);
-
         mOutputText = new TextView(this);
         mOutputText.setLayoutParams(tlp);
         mOutputText.setPadding(16, 16, 16, 16);
@@ -128,7 +112,9 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
         mOutputText.setText(
                 "Click the \'" + BUTTON_TEXT +"\' button to test the API.");
         activityLayout.addView(mOutputText);
-
+        testHandler = new TextView(this);
+        testHandler.setText("<Flight & Hotel Information>");
+        activityLayout.addView(testHandler);
         mProgress = new ProgressDialog(this);
         mProgress.setMessage("Calling Google Calendar API ...");
 
@@ -139,49 +125,45 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
     }
+    public static String[] parseReservation(String reservation) {
+        String[] info = new String[4];
+        String[] parse;
+        parse = reservation.split("\n");
+        for(int i = 4;i<parse[0].length()/2;i++)
+            info[0] += parse[0].charAt(i);
+        Log.d("Calendar info check", info[0]);
 
-    private void createEvent(com.google.api.services.calendar.Calendar mService) throws IOException {
-        Event event = new Event()
-                .setSummary("Google I/O 2018")
-                .setLocation("800 Howard St., San Francisco, CA 94103")
-                .setDescription("A chance to hear more about Google's developer products.");
+        info[2] = parse[1];
 
-        DateTime startDateTime = new DateTime("2018-05-28T09:00:00-07:00");
+        return info;
+    }
+    public static void createEvent(com.google.api.services.calendar.Calendar mService,
+                                   String startD, String endD, String nation) throws IOException {
+        Event event = new Event().setSummary("Travel to " + nation)
+                .setLocation(nation)
+                .setDescription("Flight from to " + nation);
+        DateTime startDateTime = new DateTime(startD + "T09:00:00");
+
         EventDateTime start = new EventDateTime()
                 .setDateTime(startDateTime)
-                .setTimeZone("America/Los_Angeles");
+                .setTimeZone("Asia/Seoul");
         event.setStart(start);
 
-        DateTime endDateTime = new DateTime("2018-05-28T17:00:00-07:00");
+        DateTime endDateTime = new DateTime(endD + "T11:00:00");
         EventDateTime end = new EventDateTime()
                 .setDateTime(endDateTime)
-                .setTimeZone("America/Los_Angeles");
+                .setTimeZone("Asia/Seoul");
         event.setEnd(end);
 
-        String[] recurrence = new String[] {"RRULE:FREQ=DAILY;COUNT=2"};
-        event.setRecurrence(Arrays.asList(recurrence));
-
-        EventAttendee[] attendees = new EventAttendee[] {
-                new EventAttendee().setEmail("lpage@example.com"),
-                new EventAttendee().setEmail("sbrin@example.com"),
-        };
-        event.setAttendees(Arrays.asList(attendees));
-
-        EventReminder[] reminderOverrides = new EventReminder[] {
+        EventReminder[] reminderOverrides = new EventReminder[]{
                 new EventReminder().setMethod("email").setMinutes(24 * 60),
                 new EventReminder().setMethod("popup").setMinutes(10),
         };
-        Event.Reminders reminders = new Event.Reminders()
-                .setUseDefault(false)
-                .setOverrides(Arrays.asList(reminderOverrides));
-        event.setReminders(reminders);
 
-        String calendarId = "primary";
-
+        String calendarId = "hke6eajpijuuku4osjdeeodea8@group.calendar.google.com";
         event = mService.events().insert(calendarId, event).execute();
         Log.d("create", "Event created : " + event.getHtmlLink());
     }
-
     /**
      * Attempt to call the API, after verifying that all the preconditions are
      * satisfied. The preconditions are: Google Play Services installed, an
@@ -385,7 +367,7 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
      * Placing the API calls in their own task ensures the UI stays responsive.
      */
     private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
-        private com.google.api.services.calendar.Calendar mService = null;
+
         private Exception mLastError = null;
 
         MakeRequestTask(GoogleAccountCredential credential) {
@@ -393,7 +375,7 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
             jsonFactory = JacksonFactory.getDefaultInstance();
             mService = new com.google.api.services.calendar.Calendar.Builder(
                     transport, jsonFactory, credential)
-                    .setApplicationName("Google Calendar API Android Quickstart")
+                    .setApplicationName("Travel Maker")
                     .build();
         }
 
@@ -421,7 +403,7 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
             // List the next 10 events from the primary calendar.
             DateTime now = new DateTime(System.currentTimeMillis());
             List<String> eventStrings = new ArrayList<String>();
-            Events events = mService.events().list("primary")
+            Events events = mService.events().list("hke6eajpijuuku4osjdeeodea8@group.calendar.google.com")
                     .setMaxResults(10)
                     .setTimeMin(now)
                     .setOrderBy("startTime")
@@ -440,7 +422,7 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
                         String.format("%s (%s)", event.getSummary(), start));
             }
             if(createOneSchedule) {
-                createEvent(mService);
+                //createEvent(mService);`
                 createOneSchedule = false;
             }
             return eventStrings;
