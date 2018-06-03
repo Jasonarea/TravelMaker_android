@@ -151,10 +151,10 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
         return info;
     }
     public static void createEvent(com.google.api.services.calendar.Calendar mService,
-                                   String startD, String endD, String nation) throws IOException {
+                                   String startD, String endD, String nation, String fromNation) throws IOException {
         Event event = new Event().setSummary("Travel to " + nation)
                 .setLocation(nation)
-                .setDescription("Flight from to " + nation);
+                .setDescription("Flight from " + fromNation + " to " + nation);
         DateTime startDateTime = new DateTime(startD + "T09:00:00");
 
         EventDateTime start = new EventDateTime()

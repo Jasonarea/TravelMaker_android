@@ -113,8 +113,6 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
-
-
     }
     /**
      * Attempt to call the API, after verifying that all the preconditions are
