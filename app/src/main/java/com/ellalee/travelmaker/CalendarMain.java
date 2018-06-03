@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Locale;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,14 +74,17 @@ public class CalendarMain extends Activity {
      */
     private Button rightBtn;
 
-    //dayList를 위한 변수
+    /*
+     * 스케줄 추가를 위한 floating 버튼
+     */
+    private FloatingActionButton addSche;
+
+    //dayList counting 변수
     private int count = 0;
 
+    //month back, month next를 위한 변수
     private int back_month_count = 0;
     private int next_month_count = 0;
-
-    private int back_year_count = 0;
-    private int next_year_count = 0;
 
 
     // 오늘에 날짜를 세팅
@@ -109,9 +114,9 @@ public class CalendarMain extends Activity {
 
         gridView = (GridView) findViewById(R.id.gridview);
 
-        leftBtn = (Button)findViewById(R.id.calendar_month_back);
-        rightBtn = (Button)findViewById(R.id.calendar_month_next);
-
+        leftBtn = (Button) findViewById(R.id.calendar_month_back);
+        rightBtn = (Button) findViewById(R.id.calendar_month_next);
+        addSche = (FloatingActionButton) findViewById(R.id.scheFAB);
 
         //gridview 요일 표시
 
@@ -154,10 +159,10 @@ public class CalendarMain extends Activity {
         tvDate.setText(mCal.get(Calendar.YEAR) + " / " + (mCal.get(Calendar.MONTH) + 1));
 
         //이번달 1일 무슨요일인지 판단 mCal.set(Year,Month,Day)
-       mCal.set(Integer.parseInt(curYearFormat.format(date)), Integer.parseInt(curMonthFormat.format(date)) - 1, 1);
+        mCal.set(Integer.parseInt(curYearFormat.format(date)), Integer.parseInt(curMonthFormat.format(date)) - 1, 1);
 
         int dayNum = mCal.get(Calendar.DAY_OF_WEEK);
-        Log.d( "dayNum",String.valueOf(dayNum));
+        Log.d("dayNum", String.valueOf(dayNum));
         //1일 - 요일 매칭 시키기 위해 공백 add
 
         for (int i = 1; i < dayNum; i++) {
@@ -178,14 +183,14 @@ public class CalendarMain extends Activity {
 
             public void onClick(View v) {
                 mCal = Calendar.getInstance();
-                Log.d("삭제할 월", String.valueOf(mCal.get(Calendar.MONTH)-back_month_count + next_month_count));
+                Log.d("삭제할 월", String.valueOf(mCal.get(Calendar.MONTH) - back_month_count + next_month_count));
                 mCal.add(Calendar.MONTH, -back_month_count + next_month_count);
                 int useDay = 6;
                 int dayNum;
 
-                Log.d( "삭제된 달의 크기",String.valueOf(dayList.size() - 1));
+                Log.d("삭제된 달의 크기", String.valueOf(dayList.size() - 1));
 
-                for(int i = dayList.size() - 1; i >= 7; i--) {
+                for (int i = dayList.size() - 1; i >= 7; i--) {
                     dayList.remove(i);
                 }
 
@@ -219,20 +224,20 @@ public class CalendarMain extends Activity {
                 int useDay = 6;
 
                 // 지워야할 달 날짜 세팅
-                Log.d("삭제할 월", String.valueOf(mCal.get(Calendar.MONTH)-back_month_count + next_month_count));
+                Log.d("삭제할 월", String.valueOf(mCal.get(Calendar.MONTH) - back_month_count + next_month_count));
                 mCal.add(Calendar.MONTH, -back_month_count + next_month_count);
                 int dayNum = mCal.get(Calendar.DAY_OF_WEEK) - 1;
 
-                Log.d( "새로 세팅된 달의 크기",String.valueOf(dayList.size() - 1));
-                Log.d( "useDay",String.valueOf(useDay));
-                Log.d( "dayNum",String.valueOf(dayNum));
+                Log.d("새로 세팅된 달의 크기", String.valueOf(dayList.size() - 1));
+                Log.d("useDay", String.valueOf(useDay));
+                Log.d("dayNum", String.valueOf(dayNum));
 
-                for(int i = dayList.size() - 1; i >= 7; i--) {
+                for (int i = dayList.size() - 1; i >= 7; i--) {
                     dayList.remove(i);
                 }
                 next_month_count += 1;
 
-                mCal.add(Calendar.MONTH , 1);
+                mCal.add(Calendar.MONTH, 1);
                 mCal.set(mCal.get(Calendar.YEAR), mCal.get(Calendar.MONTH), 1);
                 dayNum = mCal.get(Calendar.DAY_OF_WEEK);
 
@@ -251,7 +256,22 @@ public class CalendarMain extends Activity {
             }
         });
 
+        addSche.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                startActivityForResult(new Intent(getApplicationContext(), CalendarAddSche.class), 1);
+            }
+        });
+    }
 
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        String year = data.getStringExtra("year");
+        String month = data.getStringExtra("month");
+        String day = data.getStringExtra("day");
+        String schedule = data.getStringExtra("schedule");
+        String memo = data.getStringExtra("memo");
+
+        //필터링을 해서 집어넣으시오(DB필요)
     }
 
 
