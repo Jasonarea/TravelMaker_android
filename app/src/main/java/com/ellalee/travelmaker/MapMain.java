@@ -2,6 +2,8 @@ package com.ellalee.travelmaker;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
@@ -60,9 +62,10 @@ import java.util.List;
 
 public class MapMain extends FragmentActivity implements OnMapReadyCallback,GoogleMap.OnMarkerClickListener{
 
-    private SQLiteDatabase db;
-    private SQLiteOpenHelper helper;
-
+    private SQLiteDatabase db ;
+    private PlanSQLiteHelper helper;
+    private Plan plan;
+                      //marker 0:default 1:residence 2: ....
     private int edit_mode = 0;  // 0:onlyView 1:editMarker 2: editRoute
     private int routeIndex = 0; // day 1,2 ....
     private int newIndex = 0;   // recently added index
@@ -76,46 +79,21 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     private ContextMenu contextMenu;
 
     private ArrayList<Route> routes = new ArrayList<>(); //multi
+//   private ArrayList<Route> routes; //multi
     String[] routeColor;
 
     Animation slidingOpen;
     Animation slidingClose;
     LinearLayout slidingLayout;
-    LinearLayout routeInfoContainer;
     RouteInfoSliding infoSliding;
     HorizontalScrollView routeHS;
     RouteInfoSliding routeInfoDraw;
-
-
     boolean openPage=false;
-/*
-    private class SlidingPageAnimationListener implements Animation.AnimationListener{
-        @Override
-        public void onAnimationStart(Animation animation) {}
 
-        @Override
-        public void onAnimationRepeat(Animation animation) {}
 
-        @Override
-        public void onAnimationEnd(Animation animation) {
-            if(openPage){ //currently open -> close
-                slidingLayout.setVisibility(View.INVISIBLE);
-                routeInfoDraw.setVisibility(View.INVISIBLE);
-                routeHS.setVisibility(View.INVISIBLE);
-
-                openPage=false;
-            }
-            else{ //currently close -> open
-                openPage=true;
-            }
-        }
-    }
-    */
     private class SlidingPageAnimationListener implements Animation.AnimationListener{
     @Override
-    public void onAnimationStart(Animation animation) {
-        Log.d("page state: ",openPage+"**********************");
-    }
+    public void onAnimationStart(Animation animation) {}
 
     @Override
     public void onAnimationRepeat(Animation animation) {}
@@ -131,7 +109,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             routeInfoDraw.setVisibility(View.VISIBLE);
             routeHS.setVisibility(View.VISIBLE);
         }
-       }
+    }
     }
 
     @Override
@@ -139,11 +117,20 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_main);
 
+        Intent intent = getIntent();
+        long plan_id = intent.getExtras().getLong("plan_id");
+        /*
+        plan_id를 통해 db에서 plan불러오기
+        plan  = (Plan)intent.getSerializableExtra("newPlan"); ///intent 넘기기
+        routes = plan.getRoutesList();
+*/
+        Toast.makeText(getApplicationContext(),"plan_id:"+plan_id, Toast.LENGTH_SHORT).show();
+
         geocoder = new Geocoder(this);
         editAddress = findViewById(R.id.editAddress);
         btnSearch = findViewById(R.id.btnSearch);
         btnRoute = findViewById(R.id.btnRoute);
-        btnPlace = findViewById(R.id.btnPlace);
+         btnPlace = findViewById(R.id.btnPlace);
 
         routeColor = getResources().getStringArray(R.array.routeColor);
         registerForContextMenu(btnRoute);
@@ -163,6 +150,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         FragmentManager fragmentManager = getFragmentManager();
         MapFragment mapFragment = (MapFragment) fragmentManager.findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
     }
 
     @Override
@@ -170,14 +158,20 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         googleMap = map;
         geocoder = new Geocoder(this);
 
+        //initialize when plan is created
         //initial route setting (default route)
-        Route day1= new Route(0,routeColor[0],googleMap);
-        routes.add(0,day1);
+        if(routes.isEmpty()) {
+//          Route day1 = new Route(0, routeColor[0], googleMap);
+            Route day1 = new Route(0, routeColor[0]);
+            routes.add(0, day1);
+        }
 
-        LatLng SEOUL = new LatLng(37.56, 126.97);
+        //main activity에서 valid한 로케이션 확인 후 넘겨주기
+        LatLng center = new LatLng(37.56, 126.97);
+//        LatLng center = plan.getCentre();
         //************modify to get position point from main activity
 
-        map.moveCamera(CameraUpdateFactory.newLatLng(SEOUL));
+        map.moveCamera(CameraUpdateFactory.newLatLng(center));
         map.animateCamera(CameraUpdateFactory.zoomTo(10));
 
         btnSearch.setOnClickListener(new View.OnClickListener() {
@@ -209,11 +203,11 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                         mOptions.draggable(true);
                         mOptions.position(SearchPoint);
                         mOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.heart));
+
                         //add marker
-                        googleMap.addMarker(mOptions);
+                        googleMap.addMarker(mOptions).setTag(0);
                         //zoom camera view
                         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SearchPoint, 15));
-
                     }
                 }
             }
@@ -228,7 +222,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                 option.position(latLng);
                 option.title(" ");
                 option.icon(BitmapDescriptorFactory.fromResource(R.drawable.heart));
-                googleMap.addMarker(option);
+                googleMap.addMarker(option).setTag(0);
                 //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
             }
         });
@@ -256,7 +250,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                 Route cur;
                 while (route_iterator.hasNext()) {
                     cur = route_iterator.next();
-                    cur.setPoints(); //if(route_iterator.contains(marker)
+                    cur.setPoints(googleMap); //if(route_iterator.contains(marker)
                 }
             }
         });
@@ -274,23 +268,19 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                     polyline.setWidth(10); //normal
                 }
                 else{
-//                    slidingLayout.setVisibility(View.VISIBLE);
-//                    routeInfoDraw.setVisibility(View.VISIBLE);
-//                    routeHS.setVisibility(View.VISIBLE);
-
                     polyline.setWidth(30); //highlight
                     Iterator<Route> iterator = routes.iterator();
                     Route cur;
                     while(iterator.hasNext()){
                         cur=iterator.next();
-                        if(cur.contains(polyline)!=-1){
-                            title.setText("Route info of Day "+cur.contains(polyline));
+                        if(cur.contains(polyline,googleMap)!=-1){
+                            title.setText("Route info of Day "+cur.contains(polyline,googleMap));
                             RouteInfoSliding indicator = findViewById(R.id.routeInfoDraw);
                             indicator.setRoute(cur);
                             cur.setMarkerList(indicator.getModified()); //get the modified route info
 
                         }else{
-                            cur.setPolylineWidth(10);
+                            cur.setPolylineWidth(10,googleMap);
                         }
                     }
                     openPage=true;
@@ -321,21 +311,25 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                         switch (iconOpt.getCheckedRadioButtonId()){
                             case R.id.opt_dining:
                                 marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_dining));
+                                marker.setTag(1);
                                 break;
                             case R.id.opt_residence:
                                 marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_residence));
+                                marker.setTag(2);
                                 break;
                             case R.id.opt_shopping:
                                 marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_shopping));
+                                marker.setTag(3);
                                 break;
                             case R.id.opt_default:
                                 marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.marker_default));
+                                marker.setTag(0);
                                 break;
                         }
 
                     }
                 });
-                popInput.setNegativeButton("Candle", new DialogInterface.OnClickListener() {
+                popInput.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
@@ -346,7 +340,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             }
         });
     }
-
 
     @Override
     public boolean onMarkerClick(Marker marker) {
@@ -361,7 +354,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             while (route_iterator.hasNext()){
                 cur = route_iterator.next();
                 if(cur.remove(marker)){
-                    cur.setPoints();
+                    cur.setPoints(googleMap);
                     if(cur.getMarkerList().size()==1){
                         cur.getMarkerList().clear();
                     }
@@ -373,7 +366,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                 Toast.makeText(this, "This place was just added.", Toast.LENGTH_SHORT).show();
             }else{
                 routes.get(routeIndex).add(marker);
-                routes.get(routeIndex).setPoints();
+                routes.get(routeIndex).setPoints(googleMap);
+//                routes.get(routeIndex).drawPolyline(googleMap);
             }
 
         }
@@ -406,7 +400,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             //maximum route number is 20
             if(newIndex<20) {
                 newIndex = routes.size();
-                Route route = new Route(newIndex, routeColor[newIndex], googleMap);
+//                Route route = new Route(newIndex, routeColor[newIndex], googleMap);
+                Route route = new Route(newIndex, routeColor[newIndex]);
                 routes.add(newIndex, route);
 
                 openContextMenu(btnRoute); //show reorganized context menu
@@ -459,5 +454,27 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             Toast.makeText(this,"Show the route",Toast.LENGTH_SHORT).show();
             edit_mode = 0;
         }
+    }
+    public void save(View v){
+/*
+        helper = new PlanSQLiteHelper(getApplicationContext());
+
+        Plan p = plan;
+        p.setRoutesList(routes);
+/*        p.setTitle(plan.getTitle());
+        p.setCity(plan.getCity());
+        p.setCentre(plan.getCentre());
+    //    p.setId(plan.getId());
+        p.setY(plan.getYear());
+        p.setM(plan.getMonth());
+        p.setD(plan.getDay());
+
+        long plan_id = helper.createPlan(p);
+        db = helper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put("KEY_ID",plan_id);
+        db.insert("TABLE_PLAN",null,values);
+        */
     }
 }

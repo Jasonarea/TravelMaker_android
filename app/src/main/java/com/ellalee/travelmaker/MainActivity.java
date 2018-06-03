@@ -1,8 +1,11 @@
 package com.ellalee.travelmaker;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.location.Address;
+import android.location.Geocoder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,11 +17,17 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.maps.model.LatLng;
+
+import java.io.IOException;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
     private FrameLayout flContainer;
     private DrawerLayout dlDrawer;
     private ImageButton btn;
+
+    SQLiteDatabase db;
+    PlanSQLiteHelper helper;
 
     @Override
 
@@ -51,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-
+        helper = new PlanSQLiteHelper(getApplicationContext());
 
         lvNavList = (ListView)findViewById(R.id.lv_activity_main_nav_list);
 
@@ -120,6 +132,53 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void mapMain(View v){
-        startActivity(new Intent(getApplicationContext(),MapMain.class));
+
+        EditText input = findViewById(R.id.EditWhereToGo);
+        String city = input.getText().toString();
+        LatLng center;
+        Plan plan;
+
+        Geocoder geocoder = new Geocoder(this);
+        List<Address> list = null;
+        double latitude, longitude;
+
+        try {
+            list = geocoder.getFromLocationName(city, 10);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(MainActivity.this, "I/O Error", Toast.LENGTH_SHORT).show();
+        }
+
+        if (list != null) {
+            if (list.size() == 0) {
+                Toast.makeText(MainActivity.this, "No matching area info", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                plan = new Plan();
+
+                latitude = list.get(0).getLatitude();
+                longitude = list.get(0).getLongitude();
+
+                center = new LatLng(latitude, longitude);
+
+                plan.setCentre(center);
+                plan.setCity(city);
+                plan.setTitle(city); //default title is a city name
+
+                long plan_id = helper.createPlan(plan);
+                db = helper.getWritableDatabase();
+
+                ContentValues values = new ContentValues();
+                values.put("KEY_ID",plan_id);
+                db.insert("TABLE_PLAN",null,values);
+
+                Intent intent = new Intent(getApplicationContext(),MapMain.class);
+                intent.putExtra("plan_id",plan_id);
+                //putSerializable("newPlan",plan);
+//                intent.putExtras(bundle);
+
+                startActivity(intent);
+            }
+        }
     }
 }

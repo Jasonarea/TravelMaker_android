@@ -21,18 +21,36 @@ public class Route{
     private String routeColor = new String();
 
 
-    Route(int idx,String color, GoogleMap map){
+//    Route(int idx,String color, GoogleMap map){
+    Route(int idx,String color){
         index = idx;
         markerList = new ArrayList<>();
         routeColor = color;
+        setPolylineOptions();
+        polyline = null;
+//        polyline = map.addPolyline(polylineOptions);
+//        polyline.setClickable(true);
+//        polyline.setTag(index);
+    }
+    boolean add(Marker marker){
+        return markerList.add(marker);
+    }
+
+    public void init(GoogleMap map){
+        if(polyline==null){
+            polyline = map.addPolyline(polylineOptions);
+            polyline.setClickable(true);
+            polyline.setTag(index);
+        }
+    }
+
+    /*public void drawPolyline(GoogleMap map){
         setPolylineOptions();
         polyline = map.addPolyline(polylineOptions);
         polyline.setClickable(true);
         polyline.setTag(index);
     }
-    boolean add(Marker marker){
-        return markerList.add(marker);
-    }
+    */
 
     boolean remove(Marker marker){
         return markerList.remove(marker);
@@ -42,7 +60,7 @@ public class Route{
         return index;
     }
 
-    ArrayList<Marker> getMarkerList(){
+    public ArrayList<Marker> getMarkerList(){
         return markerList;
     }
 
@@ -58,7 +76,8 @@ public class Route{
         }
         return false;
     }
-    int contains(Polyline line){
+    int contains(Polyline line,GoogleMap map){
+        init(map);
         if(polyline.equals(line)){
             return index;
         }
@@ -76,7 +95,8 @@ public class Route{
         return cur.equals(m);
     }
 
-    public void setPolylineWidth(float width){
+    public void setPolylineWidth(float width,GoogleMap map){
+        init(map);
         polyline.setWidth(width);
     }
 
@@ -100,10 +120,8 @@ public class Route{
         this.polylineOptions.endCap(new RoundCap());
         this.polylineOptions.addAll(toLatLng(this.markerList));
     }
-    public void setPoints(ArrayList<LatLng> latLng){
-        polyline.setPoints(latLng);
-    }
-    public void setPoints(){
+    public void setPoints(GoogleMap map){
+        init(map);
         polyline.setPoints(toLatLng(markerList));
     }
 }
