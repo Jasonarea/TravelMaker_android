@@ -23,7 +23,7 @@ import com.kakao.util.helper.log.Logger;
 
 public class Sharing extends AppCompatActivity {
 
-    private String encoding = "UTF-8";
+    //private String encoding = "UTF-8";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,11 +54,11 @@ public class Sharing extends AppCompatActivity {
     }
     /*public void kakao() {
         FeedTemplate params = FeedTemplate
-                .newBuilder(ContentObject.newBuilder("���,
+                .newBuilder(ContentObject.newBuilder("���,
                         "http://mud-kage.kakao.co.kr/dn/NTmhS/btqfEUdFAUf/FjKzkZsnoeE4o19klTOVI1/openlink_640x640s.jpg",
                         LinkObject.newBuilder().setWebUrl("https://developers.kakao.com")
                                 .setMobileWebUrl("https://developers.kakao.com").build())
-                        .setDescrption("�메리카 �케)
+                        .setDescrption("�메리카 �케)
                         .build())
                 .setSocial(SocialObject.newBuilder().setLikeCount(10).setCommentCount(20)
                         .setSharedCount(30).setViewCount(40).build())

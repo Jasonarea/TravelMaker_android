@@ -228,7 +228,7 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         Plan plan = new Plan();
         plan.setId(c.getInt(c.getColumnIndex(KEY_ID)));
         plan.setTitle(c.getString(c.getColumnIndex(KEY_TITLE)));
-        plan.setRoutesList(getRouteList(plan_id));
+       //plan.setRoutesList(getRouteList(plan_id));
         plan.setY(c.getInt(c.getColumnIndex(KEY_YEAR)));
         plan.setM(c.getInt(c.getColumnIndex(KEY_MONTH)));
         plan.setD(c.getInt(c.getColumnIndex(KEY_DAY)));
@@ -236,7 +236,7 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         return plan;
     }
 
-    public ArrayList<Route> getRouteList(long plan_id){
+    /*public ArrayList<Route> getRouteList(long plan_id){
         SQLiteDatabase db = getReadableDatabase();
         ArrayList<Route> list = new ArrayList<>();
 
@@ -244,7 +244,7 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         Cursor c = db.rawQuery(selectQuery,null);
 
 
-    }
+    }*/
 
     public int updatePlan(Plan plan) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -259,5 +259,4 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         return db.update(TABLE_PLAN, values, KEY_ID + " = ?",
                 new String[] { String.valueOf(plan.getId()) });
     }
-*/
 }
