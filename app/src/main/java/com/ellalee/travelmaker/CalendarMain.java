@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,11 +19,13 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import static java.lang.Math.abs;
 
 
 public class CalendarMain extends Activity {
-
+    private FirebaseAnalytics mFirebaseAnalytics;
     /**
      * 연/월 텍스트뷰
      */
@@ -43,7 +46,7 @@ public class CalendarMain extends Activity {
     /**
      * 스케줄 저장되어있는 리스트
      */
-    private List<String> doList;
+    private static List<String> doList;
 
 
     /**
@@ -69,11 +72,29 @@ public class CalendarMain extends Activity {
      */
     private Button rightBtn;
 
+    //dayList를 위한 변수
     private int count = 0;
 
     private int back_month_count = 0;
+    private int next_month_count = 0;
 
     private int back_year_count = 0;
+    private int next_year_count = 0;
+
+
+    // 오늘에 날짜를 세팅
+
+    long now = System.currentTimeMillis();
+
+    final Date date = new Date(now);
+
+    //연,월,일을 따로 저장
+
+    final SimpleDateFormat curYearFormat = new SimpleDateFormat("yyyy", Locale.KOREA);
+
+    final SimpleDateFormat curMonthFormat = new SimpleDateFormat("MM", Locale.KOREA);
+
+    final SimpleDateFormat curDayFormat = new SimpleDateFormat("dd", Locale.KOREA);
 
     @Override
 
@@ -82,31 +103,14 @@ public class CalendarMain extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_calendar_main);
-
+        //mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
         tvDate = (TextView) findViewById(R.id.tv_date);
 
         gridView = (GridView) findViewById(R.id.gridview);
 
         leftBtn = (Button)findViewById(R.id.calendar_month_back);
-
-        // 오늘에 날짜를 세팅
-
-        long now = System.currentTimeMillis();
-
-        final Date date = new Date(now);
-
-        //연,월,일을 따로 저장
-
-        final SimpleDateFormat curYearFormat = new SimpleDateFormat("yyyy", Locale.KOREA);
-
-        final SimpleDateFormat curMonthFormat = new SimpleDateFormat("MM", Locale.KOREA);
-
-        final SimpleDateFormat curDayFormat = new SimpleDateFormat("dd", Locale.KOREA);
-
-        //현재 날짜 텍스트뷰에 뿌려줌
-
-        tvDate.setText(curYearFormat.format(date) + "/" + curMonthFormat.format(date));
+        rightBtn = (Button)findViewById(R.id.calendar_month_next);
 
 
         //gridview 요일 표시
@@ -142,60 +146,18 @@ public class CalendarMain extends Activity {
         sat.setDay("토");
         dayList.add(sat);
 
-        // 일정 리스트값이 아직 전달 안되서 임의로 값 넣음
-        doList.add("TM presentation (2018-05-24)");
-        doList.add("Okinawa (2018-05-29");
-        doList.add("Okinawa (2018-05-30");
-        doList.add("Okinawa (2018-05-31");
-        doList.add("Hotel (2018-05-29)");
-        doList.add("Hotel (2018-05-30");
 
         mCal = Calendar.getInstance();
 
+        //현재 날짜 텍스트뷰에 뿌려줌
+
+        tvDate.setText(mCal.get(Calendar.YEAR) + " / " + (mCal.get(Calendar.MONTH) + 1));
 
         //이번달 1일 무슨요일인지 판단 mCal.set(Year,Month,Day)
-
-        mCal.set(Integer.parseInt(curYearFormat.format(date)), Integer.parseInt(curMonthFormat.format(date)) - 1, 1);
+       mCal.set(Integer.parseInt(curYearFormat.format(date)), Integer.parseInt(curMonthFormat.format(date)) - 1, 1);
 
         int dayNum = mCal.get(Calendar.DAY_OF_WEEK);
-
-        leftBtn.setOnClickListener(new View.OnClickListener() {
-
-            public void onClick(View v) {
-                // 이전 달이 전년도가 아닐 때
-                if(mCal.get(Calendar.MONTH) + 1 >= back_month_count)
-                    deleteCalendarDate(mCal.get(Calendar.MONTH) + 1 - back_month_count, back_month_count);
-                else // 이전 달이 전년도일 때
-                    deleteCalendarDate(13 - (mCal.get(Calendar.MONTH) + 1 - back_month_count), back_month_count);
-
-                back_month_count += 1;
-                mCal = Calendar.getInstance();
-
-                // 이전년도 캘린더 제공
-                if(Integer.parseInt(curMonthFormat.format(date)) - 1 - back_month_count < 0) {
-                    back_year_count = (int)back_month_count / 12;
-                    mCal.set(Integer.parseInt(curYearFormat.format(date)) - abs(Integer.parseInt(curYearFormat.format(date))- back_year_count + 1)/12,
-                            13 - (mCal.get(Calendar.MONTH)  + 1 - back_month_count), 1);
-                }
-                else {
-                    mCal.set(Integer.parseInt(curYearFormat.format(date)), Integer.parseInt(curMonthFormat.format(date)) - 1 - back_month_count, 1);
-                }
-
-                int dayNum = mCal.get(Calendar.DAY_OF_WEEK);
-
-                //1일 - 요일 매칭 시키기 위해 공백 add
-                for (int i = 1; i < dayNum; i++) {
-                    Day empty = new Day();
-                    empty.setDay("");
-                    dayList.add(empty);
-                }
-                tvDate.setText(curYearFormat.format(date) + "/" + String.valueOf(Integer.parseInt(curMonthFormat.format(date)) - back_month_count));
-                setCalendarDate(mCal.get(Calendar.MONTH) + 1);
-                gridAdapter.notifyDataSetChanged();
-
-            }
-        });
-
+        Log.d( "dayNum",String.valueOf(dayNum));
         //1일 - 요일 매칭 시키기 위해 공백 add
 
         for (int i = 1; i < dayNum; i++) {
@@ -210,6 +172,84 @@ public class CalendarMain extends Activity {
         gridAdapter = new GridAdapter(getApplicationContext(), dayList);
 
         gridView.setAdapter(gridAdapter);
+
+        //back button 눌렀을 때
+        leftBtn.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+                mCal = Calendar.getInstance();
+                Log.d("삭제할 월", String.valueOf(mCal.get(Calendar.MONTH)-back_month_count + next_month_count));
+                mCal.add(Calendar.MONTH, -back_month_count + next_month_count);
+                int useDay = 6;
+                int dayNum;
+
+                Log.d( "삭제된 달의 크기",String.valueOf(dayList.size() - 1));
+
+                for(int i = dayList.size() - 1; i >= 7; i--) {
+                    dayList.remove(i);
+                }
+
+                back_month_count += 1;
+                mCal.add(Calendar.MONTH, -1);
+                mCal.set(mCal.get(Calendar.YEAR), mCal.get(Calendar.MONTH), 1);
+
+                dayNum = mCal.get(Calendar.DAY_OF_WEEK);
+                Log.d("이번달 채워질 공백의 수", String.valueOf(dayNum));
+                Log.d("새로 세팅될 월", String.valueOf(mCal.get(Calendar.MONTH)));
+
+                //1일 - 요일 매칭 시키기 위해 공백 add
+                for (int i = 1; i < dayNum; i++) {
+                    Day empty = new Day();
+                    empty.setDay("");
+                    dayList.add(empty);
+                }
+                tvDate.setText(mCal.get(Calendar.YEAR) + " / " + (mCal.get(Calendar.MONTH) + 1));
+                setCalendarDate(mCal.get(Calendar.MONTH) + 1);
+                gridAdapter.notifyDataSetChanged();
+
+            }
+        });
+
+        //next button 눌렀을 때
+        rightBtn.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View v) {
+
+                Log.d("삭제할 월", String.valueOf(mCal.get(Calendar.MONTH)));
+                int useDay = 6;
+
+                // 지워야할 달 날짜 세팅
+                Log.d("삭제할 월", String.valueOf(mCal.get(Calendar.MONTH)-back_month_count + next_month_count));
+                mCal.add(Calendar.MONTH, -back_month_count + next_month_count);
+                int dayNum = mCal.get(Calendar.DAY_OF_WEEK) - 1;
+
+                Log.d( "새로 세팅된 달의 크기",String.valueOf(dayList.size() - 1));
+                Log.d( "useDay",String.valueOf(useDay));
+                Log.d( "dayNum",String.valueOf(dayNum));
+
+                for(int i = dayList.size() - 1; i >= 7; i--) {
+                    dayList.remove(i);
+                }
+                next_month_count += 1;
+
+                mCal.add(Calendar.MONTH , 1);
+                mCal.set(mCal.get(Calendar.YEAR), mCal.get(Calendar.MONTH), 1);
+                dayNum = mCal.get(Calendar.DAY_OF_WEEK);
+
+                Log.d("새로 세팅될 월", String.valueOf(mCal.get(Calendar.MONTH)));
+
+                //1일 - 요일 매칭 시키기 위해 공백 add
+                for (int i = 1; i < dayNum; i++) {
+                    Day empty = new Day();
+                    empty.setDay("");
+                    dayList.add(empty);
+                }
+                tvDate.setText(mCal.get(Calendar.YEAR) + " / " + (mCal.get(Calendar.MONTH) + 1));
+                setCalendarDate(mCal.get(Calendar.MONTH) + 1);
+                gridAdapter.notifyDataSetChanged();
+
+            }
+        });
 
 
     }
@@ -232,9 +272,13 @@ public class CalendarMain extends Activity {
             d.setDay("" + String.valueOf(i + 1));
 
             for (int j = 0; j < doList.size(); j++) {
-                if (doList.get(j).substring(doList.get(j).indexOf("(")+9, doList.get(j).indexOf("(")+11).equals(d.getDay().toString())) {
-                    count += 1;
-                    d.setSche(doList.get(j).substring(0, doList.get(j).indexOf("(")-1));
+                if(doList.get(j).substring(doList.get(j).indexOf("(")+1, doList.get(j).indexOf("(")+5).equals(String.valueOf(mCal.get(Calendar.YEAR)))) {
+                    if(doList.get(j).substring(doList.get(j).indexOf("(")+6, doList.get(j).indexOf("(")+8).equals(String.valueOf(mCal.get(Calendar.MONTH) + 1))) {
+                        if (doList.get(j).substring(doList.get(j).indexOf("(") + 9, doList.get(j).indexOf("(") + 11).equals(d.getDay().toString())) {
+                            count += 1;
+                            d.setSche(doList.get(j).substring(0, doList.get(j).indexOf("(") - 1));
+                        }
+                    }
                 }
             }
             dayList.add(d);
@@ -244,32 +288,25 @@ public class CalendarMain extends Activity {
     /*
      * 기존에 캘린더에 있던 daylist 객체를 지우는 함수
      */
-    private void deleteCalendarDate(int month, int back_count) {
-        mCal.set(Calendar.MONTH, month - 1);
+    private void deleteCalendarDate(int month, int year) {
+        int useDay = 6;
 
-        int useDay = 7;
-        int dayNum = mCal.get(Calendar.DAY_OF_WEEK);
+        // 지워야할 달 날짜 세팅
+        Log.d("delete함수 월 세팅", String.valueOf(month));
+        mCal.set(year, month, 1);
+        int dayNum = mCal.get(Calendar.DAY_OF_WEEK) - 1;
 
-        // 이전달이 작년이 아닐 때
-        if((mCal.get(Calendar.MONTH) + 1 - back_count) > 0) {
-            //이전달 버튼을 처음 눌렀을 때
-            if(back_count == 1)
-                useDay = 0;
-            else
-                useDay = 7;
-        }
+        Log.d( "새로 세팅된 달의 크기",String.valueOf(mCal.getActualMaximum(Calendar.DAY_OF_MONTH) +  dayNum + useDay));
+        Log.d( "useDay",String.valueOf(useDay));
+        Log.d( "dayNum",String.valueOf(dayNum));
 
-        //이전달이 작년일 때
-        if((mCal.get(Calendar.MONTH) + 1 -back_count) < 0) {
-            int year = abs((mCal.get(Calendar.MONTH) + 1 - back_count)) / 12 + 1;
-            mCal.set(Calendar.YEAR, mCal.get(Calendar.YEAR) - year);
-            useDay = 0;
-        }
-
-        for(int i = mCal.getActualMaximum(Calendar.DAY_OF_MONTH) + dayNum + useDay;  i >= 7; i--) {
+        for(int i = mCal.getActualMaximum(Calendar.DAY_OF_MONTH) +  dayNum + useDay; i >= 7; i--) {
             dayList.remove(i);
         }
+    }
 
+    public static void setDoList(List<String> d) {
+        doList = d;
     }
 
 
@@ -420,6 +457,7 @@ public class CalendarMain extends Activity {
     private class Day {
         private String day;
         private ArrayList<String> sche = new ArrayList<String>();
+        private ArrayList<String> memo = new ArrayList<String>();
 
         public void setDay(String d) {
             day = d;
@@ -435,6 +473,14 @@ public class CalendarMain extends Activity {
 
         public ArrayList<String> getSche() {
             return sche;
+        }
+
+        public void setMemo(int date, String m) {
+            memo.add(date + "," + m);
+        }
+
+        public ArrayList<String> getMemo() {
+            return memo;
         }
     }
 
