@@ -187,12 +187,12 @@ public class GmailSync implements Runnable {
         }
         final String finalText = text;
         final String[] textArray = total;
-        handler.post(new Runnable() {
+        /*handler.post(new Runnable() {
             @Override
             public void run() {
 
             }
-        });
+        });*/
         for(int j = 0;!textArray[j].equals("");j++) {
             Log.d("TextArray", textArray[j]);
             String[] parseData = textArray[j].split("\n");
@@ -211,7 +211,6 @@ public class GmailSync implements Runnable {
             CalendarSync.createEvent(CalendarSync.mService, startD, startD, nation);
             CalendarSync.createEvent(CalendarSync.mService, endD,endD,"Seoul");
         }
-
     }
 
     public int[] getDate(String time) {
