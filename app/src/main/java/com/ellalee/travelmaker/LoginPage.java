@@ -87,7 +87,7 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
         String email = loadSavedPreferences();
         if(email.equals("EmailStuff")){
             Log.d("Email", email);
-            Intent intent = new Intent(getApplicationContext(), CalendarSync.class);
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
         }
         Log.d("Email", email);
@@ -113,8 +113,6 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
-
-
     }
     /**
      * Attempt to call the API, after verifying that all the preconditions are
@@ -133,12 +131,11 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
         } else {
             //new MakeRequestTask(mCredential).execute();
             mOutputText.setText("Login Finish");
-            Intent intent = new Intent(getApplicationContext(), CalendarSync.class);
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
             //mProgress.hide();
         }
     }
-
     /**
      * Attempts to set the account used with the API credentials. If an account
      * name was previously saved it will use that one; otherwise an account
