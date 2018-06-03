@@ -150,7 +150,7 @@ public class CalendarMain extends Activity {
         Day sat = new Day();
         sat.setDay("토");
         dayList.add(sat);
-
+        doList.add("Travel to 홍콩 (2018-06-25T18:00:00,000+09:00");
 
         mCal = Calendar.getInstance();
 
@@ -265,12 +265,15 @@ public class CalendarMain extends Activity {
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        String year = data.getStringExtra("year");
-        String month = data.getStringExtra("month");
-        String day = data.getStringExtra("day");
-        String schedule = data.getStringExtra("schedule");
-        String memo = data.getStringExtra("memo");
+        if(resultCode != RESULT_CANCELED) {
+            String year = data.getStringExtra("year");
+            String month = data.getStringExtra("month");
+            String day = data.getStringExtra("day");
+            String schedule = data.getStringExtra("schedule");
+            String memo = data.getStringExtra("memo");
 
+            Log.d("정보", year + " " + month + " " + day + " " + schedule + " " + memo);
+        }
         //필터링을 해서 집어넣으시오(DB필요)
     }
 
@@ -285,18 +288,17 @@ public class CalendarMain extends Activity {
 
         mCal.set(Calendar.MONTH, month - 1);
 
-
         for (int i = 0; i < mCal.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
             Day d = new Day();
             count  = 0;
             d.setDay("" + String.valueOf(i + 1));
 
             for (int j = 0; j < doList.size(); j++) {
-                if(doList.get(j).substring(doList.get(j).indexOf("(")+1, doList.get(j).indexOf("(")+5).equals(String.valueOf(mCal.get(Calendar.YEAR)))) {
-                    if(doList.get(j).substring(doList.get(j).indexOf("(")+6, doList.get(j).indexOf("(")+8).equals(String.valueOf(mCal.get(Calendar.MONTH) + 1))) {
-                        if (doList.get(j).substring(doList.get(j).indexOf("(") + 9, doList.get(j).indexOf("(") + 11).equals(d.getDay().toString())) {
+                if(Integer.parseInt(doList.get(j).substring(doList.get(j).length() - 29, doList.get(j).length()-25)) == mCal.get(Calendar.YEAR)) {
+                    if(Integer.parseInt(doList.get(j).substring(doList.get(j).length()-24, doList.get(j).length()-22)) == mCal.get(Calendar.MONTH) + 1) {
+                        if (Integer.parseInt(doList.get(j).substring(doList.get(j).length() - 21, doList.get(j).length() - 19)) == Integer.parseInt(d.getDay())) {
                             count += 1;
-                            d.setSche(doList.get(j).substring(0, doList.get(j).indexOf("(") - 1));
+                            d.setSche(doList.get(j).substring(10, doList.get(j).length() - 30));
                         }
                     }
                 }

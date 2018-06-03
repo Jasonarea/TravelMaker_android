@@ -57,7 +57,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_margin = "16dp"
-        android:src = "@drawable/add_sche_fab" />
+        android:src = "@drawable/sche_plus" />
 
 </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

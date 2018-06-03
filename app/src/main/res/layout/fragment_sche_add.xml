@@ -3,26 +3,22 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/cancel_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
     <TextView
         android:id="@+id/DateSetting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="40dp"
         android:text="날짜 :"/>
     <EditText
         android:id="@+id/setYear"
         android:layout_toRightOf="@id/DateSetting"
-        android:layout_alignBottom="@id/DateSetting"
+        android:layout_alignBaseline="@id/DateSetting"
         android:layout_marginLeft="5dp"
-        android:layout_width="15dp"
+        android:layout_width="60dp"
         android:layout_height="wrap_content"
-        android:hint="ex)2018"/>
+        android:hint="ex)2018"
+        android:textSize="12sp"/>
     <TextView
         android:id="@+id/Year"
         android:layout_toRightOf="@+id/setYear"
@@ -34,11 +30,12 @@
     <EditText
         android:id="@+id/setMonth"
         android:layout_toRightOf="@+id/Year"
-        android:layout_alignBottom="@+id/DateSetting"
+        android:layout_alignBaseline="@+id/DateSetting"
         android:layout_marginLeft="5dp"
-        android:layout_width="15dp"
+        android:layout_width="60dp"
         android:layout_height="wrap_content"
-        android:hint="ex)2"/>
+        android:hint="ex)2"
+        android:textSize="12sp"/>
     <TextView
         android:id="@+id/Month"
         android:layout_toRightOf="@+id/setMonth"
@@ -50,16 +47,17 @@
     <EditText
         android:id="@+id/setDay"
         android:layout_toRightOf="@+id/Month"
-        android:layout_alignBottom="@+id/DateSetting"
+        android:layout_alignBaseline="@+id/DateSetting"
         android:layout_marginLeft="5dp"
-        android:layout_width="15dp"
+        android:layout_width="60dp"
         android:layout_height="wrap_content"
-        android:hint="ex)23"/>
+        android:hint="ex)23"
+        android:textSize="12sp"/>
     <TextView
         android:id="@+id/Day"
         android:layout_toRightOf="@+id/setDay"
         android:layout_alignBottom="@+id/DateSetting"
-        android:latout_marginLeft = "5dp"
+        android:layout_marginLeft = "5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="일"/>
@@ -75,16 +73,17 @@
     <EditText
         android:id="@+id/addSche"
         android:layout_toRightOf="@+id/scheSetting"
-        android:layout_alignBottom="@id/scheSetting"
+        android:layout_alignBaseline="@id/scheSetting"
         android:layout_marginLeft="5dp"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
-        android:hint="신라호텔"/>
+        android:hint="신라호텔"
+        android:textSize="12sp"/>
 
     <TextView
         android:id="@+id/memoSetting"
         android:layout_below="@+id/scheSetting"
-        android:layout_maginLeft = "40dp"
+        android:layout_marginLeft = "40dp"
         android:layout_marginTop="15dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -92,17 +91,29 @@
     <EditText
         android:id="@+id/addMemo"
         android:layout_toRightOf="@+id/memoSetting"
-        android:layout_alignBottom="@id/memoSetting"
+        android:layout_alignBaseline="@id/memoSetting"
         android:layout_marginLeft="5dp"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
-        android:hint="뷔페가기"/>
+        android:hint="뷔페가기"
+        android:textSize="12sp"/>
 
+    <Button
+        android:id="@+id/cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="60dp"
+        android:layout_below="@+id/addMemo"
+        android:layout_marginTop="15dp"
+        android:text="취소"/>
     <Button
         android:id="@+id/add_complete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/addMemo"
-        android:layout_marginLeft="60dp"
-        android:layout_marginTop="15dp" />
+        android:layout_toRightOf="@+id/cancel"
+        android:layout_marginTop="15dp"
+        android:text = "완료"/>
+
 </RelativeLayout>
