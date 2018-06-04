@@ -46,7 +46,6 @@ public class GmailSync implements Runnable {
     public static int count = 0;
     HttpTransport mHttpTransport;
     JsonFactory mJsonFactory;
-    Handler handler = new Handler();
     TextView test;
     GoogleAccountCredential mCredential;
     List<Email> allMail;
@@ -80,7 +79,7 @@ public class GmailSync implements Runnable {
         db = new MySQLiteHelper(mContext);
         db.deleteEverything();
         final String[] total = new String[10];
-        for(int j = 0;j<10;j++) total[j] = "";
+        for (int j = 0; j < 10; j++) total[j] = "";
         Gmail service = new Gmail.Builder(mHttpTransport, mJsonFactory, mCredential).setApplicationName("GmailApiTP").build();
         String author = "";
         ListThreadsResponse threadsResponse;
@@ -156,60 +155,124 @@ public class GmailSync implements Runnable {
 
             final String finalBod = bod;
             final String finalSub = sub;
+            int nationCo = 0;
+            int splitCount = 0;
+            String check = "";
+            int siteIndex = 0;
+            String[] nationCheck = new String[2]; int nationIndex = 0;
+            // 항공사에서 티켓을 예매했을경우
+                if(finalSub.contains("제주항공")){
+                    //제주항공
+                    cou++;
+                    String[] bods = finalBod.split("\n");
+                    for(int k = 0;k<bods.length;k++){
+                        String[] split = new String[2];
 
-            if(finalSub.contains("항공 결제요청") || finalSub.contains("항공권 결제요청")) {
+                        if(bods[k].contains("Departure")) {
+                            split[splitCount] += bods[k] + '\n';
+                            String[] date = new String[2];
+                            for(int la = 0;la<split[splitCount].length();la++) {
+                                if(Character.isDigit(split[splitCount].charAt(la))){
+                                    check += split[splitCount].charAt(la);
+                                }
+                                if(la == split[splitCount].length()-1) check+=' ';
+                            }
+                            Log.d("CheckJeju", check);
+                            nationCheck[nationIndex++] = bods[k].split(" ")[2];
+                            Log.d("NationChecking", nationCheck[nationIndex-1]);
 
-                String[] bods =  finalBod.split("\n");
-                for(int k = 0;k<bods.length;k++) {
+                        }
+
+                    }
+                    String[] StartEndJeju = check.split(" ");
+                    total[cou] += "출국일자" + StartEndJeju[0].substring(0, 4) + "/0" +
+                            StartEndJeju[0].substring(4, 5) + "/" + StartEndJeju[0].substring(5, 7) + "(화)";
+                    total[cou] += "귀국일자" + StartEndJeju[1].substring(0,4) + "/0" +
+                            StartEndJeju[1].substring(4,5) + "/" + StartEndJeju[1].substring(5, 7) + "(화)" + "\n";
+                    Log.d("JejuSE", total[cou]);
+                    total[cou] += nationCheck[0] + "\n";
+                    total[cou] += nationCheck[1] + "\n";
+                }
+                else if(finalSub.contains("티웨이항공")){
+                    cou++;
+                    String[] split = new String[5];
+                    String[] bods = finalBod.split("\n");
+                    String[] site = new String[3];
+                    for(int k = 0;k<bods.length;k++){
+
+                    if(bods[k].contains("2018/") && (bods[k].contains("인천") || bods[k].contains("김포"))){
+                            split = bods[k].split(" ");
+                            if(splitCount ==0) total[cou] += "출국일자" + split[0].substring(0, 13);
+                            else total[cou] += "귀국일자" + split[0] + "\n";
+                            site[siteIndex++] = split[1];
+                            splitCount++;
+                        }
+                    }
+                    for(int lol = 0; lol<siteIndex;lol++) {
+                        total[cou] += site[lol] + "\n";
+                        Log.d("T-way", total[cou]);
+                    }
+                }
+                else if(finalSub.contains("에미레이트 항공")){
+                    //에미레이트항공 e티켓
+                }
+                else if(finalBod.contains("LJ") && finalBod.contains("ICN")){
+                    //진에어 e티켓
+                }
+            //발권대행사를 이용했을 경우
+            if (finalSub.contains("항공 결제요청") || finalSub.contains("항공권 결제요청")) {
+                cou++;
+                String[] bods = finalBod.split("\n");
+                for (int k = 0; k < bods.length; k++) {
                     if (bods[k].contains("출국일자")) {
                         Log.d("cou", Integer.toString(cou));
                         total[cou] += bods[k] + '\n';
-                    }
-                    else if(bods[k].contains("김포") || bods[k].contains("인천")) {
+                    } else if (bods[k].contains("일반석1석OK")) {
                         int isNumIndex = 0;
-                        for(int j = 1;j<bods[k - 1].length();j++) {
-                            if (!Character.isDigit(bods[k - 1].charAt(j)) && Character.isDigit(bods[k - 1].charAt(j - 1))) {
-                                isNumIndex = j;
+                        Log.d("HELLLOWORLD", bods[k - 2]);
+                        String[] nation = new String[4];
+                        for (int j = bods[k - 2].length() - 1; j >= 4; j--) {
+                            if (Character.isDigit(bods[k - 2].charAt(j))) {
+                                isNumIndex = j + 1;
                                 break;
                             }
                         }
-                        if(!bods[k-1].substring(bods[k - 1].length()-2).equals("항공")) {
-                            Log.d("helloWorld", Integer.toString(cou));
-                            total[cou++] += bods[k - 1].substring(isNumIndex) + '\n';
-                            db.addBook(new Email(sub, bod, author, emailDate[0], emailDate[1], emailDate[2], 1));
-                        }
+
+                        nation[nationCo++] = bods[k - 2].substring(isNumIndex);
+                        total[cou] += nation[nationCo - 1] + '\n';
+                        Log.d("Nation", nation[nationCo - 1]);
                     }
                 }
-
-                for(int k = 0;k<total.length;k++)
+                for (int k = 0; k < total.length; k++)
                     text += total[k] + '\n';
             }
         }
         final String finalText = text;
         final String[] textArray = total;
-        /*handler.post(new Runnable() {
-            @Override
-            public void run() {
 
-            }
-        });*/
-        for(int j = 0;!textArray[j].equals("");j++) {
-            Log.d("TextArray", textArray[j]);
+        Log.d("TextArray", textArray[1] + "This is one\n" + textArray[2] + "This is two\n");
+
+        for(int j = 1;!textArray[j].equals("");j++) {
+            String toNation, fromNation;
             String[] parseData = textArray[j].split("\n");
-            String nation = parseData[1];
+            fromNation = parseData[1];
+            if (parseData.length == 3) toNation = parseData[2];
+            else toNation = parseData[3];
+
             String startD = "", endD = "";
-            for(int k = 4;k<parseData[0].length()/2;k++) {
-                if(Character.isDigit(parseData[0].charAt(k)))
+            for (int k = 4; k < parseData[0].length() / 2; k++) {
+                if (Character.isDigit(parseData[0].charAt(k)))
                     startD += parseData[0].charAt(k);
             }
-            for(int k = parseData[0].length()/2;k<parseData[0].length();k++)
-                if(Character.isDigit(parseData[0].charAt(k)))
+
+            for (int k = parseData[0].length() / 2; k < parseData[0].length(); k++)
+                if (Character.isDigit(parseData[0].charAt(k)))
                     endD += parseData[0].charAt(k);
-            startD = startD.substring(0,4) + "-" + startD.substring(4,6) + "-" + startD.substring(6);
-            endD = endD.substring(0,4) + "-" + endD.substring(4, 6) + "-" + endD.substring(6);
+            startD = startD.substring(0, 4) + "-" + startD.substring(4, 6) + "-" + startD.substring(6);
+            endD = endD.substring(0, 4) + "-" + endD.substring(4, 6) + "-" + endD.substring(6);
             Log.d("start end date", startD + ' ' + endD);
-            CalendarSync.createEvent(CalendarSync.mService, startD, startD, nation);
-            CalendarSync.createEvent(CalendarSync.mService, endD,endD,"Seoul");
+            CalendarSync.createEvent(CalendarSync.mService, startD, startD, toNation, fromNation);
+            CalendarSync.createEvent(CalendarSync.mService, endD, endD, fromNation, toNation);
         }
     }
 
