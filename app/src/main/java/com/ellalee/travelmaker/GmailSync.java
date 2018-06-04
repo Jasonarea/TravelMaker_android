@@ -46,7 +46,6 @@ public class GmailSync implements Runnable {
     public static int count = 0;
     HttpTransport mHttpTransport;
     JsonFactory mJsonFactory;
-    Handler handler = new Handler();
     TextView test;
     GoogleAccountCredential mCredential;
     List<Email> allMail;
@@ -157,33 +156,96 @@ public class GmailSync implements Runnable {
             final String finalBod = bod;
             final String finalSub = sub;
             int nationCo = 0;
-            if (finalSub.contains(""))
-                if (finalSub.contains("항공 결제요청") || finalSub.contains("항공권 결제요청")) {
+            int splitCount = 0;
+            String check = "";
+            int siteIndex = 0;
+            String[] nationCheck = new String[2]; int nationIndex = 0;
+            // 항공사에서 티켓을 예매했을경우
+                if(finalSub.contains("제주항공")){
+                    //제주항공
                     cou++;
                     String[] bods = finalBod.split("\n");
-                    for (int k = 0; k < bods.length; k++) {
-                        if (bods[k].contains("출국일자")) {
-                            Log.d("cou", Integer.toString(cou));
-                            total[cou] += bods[k] + '\n';
-                        } else if (bods[k].contains("일반석1석OK")) {
-                            int isNumIndex = 0;
-                            Log.d("HELLLOWORLD", bods[k - 2]);
-                            String[] nation = new String[4];
-                            for (int j = bods[k - 2].length() - 1; j >= 4; j--) {
-                                if (Character.isDigit(bods[k - 2].charAt(j))) {
-                                    isNumIndex = j + 1;
-                                    break;
-                                }
-                            }
+                    for(int k = 0;k<bods.length;k++){
+                        String[] split = new String[2];
 
-                            nation[nationCo++] = bods[k - 2].substring(isNumIndex);
-                            total[cou] += nation[nationCo - 1] + '\n';
-                            Log.d("Nation", nation[nationCo - 1]);
+                        if(bods[k].contains("Departure")) {
+                            split[splitCount] += bods[k] + '\n';
+                            String[] date = new String[2];
+                            for(int la = 0;la<split[splitCount].length();la++) {
+                                if(Character.isDigit(split[splitCount].charAt(la))){
+                                    check += split[splitCount].charAt(la);
+                                }
+                                if(la == split[splitCount].length()-1) check+=' ';
+                            }
+                            Log.d("CheckJeju", check);
+                            nationCheck[nationIndex++] = bods[k].split(" ")[2];
+                            Log.d("NationChecking", nationCheck[nationIndex-1]);
+
+                        }
+
+                    }
+                    String[] StartEndJeju = check.split(" ");
+                    total[cou] += "출국일자" + StartEndJeju[0].substring(0, 4) + "/0" +
+                            StartEndJeju[0].substring(4, 5) + "/" + StartEndJeju[0].substring(5, 7) + "(화)";
+                    total[cou] += "귀국일자" + StartEndJeju[1].substring(0,4) + "/0" +
+                            StartEndJeju[1].substring(4,5) + "/" + StartEndJeju[1].substring(5, 7) + "(화)" + "\n";
+                    Log.d("JejuSE", total[cou]);
+                    total[cou] += nationCheck[0] + "\n";
+                    total[cou] += nationCheck[1] + "\n";
+                }
+                else if(finalSub.contains("티웨이항공")){
+                    cou++;
+                    String[] split = new String[5];
+                    String[] bods = finalBod.split("\n");
+                    String[] site = new String[3];
+                    for(int k = 0;k<bods.length;k++){
+
+                    if(bods[k].contains("2018/") && (bods[k].contains("인천") || bods[k].contains("김포"))){
+                            split = bods[k].split(" ");
+                            if(splitCount ==0) total[cou] += "출국일자" + split[0].substring(0, 13);
+                            else total[cou] += "귀국일자" + split[0] + "\n";
+                            site[siteIndex++] = split[1];
+                            splitCount++;
                         }
                     }
-                    for (int k = 0; k < total.length; k++)
-                        text += total[k] + '\n';
+                    for(int lol = 0; lol<siteIndex;lol++) {
+                        total[cou] += site[lol] + "\n";
+                        Log.d("T-way", total[cou]);
+                    }
                 }
+                else if(finalSub.contains("에미레이트 항공")){
+                    //에미레이트항공 e티켓
+                }
+                else if(finalBod.contains("LJ") && finalBod.contains("ICN")){
+                    //진에어 e티켓
+                }
+            //발권대행사를 이용했을 경우
+            if (finalSub.contains("항공 결제요청") || finalSub.contains("항공권 결제요청")) {
+                cou++;
+                String[] bods = finalBod.split("\n");
+                for (int k = 0; k < bods.length; k++) {
+                    if (bods[k].contains("출국일자")) {
+                        Log.d("cou", Integer.toString(cou));
+                        total[cou] += bods[k] + '\n';
+                    } else if (bods[k].contains("일반석1석OK")) {
+                        int isNumIndex = 0;
+                        Log.d("HELLLOWORLD", bods[k - 2]);
+                        String[] nation = new String[4];
+                        for (int j = bods[k - 2].length() - 1; j >= 4; j--) {
+                            if (Character.isDigit(bods[k - 2].charAt(j))) {
+                                isNumIndex = j + 1;
+                                break;
+                            }
+                        }
+
+                        nation[nationCo++] = bods[k - 2].substring(isNumIndex);
+                        total[cou] += nation[nationCo - 1] + '\n';
+                        Log.d("Nation", nation[nationCo - 1]);
+                    }
+                }
+                for (int k = 0; k < total.length; k++)
+                    text += total[k] + '\n';
+            }
         }
         final String finalText = text;
         final String[] textArray = total;
