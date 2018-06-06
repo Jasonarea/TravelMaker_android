@@ -9,6 +9,9 @@ import java.util.Locale;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -19,15 +22,19 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ListAdapter;
 import android.widget.TextView;
-
-import com.google.firebase.analytics.FirebaseAnalytics;
-
-import static java.lang.Math.abs;
-
+import android.widget.Toast;
 
 public class CalendarMain extends Activity {
-    private FirebaseAnalytics mFirebaseAnalytics;
+
+    // 캘린더 DB에 schedule 테이블 생성
+    private final String dbName = "calendar";
+    private final String tableName = "schedule";
+    // DB 초기화
+    SQLiteDatabase sampleDB = null;
+    ListAdapter adapter;
+
     /**
      * 연/월 텍스트뷰
      */
@@ -41,7 +48,7 @@ public class CalendarMain extends Activity {
 
 
     /**
-     * 일 저장 할 리스트
+     * 일 저장 할 리스트 -> 날짜 저장할 리스트로 변경해야함
      */
     private ArrayList<Day> dayList;
 
@@ -150,7 +157,7 @@ public class CalendarMain extends Activity {
         Day sat = new Day();
         sat.setDay("토");
         dayList.add(sat);
-        doList.add("Travel to 홍콩 (2018-06-25T18:00:00,000+09:00");
+        doList.add("Travel to 홍콩 (2018-06-25T18:00:00,000+09:00)");
 
         mCal = Calendar.getInstance();
 
@@ -178,6 +185,33 @@ public class CalendarMain extends Activity {
 
         gridView.setAdapter(gridAdapter);
 
+        // DB 생성-----------------------------------------------------------------------------------------------------------------------
+        try {
+            sampleDB = this.openOrCreateDatabase(dbName, MODE_PRIVATE, null);
+            // 테이블이 존재하지 않으면 새로 생성
+            sampleDB.execSQL("CREATE TABLE IF NOT EXISTS " + tableName + " (date VARCHAR(20), schedule VARCAHR(30), memo VARCHAR(50) );");
+
+            //테이블이 존재하는 경우 기존 데이터를 지우기 위해 사용
+            sampleDB.execSQL("DELETE FROM " + tableName);
+
+            Log.d("dolist 사이즈 ", String.valueOf(doList.size()));
+            // doList가 비어있지 않으면
+            if(doList.size() != 0) {
+                // 모든 doList를 테이블에 집어넣음
+                for (int i = 0; i < doList.size(); i++) {
+                    Log.d("DB에 들어가는 doList", doList.get(i).substring(doList.get(i).length() - 30, doList.get(i).length() - 20) + " " + doList.get(i).substring(11, doList.get(i).length() - 30));
+                    sampleDB.execSQL("INSERT INTO " + tableName + " (date, schedule, memo) Values ('"
+                            + doList.get(i).substring(doList.get(i).length() - 30, doList.get(i).length() - 20) + "', '" + doList.get(i).substring(11, doList.get(i).length() - 30) + "', '" + "null");
+                }
+            }
+                sampleDB.close();
+        }catch (SQLiteException se) {
+            Toast.makeText(getApplicationContext(), se.getMessage(), Toast.LENGTH_LONG).show();
+            Log.e("DB exception : ", se.getMessage());
+        }
+        //----------------------------------------------------------------------------------------------------------------------------------
+
+
         //back button 눌렀을 때
         leftBtn.setOnClickListener(new View.OnClickListener() {
 
@@ -185,7 +219,6 @@ public class CalendarMain extends Activity {
                 mCal = Calendar.getInstance();
                 Log.d("삭제할 월", String.valueOf(mCal.get(Calendar.MONTH) - back_month_count + next_month_count));
                 mCal.add(Calendar.MONTH, -back_month_count + next_month_count);
-                int useDay = 6;
                 int dayNum;
 
                 Log.d("삭제된 달의 크기", String.valueOf(dayList.size() - 1));
@@ -215,21 +248,17 @@ public class CalendarMain extends Activity {
             }
         });
 
+
         //next button 눌렀을 때
         rightBtn.setOnClickListener(new View.OnClickListener() {
 
             public void onClick(View v) {
-
-                Log.d("삭제할 월", String.valueOf(mCal.get(Calendar.MONTH)));
-                int useDay = 6;
-
                 // 지워야할 달 날짜 세팅
                 Log.d("삭제할 월", String.valueOf(mCal.get(Calendar.MONTH) - back_month_count + next_month_count));
                 mCal.add(Calendar.MONTH, -back_month_count + next_month_count);
                 int dayNum = mCal.get(Calendar.DAY_OF_WEEK) - 1;
 
                 Log.d("새로 세팅된 달의 크기", String.valueOf(dayList.size() - 1));
-                Log.d("useDay", String.valueOf(useDay));
                 Log.d("dayNum", String.valueOf(dayNum));
 
                 for (int i = dayList.size() - 1; i >= 7; i--) {
@@ -263,6 +292,7 @@ public class CalendarMain extends Activity {
         });
     }
 
+    // 일정을 추가할 때 받은 값들
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode != RESULT_CANCELED) {
@@ -279,7 +309,7 @@ public class CalendarMain extends Activity {
 
 
     /**
-     * 해당 월에 표시할 일 수 구함
+     * 해당 월에 표시할 스케줄 세팅
      *
      * @param month
      */
@@ -287,23 +317,53 @@ public class CalendarMain extends Activity {
     private void setCalendarDate(int month) {
 
         mCal.set(Calendar.MONTH, month - 1);
+        Log.d("스케줄 넣을 월", String.valueOf(month));
 
         for (int i = 0; i < mCal.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
             Day d = new Day();
-            count  = 0;
+            count = 0;
             d.setDay("" + String.valueOf(i + 1));
 
-            for (int j = 0; j < doList.size(); j++) {
-                if(Integer.parseInt(doList.get(j).substring(doList.get(j).length() - 29, doList.get(j).length()-25)) == mCal.get(Calendar.YEAR)) {
-                    if(Integer.parseInt(doList.get(j).substring(doList.get(j).length()-24, doList.get(j).length()-22)) == mCal.get(Calendar.MONTH) + 1) {
-                        if (Integer.parseInt(doList.get(j).substring(doList.get(j).length() - 21, doList.get(j).length() - 19)) == Integer.parseInt(d.getDay())) {
-                            count += 1;
-                            d.setSche(doList.get(j).substring(10, doList.get(j).length() - 30));
-                        }
+            try {
+                SQLiteDatabase ReadDB = this.openOrCreateDatabase(dbName, MODE_PRIVATE, null);
+
+                // 테이블의 모든 데이터 읽어오기
+                Cursor c = ReadDB.rawQuery("SELECT * FROM " + tableName, null);
+
+                if (c != null) {
+                    if (c.moveToFirst()) {
+                        do {
+                            String Date = c.getString(c.getColumnIndex("date"));
+                            String Schedule = c.getString(c.getColumnIndex("schedule"));
+
+                            if (Integer.parseInt(Date.substring(0, 4)) == mCal.get(Calendar.YEAR))
+                                if (Integer.parseInt(Date.substring(5, 7)) == mCal.get(Calendar.MONTH))
+                                    if (Integer.parseInt(Date.substring(8)) == Integer.parseInt(d.getDay())) {
+                                        Log.d("DB에서 얻어온 정보로 통과되는 일", Date);
+                                        count += 1;
+                                        d.setSche(Schedule);
+                                    }
+                        } while (c.moveToNext());
                     }
                 }
+//            for (int j = 0; j < doList.size(); j++) {
+//                //if(Integer.parseInt(doList.get(j).substring(doList.get(j).length() - 29, doList.get(j).length()-25)) == mCal.get(Calendar.YEAR)) {
+//                    Log.d("통과되는 년도", doList.get(j).substring(doList.get(j).length() - 29, doList.get(j).length()-25));
+//                    if(Integer.parseInt(doList.get(j).substring(doList.get(j).length()-24, doList.get(j).length()-22)) == mCal.get(Calendar.MONTH) + 1) {
+//                        Log.d("통과되는 월", doList.get(j).substring(doList.get(j).length()-24, doList.get(j).length()-22));
+//                        if (Integer.parseInt(doList.get(j).substring(doList.get(j).length() - 21, doList.get(j).length() - 19)) == Integer.parseInt(d.getDay())) {
+//                            Log.d("통과되는 일",doList.get(j).substring(doList.get(j).length() - 21, doList.get(j).length() - 19));
+//                            count += 1;
+//                            d.setSche(doList.get(j).substring(10, doList.get(j).length() - 30));
+//                        }
+//                    }
+//                }
+//            }
+                dayList.add(d);
+            } catch (SQLiteException se) {
+                Toast.makeText(getApplicationContext(), se.getMessage(), Toast.LENGTH_LONG).show();
+                Log.e("DB exception : ", se.getMessage());
             }
-            dayList.add(d);
         }
     }
 
