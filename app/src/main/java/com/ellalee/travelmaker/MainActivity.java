@@ -74,8 +74,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private DrawerLayout dlDrawer;
     private ImageButton btn;
     static GoogleAccountCredential mCredential;
-    SQLiteDatabase db;
-    PlanSQLiteHelper helper;
+   // SQLiteDatabase db;
+//    PlanSQLiteHelper helper;
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
@@ -87,6 +87,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInAccount account;
     private GoogleApiClient mGoogleApiClient;
+
+
+ //   SQLiteDatabase db;
+    PlanSQLiteHelper db;
+
     @Override
 
     public void onBackPressed() {
@@ -110,14 +115,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         setContentView(R.layout.activity_main);
 
-        /*String email = loadSavedPreferences();
-        if(!email.equals("EmailStuff")){
-            Log.d("Email", email);
-            Intent intent = new Intent(getApplicationContext(), LoginPage.class);
-            startActivity(intent);
-        }*/
 
         helper = new PlanSQLiteHelper(getApplicationContext());
+        db = new PlanSQLiteHelper(getApplicationContext());
 
         lvNavList = (ListView)findViewById(R.id.lv_activity_main_nav_list);
 
@@ -269,13 +269,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 plan.setCity(city);
                 plan.setTitle(city); //default title is a city name
 
-                long plan_id = helper.createPlan(plan);
-                db = helper.getWritableDatabase();
+                long plan_id = db.createPlan(plan);
+/*                db = helper.getWritableDatabase();
 
                 ContentValues values = new ContentValues();
                 values.put("KEY_ID",plan_id);
                 db.insert("TABLE_PLAN",null,values);
-
+*/
                 Intent intent = new Intent(getApplicationContext(),MapMain.class);
                 intent.putExtra("plan_id",plan_id);
                 //putSerializable("newPlan",plan);
@@ -417,13 +417,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         dialog.show();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        // stop GoogleApiClient
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
+    public void showPlanList(View v){
+        Intent intent = new Intent(MainActivity.this,planListActivity.class);
+        startActivity(intent);
     }
 }
 
