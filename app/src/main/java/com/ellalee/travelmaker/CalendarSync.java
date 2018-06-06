@@ -71,7 +71,7 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
     static  com.google.api.services.calendar.Calendar mService = null;
     private static final String BUTTON_TEXT = "Call Google Calendar API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { "https://www.googleapis.com/auth/calendar",
+    public static final String[] SCOPES = { "https://www.googleapis.com/auth/calendar",
             "https://www.googleapis.com/auth/calendar.readonly" };
     //public static String calendarName = "";
 
@@ -119,7 +119,7 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
             @Override
             public void onClick(View v) {
 
-                gmailThread = new GmailSync(getApplicationContext(), transport, jsonFactory, mCredential, testHandler);
+                gmailThread = new GmailSync(transport, jsonFactory, mCredential, testHandler);
                 Thread gmail = new Thread(gmailThread);
                 gmail.start();
             }

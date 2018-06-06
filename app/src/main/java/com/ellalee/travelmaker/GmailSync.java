@@ -37,12 +37,11 @@ import java.util.Locale;
 public class GmailSync implements Runnable {
 
     private static final String TAG = "PlayHelloActivity";
-
+    private Context mContext;
     protected final static String GMAIL_SCOPE
             = "https://www.googleapis.com/auth/gmail.readonly";
     protected final static String SCOPE
             = "oauth2:" + GMAIL_SCOPE;
-    public Context mContext;
     public static int count = 0;
     HttpTransport mHttpTransport;
     JsonFactory mJsonFactory;
@@ -51,9 +50,7 @@ public class GmailSync implements Runnable {
     List<Email> allMail;
     MySQLiteHelper db;
     ArrayList<String> sub, bod;
-
-    public GmailSync(Context mContext, HttpTransport mHttpTrans, JsonFactory mJasonfact, GoogleAccountCredential mCredential, TextView test) {
-        this.mContext = mContext;
+    public GmailSync(HttpTransport mHttpTrans, JsonFactory mJasonfact, GoogleAccountCredential mCredential, TextView test) {
         this.mHttpTransport = mHttpTrans;
         this.mJsonFactory = mJasonfact;
         this.mCredential = mCredential;

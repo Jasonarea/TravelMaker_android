@@ -50,7 +50,7 @@ import static com.ellalee.travelmaker.CalendarSync.REQUEST_GOOGLE_PLAY_SERVICES;
 
 public class LoginPage extends AppCompatActivity implements EasyPermissions.PermissionCallbacks{
     Button loginBtn;
-    GoogleAccountCredential mCredential;
+    static GoogleAccountCredential mCredential;
     private TextView mOutputText;
     private Button mCallApiButton;
     private Button mCallMail;
@@ -60,7 +60,6 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
     boolean createOneSchedule = true;
     GmailSync gmailThread;
     private TextView testHandler;
-    private Button newBut;
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
@@ -71,7 +70,7 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
     private static final String[] SCOPES = { "https://www.googleapis.com/auth/calendar" };
     private String mEmail;
 
-    public void onCreate(Bundle savedInstanceState) {
+    /*public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final LinearLayout activityLayout = new LinearLayout(this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
@@ -94,7 +93,6 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
 
         Log.d("Email", email);
 
-        activityLayout.addView(newBut);
         mCallApiButton = new Button(this);
         mOutputText = new TextView(this);
         mCallApiButton.setText("Google Login");
@@ -117,7 +115,7 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
-    }
+    }*/
 
     /**
      * Attempt to call the API, after verifying that all the preconditions are
