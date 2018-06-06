@@ -45,7 +45,7 @@ public class Plan {
     public String getCity(){
         return city;
     }
-    public LatLng getCentre(){ return centre;}
+    public LatLng getCentre(){ return this.centre;}
     public int getYear(){
         return y;
     }
@@ -82,5 +82,14 @@ public class Plan {
     }
     public void setCity(String city){
         this.city = city;
+    }
+
+    public boolean init(){
+        if(routesList==null|| routesList.isEmpty()){
+            routesList = new ArrayList<>();
+            Route day1 = new Route(0,firstRouteColor);
+            routesList.add(0, day1);
+            return true;
+        }return false;
     }
 }

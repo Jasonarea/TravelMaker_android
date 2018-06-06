@@ -78,7 +78,8 @@
                     android:layout_toLeftOf="@+id/calendar_action_button"
                     android:layout_alignTop = "@+id/calendar_action_button"
                     android:layout_marginRight="55dp"
-                    android:background="@drawable/plan_icon" />
+                    android:background="@drawable/plan_icon"
+                    android:onClick="showPlanList"/>
 
                 <com.ellalee.travelmaker.NewFont
                     android:id="@+id/plan_text"

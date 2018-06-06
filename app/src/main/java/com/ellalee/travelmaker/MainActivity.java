@@ -37,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout dlDrawer;
     private ImageButton btn;
 
-    SQLiteDatabase db;
-    PlanSQLiteHelper helper;
+ //   SQLiteDatabase db;
+    PlanSQLiteHelper db;
 
     @Override
 
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        helper = new PlanSQLiteHelper(getApplicationContext());
+        db = new PlanSQLiteHelper(getApplicationContext());
 
         lvNavList = (ListView)findViewById(R.id.lv_activity_main_nav_list);
 
@@ -165,13 +165,13 @@ public class MainActivity extends AppCompatActivity {
                 plan.setCity(city);
                 plan.setTitle(city); //default title is a city name
 
-                long plan_id = helper.createPlan(plan);
-                db = helper.getWritableDatabase();
+                long plan_id = db.createPlan(plan);
+/*                db = helper.getWritableDatabase();
 
                 ContentValues values = new ContentValues();
                 values.put("KEY_ID",plan_id);
                 db.insert("TABLE_PLAN",null,values);
-
+*/
                 Intent intent = new Intent(getApplicationContext(),MapMain.class);
                 intent.putExtra("plan_id",plan_id);
                 //putSerializable("newPlan",plan);
@@ -180,5 +180,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         }
+    }
+    public void showPlanList(View v){
+        Intent intent = new Intent(MainActivity.this,planListActivity.class);
+        startActivity(intent);
     }
 }
