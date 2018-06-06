@@ -1,27 +1,7 @@
 package com.ellalee.travelmaker;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.ExponentialBackOff;
-
-
-
-import com.google.android.gms.auth.GoogleAuthException;
-import com.google.api.services.script.model.*;
-import java.util.Map;
-
 import android.Manifest;
 import android.accounts.AccountManager;
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -31,48 +11,69 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
+import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.util.DateTime;
+import com.google.api.client.util.ExponentialBackOff;
+import com.google.api.services.calendar.model.Event;
+import com.google.api.services.calendar.model.Events;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class JsonParsing extends Activity implements EasyPermissions.PermissionCallbacks {
+import static com.ellalee.travelmaker.CalendarSync.REQUEST_GOOGLE_PLAY_SERVICES;
+
+public class LoginPage extends AppCompatActivity implements EasyPermissions.PermissionCallbacks{
+    Button loginBtn;
     GoogleAccountCredential mCredential;
     private TextView mOutputText;
     private Button mCallApiButton;
+    private Button mCallMail;
+    private HttpTransport transport;
+    private JsonFactory jsonFactory;
     ProgressDialog mProgress;
+    boolean createOneSchedule = true;
+    GmailSync gmailThread;
+    private TextView testHandler;
+    private Button newBut;
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
+    static  com.google.api.services.calendar.Calendar mService = null;
+    private static final String PREF_ACCOUNT_NAME = "AccountName";
+    private static final String[] SCOPES = { "https://www.googleapis.com/auth/calendar" };
+    private String mEmail;
 
-    private static final String BUTTON_TEXT = "Call Google Apps Script API";
-    private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { "https://www.googleapis.com/auth/script.projects", "https://www.googleapis.com/auth/drive",
-            "https://www.googleapis.com/auth/script.scriptapp", "https://www.googleapis.com/auth/script.external_request",
-            "https://www.googleapis.com/auth/script.send_mail"};
-
-    /**
-     * Create the main activity.
-     * @param savedInstanceState previously saved instance data.
-     */
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LinearLayout activityLayout = new LinearLayout(this);
+        final LinearLayout activityLayout = new LinearLayout(this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
@@ -84,32 +85,32 @@ public class JsonParsing extends Activity implements EasyPermissions.PermissionC
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 
+        String email = loadSavedPreferences();
+        if(email.equals("EmailStuff")){
+            Log.d("Email", email);
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+        }
+
+        Log.d("Email", email);
+
+        activityLayout.addView(newBut);
         mCallApiButton = new Button(this);
-        mCallApiButton.setText(BUTTON_TEXT);
+        mOutputText = new TextView(this);
+        mCallApiButton.setText("Google Login");
+
+        mOutputText.setText("");
         mCallApiButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mCallApiButton.setEnabled(false);
-                mOutputText.setText("");
                 getResultsFromApi();
                 mCallApiButton.setEnabled(true);
-                
+                //mProgress.show();
             }
         });
         activityLayout.addView(mCallApiButton);
-
-        mOutputText = new TextView(this);
-        mOutputText.setLayoutParams(tlp);
-        mOutputText.setPadding(16, 16, 16, 16);
-        mOutputText.setVerticalScrollBarEnabled(true);
-        mOutputText.setMovementMethod(new ScrollingMovementMethod());
-        mOutputText.setText(
-                "Click the \'" + BUTTON_TEXT +"\' button to test the API.");
         activityLayout.addView(mOutputText);
-
-        mProgress = new ProgressDialog(this);
-        mProgress.setMessage("Calling Google Apps Script API ...");
-
         setContentView(activityLayout);
 
         // Initialize credentials and service object.
@@ -119,36 +120,13 @@ public class JsonParsing extends Activity implements EasyPermissions.PermissionC
     }
 
     /**
-     * Extend the given HttpRequestInitializer (usually a credentials object)
-     * with additional initialize() instructions.
-     *
-     * @param requestInitializer the initializer to copy and adjust; typically
-     *         a credential object.
-     * @return an initializer with an extended read timeout.
-     */
-    private static HttpRequestInitializer setHttpTimeout(
-            final HttpRequestInitializer requestInitializer) {
-        return new HttpRequestInitializer() {
-            @Override
-            public void initialize(HttpRequest httpRequest)
-                    throws java.io.IOException {
-                requestInitializer.initialize(httpRequest);
-                // This allows the API to call (and avoid timing out on)
-                // functions that take up to 6 minutes to complete (the maximum
-                // allowed script run time), plus a little overhead.
-                httpRequest.setReadTimeout(380000);
-            }
-        };
-    }
-
-    /**
      * Attempt to call the API, after verifying that all the preconditions are
      * satisfied. The preconditions are: Google Play Services installed, an
      * account was selected and the device currently has online access. If any
      * of the preconditions are not satisfied, the app will prompt the user as
      * appropriate.
      */
-    private void getResultsFromApi() {
+    public void getResultsFromApi() {
         if (! isGooglePlayServicesAvailable()) {
             acquireGooglePlayServices();
         } else if (mCredential.getSelectedAccountName() == null) {
@@ -156,10 +134,13 @@ public class JsonParsing extends Activity implements EasyPermissions.PermissionC
         } else if (! isDeviceOnline()) {
             mOutputText.setText("No network connection available.");
         } else {
-            new MakeRequestTask(mCredential).execute();
+            //new MakeRequestTask(mCredential).execute();
+            mOutputText.setText("Login Finish");
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+            //mProgress.hide();
         }
     }
-
     /**
      * Attempts to set the account used with the API credentials. If an account
      * name was previously saved it will use that one; otherwise an account
@@ -308,6 +289,12 @@ public class JsonParsing extends Activity implements EasyPermissions.PermissionC
         return connectionStatusCode == ConnectionResult.SUCCESS;
     }
 
+    private String loadSavedPreferences() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String name = sharedPreferences.getString("email", "EmailStuff");
+        return name;
+    }
+
     /**
      * Attempt to resolve a missing, out-of-date, invalid or disabled Google
      * Play Services installation via a user dialog, if possible.
@@ -333,168 +320,9 @@ public class JsonParsing extends Activity implements EasyPermissions.PermissionC
             final int connectionStatusCode) {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         Dialog dialog = apiAvailability.getErrorDialog(
-                JsonParsing.this,
+                LoginPage.this,
                 connectionStatusCode,
                 REQUEST_GOOGLE_PLAY_SERVICES);
         dialog.show();
     }
-
-    /**
-     * An asynchronous task that handles the Google Apps Script API call.
-     * Placing the API calls in their own task ensures the UI stays responsive.
-     */
-    private class MakeRequestTask extends AsyncTask<Void, Void, List<String>> {
-        private com.google.api.services.script.Script mService = null;
-        private Exception mLastError = null;
-
-        MakeRequestTask(GoogleAccountCredential credential) {
-            HttpTransport transport = AndroidHttp.newCompatibleTransport();
-            JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-            mService = new com.google.api.services.script.Script.Builder(
-                    transport, jsonFactory, credential)
-                    .setApplicationName("Travel Maker")
-                    .build();
-        }
-
-        /**
-         * Background task to call Google Apps Script API.
-         * @param params no parameters needed for this task.
-         */
-        @Override
-        protected List<String> doInBackground(Void... params) {
-            try {
-                return getDataFromApi();
-            } catch (Exception e) {
-                mLastError = e;
-                cancel(true);
-                return null;
-            }
-        }
-
-        /**
-         * Call the API to run an Apps Script function that returns a list
-         * of folders within the user's root directory on Drive.
-         *
-         * @return list of String folder names and their IDs
-         * @throws IOException
-         */
-        private List<String> getDataFromApi()
-                throws IOException, GoogleAuthException {
-            // ID of the script to call. Acquire this from the Apps Script editor,
-            // under Publish > Deploy as API executable.
-            String scriptId = "1EWeU0xxvF_IFKxzcUdJnWT9_RAPJXw4F4mb7UZKrvpqWHCsDV2Sj7JiJ";
-
-            List<String> folderList = new ArrayList<String>();
-
-            // Create an execution request object.
-            ExecutionRequest request = new ExecutionRequest()
-                    .setFunction("getFoldersUnderRoot");
-
-            // Make the request.
-            Operation op =
-                    mService.scripts().run(scriptId, request).execute();
-
-            // Print results of request.
-            if (op.getError() != null) {
-                throw new IOException(getScriptError(op));
-            }
-            if (op.getResponse() != null &&
-                    op.getResponse().get("result") != null) {
-                // The result provided by the API needs to be cast into
-                // the correct type, based upon what types the Apps Script
-                // function returns. Here, the function returns an Apps
-                // Script Object with String keys and values, so must be
-                // cast into a Java Map (folderSet).
-                Map<String, String> folderSet =
-                        (Map<String, String>)(op.getResponse().get("result"));
-
-                for (String id: folderSet.keySet()) {
-                    folderList.add(
-                            String.format("%s (%s)", folderSet.get(id), id));
-                }
-            }
-
-            return folderList;
-        }
-
-        /**
-         * Interpret an error response returned by the API and return a String
-         * summary.
-         *
-         * @param op the Operation returning an error response
-         * @return summary of error response, or null if Operation returned no
-         *     error
-         */
-        private String getScriptError(Operation op) {
-            if (op.getError() == null) {
-                return null;
-            }
-
-            // Extract the first (and only) set of error details and cast as a Map.
-            // The values of this map are the script's 'errorMessage' and
-            // 'errorType', and an array of stack trace elements (which also need to
-            // be cast as Maps).
-            Map<String, Object> detail = op.getError().getDetails().get(0);
-            List<Map<String, Object>> stacktrace =
-                    (List<Map<String, Object>>)detail.get("scriptStackTraceElements");
-
-            java.lang.StringBuilder sb =
-                    new StringBuilder("\nScript error message: ");
-            sb.append(detail.get("errorMessage"));
-
-            if (stacktrace != null) {
-                // There may not be a stacktrace if the script didn't start
-                // executing.
-                sb.append("\nScript error stacktrace:");
-                for (Map<String, Object> elem : stacktrace) {
-                    sb.append("\n  ");
-                    sb.append(elem.get("function"));
-                    sb.append(":");
-                    sb.append(elem.get("lineNumber"));
-                }
-            }
-            sb.append("\n");
-            return sb.toString();
-        }
-
-
-        @Override
-        protected void onPreExecute() {
-            mOutputText.setText("");
-            mProgress.show();
-        }
-
-        @Override
-        protected void onPostExecute(List<String> output) {
-            mProgress.hide();
-            if (output == null || output.size() == 0) {
-                mOutputText.setText("No results returned.");
-            } else {
-                output.add(0, "Data retrieved using the Google Apps Script API:");
-                mOutputText.setText(TextUtils.join("\n", output));
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mProgress.hide();
-            if (mLastError != null) {
-                if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
-                    showGooglePlayServicesAvailabilityErrorDialog(
-                            ((GooglePlayServicesAvailabilityIOException) mLastError)
-                                    .getConnectionStatusCode());
-                } else if (mLastError instanceof UserRecoverableAuthIOException) {
-                    startActivityForResult(
-                            ((UserRecoverableAuthIOException) mLastError).getIntent(),
-                            JsonParsing.REQUEST_AUTHORIZATION);
-                } else {
-                    mOutputText.setText("The following error occurred:\n"
-                            + mLastError.getMessage());
-                }
-            } else {
-                mOutputText.setText("Request cancelled.");
-            }
-        }
-    }
-
 }
