@@ -60,6 +60,7 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
     boolean createOneSchedule = true;
     GmailSync gmailThread;
     private TextView testHandler;
+    private Button newBut;
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
@@ -90,7 +91,10 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
         }
+
         Log.d("Email", email);
+
+        activityLayout.addView(newBut);
         mCallApiButton = new Button(this);
         mOutputText = new TextView(this);
         mCallApiButton.setText("Google Login");
@@ -114,6 +118,7 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
     }
+
     /**
      * Attempt to call the API, after verifying that all the preconditions are
      * satisfied. The preconditions are: Google Play Services installed, an
