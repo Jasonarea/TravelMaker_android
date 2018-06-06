@@ -159,68 +159,94 @@ public class GmailSync implements Runnable {
             int splitCount = 0;
             String check = "";
             int siteIndex = 0;
-            String[] nationCheck = new String[2]; int nationIndex = 0;
+            String[] nationCheck = new String[2];
+            int nationIndex = 0;
+            //호텔 바우처 등록
+            /*if (finalSub.contains("HOTEL VOUCHER") || finalSub.contains("호스트") || finalBod.contains("투숙객") ||finalBod.contains("체크인")) {
+                //booking.com
+                cou++;
+                String[] bods = finalBod.split("\n");
+                String checkInOut[] = new String[2];
+                for(int k = 0;k<bods.length;k++){
+                    if(bods[k].contains("*체크인*") || bods[k].contains("*체크아웃*")){
+                        for(int lo = 0;lo<8;lo++){
+                            if(Character.isDigit(bods[k].charAt(lo)))
+                                if(bods[k].contains("체크인")) {checkInOut[0] += bods[k].charAt(lo);Log.d("checkinout", checkInOut[0]);}
+                               
+                        }
+                        if(bods[k].contains("체크인")) {
+                            total[cou] += "체크인" + checkInOut[0].substring(0,4) + "/" +"0" +
+                                    checkInOut[0].substring(4,5) + "/" + checkInOut[0].substring(5, 7);
+                        }
+                        else
+                            total[cou] += "체크아웃"+ checkInOut[1].substring(0,4) + "/" +"0" +
+                                    checkInOut[1].substring(4,5) + "/" + checkInOut[1].substring(5, 7) + "\n";
+
+                    }
+                }
+            }*/
             // 항공사에서 티켓을 예매했을경우
-                if(finalSub.contains("제주항공")){
-                    //제주항공
-                    cou++;
-                    String[] bods = finalBod.split("\n");
-                    for(int k = 0;k<bods.length;k++){
-                        String[] split = new String[2];
+            if (finalSub.contains("제주항공")) {
+                if(db.select(sub)) continue;
+                else db.addBook(new Email(sub,bod,author,emailDate[0],emailDate[1],emailDate[2],1));
+                //제주항공
+                cou++;
+                String[] bods = finalBod.split("\n");
+                for (int k = 0; k < bods.length; k++) {
+                    String[] split = new String[2];
 
-                        if(bods[k].contains("Departure")) {
-                            split[splitCount] += bods[k] + '\n';
-                            String[] date = new String[2];
-                            for(int la = 0;la<split[splitCount].length();la++) {
-                                if(Character.isDigit(split[splitCount].charAt(la))){
-                                    check += split[splitCount].charAt(la);
-                                }
-                                if(la == split[splitCount].length()-1) check+=' ';
+                    if (bods[k].contains("Departure")) {
+                        split[splitCount] += bods[k] + '\n';
+                        String[] date = new String[2];
+                        for (int la = 0; la < split[splitCount].length(); la++) {
+                            if (Character.isDigit(split[splitCount].charAt(la))) {
+                                check += split[splitCount].charAt(la);
                             }
-                            Log.d("CheckJeju", check);
-                            nationCheck[nationIndex++] = bods[k].split(" ")[2];
-                            Log.d("NationChecking", nationCheck[nationIndex-1]);
-
+                            if (la == split[splitCount].length() - 1) check += ' ';
                         }
+                        Log.d("CheckJeju", check);
+                        nationCheck[nationIndex++] = bods[k].split(" ")[2];
+                        Log.d("NationChecking", nationCheck[nationIndex - 1]);
+                    }
+                }
+                String[] StartEndJeju = check.split(" ");
+                total[cou] += "출국일자" + StartEndJeju[0].substring(0, 4) + "/0" +
+                        StartEndJeju[0].substring(4, 5) + "/" + StartEndJeju[0].substring(5, 7) + "(화)";
+                total[cou] += "귀국일자" + StartEndJeju[1].substring(0, 4) + "/0" +
+                        StartEndJeju[1].substring(4, 5) + "/" + StartEndJeju[1].substring(5, 7) + "(화)" + "\n";
+                Log.d("JejuSE", total[cou]);
+                total[cou] += nationCheck[0] + "\n";
+                total[cou] += nationCheck[1] + "\n";
+            } else if (finalSub.contains("티웨이항공")) {
+                if(db.select(sub)) continue;
+                else db.addBook(new Email(sub,bod,author,emailDate[0],emailDate[1],emailDate[2],1));
+                cou++;
+                String[] split = new String[5];
+                String[] bods = finalBod.split("\n");
+                String[] site = new String[3];
+                for (int k = 0; k < bods.length; k++) {
 
-                    }
-                    String[] StartEndJeju = check.split(" ");
-                    total[cou] += "출국일자" + StartEndJeju[0].substring(0, 4) + "/0" +
-                            StartEndJeju[0].substring(4, 5) + "/" + StartEndJeju[0].substring(5, 7) + "(화)";
-                    total[cou] += "귀국일자" + StartEndJeju[1].substring(0,4) + "/0" +
-                            StartEndJeju[1].substring(4,5) + "/" + StartEndJeju[1].substring(5, 7) + "(화)" + "\n";
-                    Log.d("JejuSE", total[cou]);
-                    total[cou] += nationCheck[0] + "\n";
-                    total[cou] += nationCheck[1] + "\n";
-                }
-                else if(finalSub.contains("티웨이항공")){
-                    cou++;
-                    String[] split = new String[5];
-                    String[] bods = finalBod.split("\n");
-                    String[] site = new String[3];
-                    for(int k = 0;k<bods.length;k++){
-
-                    if(bods[k].contains("2018/") && (bods[k].contains("인천") || bods[k].contains("김포"))){
-                            split = bods[k].split(" ");
-                            if(splitCount ==0) total[cou] += "출국일자" + split[0].substring(0, 13);
-                            else total[cou] += "귀국일자" + split[0] + "\n";
-                            site[siteIndex++] = split[1];
-                            splitCount++;
-                        }
-                    }
-                    for(int lol = 0; lol<siteIndex;lol++) {
-                        total[cou] += site[lol] + "\n";
-                        Log.d("T-way", total[cou]);
+                    if (bods[k].contains("2018/") && (bods[k].contains("인천") || bods[k].contains("김포"))) {
+                        split = bods[k].split(" ");
+                        if (splitCount == 0) total[cou] += "출국일자" + split[0].substring(0, 13);
+                        else total[cou] += "귀국일자" + split[0] + "\n";
+                        site[siteIndex++] = split[1];
+                        splitCount++;
                     }
                 }
-                else if(finalSub.contains("에미레이트 항공")){
-                    //에미레이트항공 e티켓
+                for (int lol = 0; lol < siteIndex; lol++) {
+                    total[cou] += site[lol] + "\n";
+                    Log.d("T-way", total[cou]);
                 }
-                else if(finalBod.contains("LJ") && finalBod.contains("ICN")){
-                    //진에어 e티켓
-                }
+            } else if (finalSub.contains("에미레이트 항공")) {
+                //에미레이트항공 e티켓
+            } else if (finalBod.contains("LJ") && finalBod.contains("ICN")) {
+                //진에어 e티켓
+            }
             //발권대행사를 이용했을 경우
             if (finalSub.contains("항공 결제요청") || finalSub.contains("항공권 결제요청")) {
+                if(db.select(sub)) continue;
+                else db.addBook(new Email(sub,bod,author,emailDate[0],emailDate[1],emailDate[2],1));
                 cou++;
                 String[] bods = finalBod.split("\n");
                 for (int k = 0; k < bods.length; k++) {
@@ -241,6 +267,7 @@ public class GmailSync implements Runnable {
                         nation[nationCo++] = bods[k - 2].substring(isNumIndex);
                         total[cou] += nation[nationCo - 1] + '\n';
                         Log.d("Nation", nation[nationCo - 1]);
+                        db.addBook(new Email(sub,bod,author,emailDate[0],emailDate[1],emailDate[2],1));
                     }
                 }
                 for (int k = 0; k < total.length; k++)

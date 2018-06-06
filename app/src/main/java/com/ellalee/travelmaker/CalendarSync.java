@@ -2,6 +2,7 @@ package com.ellalee.travelmaker;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
@@ -51,16 +52,17 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class CalendarSync extends Activity implements EasyPermissions.PermissionCallbacks {
-    GoogleAccountCredential mCredential;
+    static GoogleAccountCredential mCredential;
     private TextView mOutputText;
     private Button mCallApiButton;
     private Button mCallMail;
-    private HttpTransport transport;
-    private JsonFactory jsonFactory;
+    private static HttpTransport transport;
+    private static JsonFactory jsonFactory;
     ProgressDialog mProgress;
     boolean createOneSchedule = true;
     GmailSync gmailThread;
     private TextView testHandler;
+    private Button newBut;
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
@@ -69,7 +71,9 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
     static  com.google.api.services.calendar.Calendar mService = null;
     private static final String BUTTON_TEXT = "Call Google Calendar API";
     private static final String PREF_ACCOUNT_NAME = "accountName";
-    private static final String[] SCOPES = { "https://www.googleapis.com/auth/calendar" };
+    private static final String[] SCOPES = { "https://www.googleapis.com/auth/calendar",
+            "https://www.googleapis.com/auth/calendar.readonly" };
+    //public static String calendarName = "";
 
     /**
      * Create the main activity.
@@ -99,6 +103,9 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
         mCallApiButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mCredential = GoogleAccountCredential.usingOAuth2(
+                        getApplicationContext(), Arrays.asList(SCOPES))
+                        .setBackOff(new ExponentialBackOff());
                 mCallApiButton.setEnabled(false);
                 mOutputText.setText("");
                 getResultsFromApi();
@@ -111,6 +118,7 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
         mCallMail.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+
                 gmailThread = new GmailSync(getApplicationContext(), transport, jsonFactory, mCredential, testHandler);
                 Thread gmail = new Thread(gmailThread);
                 gmail.start();
@@ -123,20 +131,17 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
         mOutputText.setVerticalScrollBarEnabled(true);
         mOutputText.setMovementMethod(new ScrollingMovementMethod());
         mOutputText.setText(
-                "Click the \'" + BUTTON_TEXT +"\' button to test the API.");
+                "Click the \'" + BUTTON_TEXT +"\' button");
         activityLayout.addView(mOutputText);
         testHandler = new TextView(this);
         testHandler.setText("<Flight & Hotel Information>");
         activityLayout.addView(testHandler);
         mProgress = new ProgressDialog(this);
-        mProgress.setMessage("Calling Google Calendar API ...");
+        mProgress.setMessage("하이하이하이");
 
         setContentView(activityLayout);
 
         // Initialize credentials and service object.
-        mCredential = GoogleAccountCredential.usingOAuth2(
-                getApplicationContext(), Arrays.asList(SCOPES))
-                .setBackOff(new ExponentialBackOff());
     }
     public static String[] parseReservation(String reservation) {
         String[] info = new String[4];
@@ -150,6 +155,7 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
 
         return info;
     }
+
     public static void createEvent(com.google.api.services.calendar.Calendar mService,
                                    String startD, String endD, String nation, String fromNation) throws IOException {
         Event event = new Event().setSummary("Travel to " + nation)
@@ -173,7 +179,7 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
                 new EventReminder().setMethod("popup").setMinutes(10),
         };
 
-        String calendarId = "hke6eajpijuuku4osjdeeodea8@group.calendar.google.com";
+        String calendarId = "primary";
         event = mService.events().insert(calendarId, event).execute();
         Log.d("create", "Event created : " + event.getHtmlLink());
     }
@@ -416,7 +422,7 @@ public class CalendarSync extends Activity implements EasyPermissions.Permission
             // List the next 10 events from the primary calendar.
             DateTime now = new DateTime(System.currentTimeMillis());
             List<String> eventStrings = new ArrayList<String>();
-            Events events = mService.events().list("hke6eajpijuuku4osjdeeodea8@group.calendar.google.com")
+            Events events = mService.events().list("primary")
                     .setMaxResults(10)
                     .setTimeMin(now)
                     .setOrderBy("startTime")

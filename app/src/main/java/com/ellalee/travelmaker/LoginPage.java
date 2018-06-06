@@ -60,6 +60,7 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
     boolean createOneSchedule = true;
     GmailSync gmailThread;
     private TextView testHandler;
+    private Button newBut;
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
@@ -87,10 +88,13 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
         String email = loadSavedPreferences();
         if(email.equals("EmailStuff")){
             Log.d("Email", email);
-            Intent intent = new Intent(getApplicationContext(), CalendarSync.class);
-            startActivity(intent);
+            //Intent intent = new Intent(getApplicationContext(), CalendarSync.class);
+            //startActivity(intent);
         }
+
         Log.d("Email", email);
+
+        activityLayout.addView(newBut);
         mCallApiButton = new Button(this);
         mOutputText = new TextView(this);
         mCallApiButton.setText("Google Login");
@@ -114,6 +118,7 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
     }
+
     /**
      * Attempt to call the API, after verifying that all the preconditions are
      * satisfied. The preconditions are: Google Play Services installed, an
@@ -131,8 +136,8 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
         } else {
             //new MakeRequestTask(mCredential).execute();
             mOutputText.setText("Login Finish");
-            Intent intent = new Intent(getApplicationContext(), CalendarSync.class);
-            startActivity(intent);
+            //Intent intent = new Intent(getApplicationContext(), CalendarSync.class);
+            //startActivity(intent);
             //mProgress.hide();
         }
     }

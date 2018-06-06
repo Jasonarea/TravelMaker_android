@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -81,14 +82,10 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(KEY_URGENCY, email.getUrgency());
 
         // 3. insert
-        if(email.getBody().contains("이티켓") || email.getBody().contains("E-ticket") || email.getBody().contains("Hotel") ||
-                email.getBody().contains("Airbnb") || email.getBody().contains("전자항공권") || email.getBody().contains("항공권") ||
-                email.getBody().contains("The Log")) {
-            Log.d("addBook", email.getSubject());
-            db.insert(TABLE_BOOKS, // table
-                    null, //nullColumnHack
-                    values); // key/value -> keys = column names/ values = column values
-        }
+        Log.d("Hellobook", email.getSubject());
+        db.insert(TABLE_BOOKS, // table
+                null, //nullColumnHack
+                values); // key/value -> keys = column names/ values = column values
             // 4. close
         db.close();
     }
@@ -134,9 +131,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         List<Email> emails = new LinkedList<Email>();
 
         // 1. build the query
-        String query = "SELECT * FROM " + TABLE_BOOKS + " WHERE " + KEY_BODY + " LIKE '%Airbnb%' OR " +
-                KEY_BODY + " LIKE '%e-ticket%' OR " + KEY_BODY + " LIKE '%e-티켓%' OR " + KEY_BODY +
-                " LIKE '%VOUCHER%' OR " + KEY_BODY + " LIKE '%체크인%' OR " + KEY_BODY  + " LIKE '%Check-in%'";
+        String query = "SELECT * FROM " + TABLE_BOOKS;
 
         // 2. get reference to writable DB
         SQLiteDatabase db = this.getWritableDatabase();
@@ -156,7 +151,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 email.setMonth(cursor.getInt(5));
                 email.setYear(cursor.getInt(6));
                 email.setUrgency(cursor.getInt(7));
-                Log.d("Airbnb", cursor.getString(1));
                 // Add book to books
                 emails.add(email);
             } while (cursor.moveToNext());
@@ -166,7 +160,21 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         // return books
         return emails;
     }
+    public boolean select(String bod) {
+        String sql = "SELECT * FROM " +TABLE_BOOKS+ " WHERE body LIKE '%"+bod+"%'";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor result = db.rawQuery(sql, null);
 
+        result.moveToFirst();
+        // result(Cursor 객체)가 비어 있으면 false 리턴
+        while(result.moveToNext()) {
+            String name = result.getString(1);
+            result.close();
+            return true;
+        }
+        result.close();
+        return false;
+    }
     public void deleteEverything(){
         SQLiteDatabase db = this.getWritableDatabase();
         if (db != null) {
