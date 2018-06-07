@@ -1,5 +1,6 @@
 package com.ellalee.travelmaker;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,8 +28,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class CalendarMain extends Activity {
-//    final SQLiteDatabase calendar = new SQLiteDatabase();
-//    final CalendarDBHelper dbHelper = new CalendarDBHelper(getApplicationContext(), "calendar.db", null, 1);
 
     // 캘린더 DB에 schedule 테이블 생성
     private final String dbName = "calendar";
@@ -118,8 +117,6 @@ public class CalendarMain extends Activity {
 
         setContentView(R.layout.activity_calendar_main);
 
-//        final CalendarDBHelper dbHelper = new CalendarDBHelper(getApplicationContext(), "calendar.db", null, 1);
-
 
         tvDate = (TextView) findViewById(R.id.tv_date);
 
@@ -163,12 +160,8 @@ public class CalendarMain extends Activity {
         dayList.add(sat);
         doList.add("Travel to 홍콩 (2018-06-25T18:00:00,000+09:00)");
 
-
-//        for(int i = 0; i< doList.size(); i++) {
-//            Log.d("DB", "들어간닷");
-//            dbHelper.insert(doList.get(i).substring(doList.get(i).length() - 30, doList.get(i).length() - 20), doList.get(i).substring(11, doList.get(i).length() - 30), "");
-//        }
         mCal = Calendar.getInstance();
+
 
         //현재 날짜 텍스트뷰에 뿌려줌
 
@@ -252,7 +245,8 @@ public class CalendarMain extends Activity {
                 }
                 tvDate.setText(mCal.get(Calendar.YEAR) + " / " + (mCal.get(Calendar.MONTH) + 1));
                 setCalendarDate(mCal.get(Calendar.YEAR), mCal.get(Calendar.MONTH) + 1);
-                gridAdapter.notifyDataSetChanged();
+                gridAdapter = new GridAdapter(getApplicationContext(), dayList);
+                gridView.setAdapter(gridAdapter);
 
             }
         });
@@ -289,8 +283,8 @@ public class CalendarMain extends Activity {
                 }
                 tvDate.setText(mCal.get(Calendar.YEAR) + " / " + (mCal.get(Calendar.MONTH) + 1));
                 setCalendarDate(mCal.get(Calendar.YEAR), mCal.get(Calendar.MONTH) + 1);
-                gridAdapter.notifyDataSetChanged();
-
+                gridAdapter = new GridAdapter(getApplicationContext(), dayList);
+                gridView.setAdapter(gridAdapter);
             }
         });
 
@@ -304,16 +298,24 @@ public class CalendarMain extends Activity {
     // 일정을 추가할 때 받은 값들
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        SQLiteDatabase writeDB = this.openOrCreateDatabase(dbName, MODE_PRIVATE, null);
+
         if(resultCode != RESULT_CANCELED) {
+
             String year = data.getStringExtra("year");
             String month = data.getStringExtra("month");
             String day = data.getStringExtra("day");
             String schedule = data.getStringExtra("schedule");
             String memo = data.getStringExtra("memo");
-
-            Log.d("정보", year + " " + month + " " + day + " " + schedule + " " + memo);
+            try {
+                writeDB.execSQL("INSERT INTO " + tableName + " (date, schedule, memo) Values ('"
+                        + year + "-" + month + "-" + day + "', '" + schedule + "', '" + memo + "');");
+                writeDB.close();
+            }catch (SQLiteException se) {
+                Toast.makeText(getApplicationContext(), se.getMessage(), Toast.LENGTH_LONG).show();
+                Log.e("DB exception : ", se.getMessage());
+            }
         }
-        //필터링을 해서 집어넣으시오(DB필요)
     }
 
 
@@ -349,8 +351,8 @@ public class CalendarMain extends Activity {
 
 
                             if (Integer.parseInt(Date.substring(0, 4)) == mCal.get(Calendar.YEAR)) {
-                                if (Integer.parseInt(Date.substring(5, 7)) == month) {
-                                    if (Integer.parseInt(Date.substring(8)) == Integer.parseInt(d.getDay())) {
+                                if (Integer.parseInt(Date.substring(5, 7).trim()) == month) {
+                                    if (Integer.parseInt(Date.substring(8).trim()) == Integer.parseInt(d.getDay())) {
                                         Log.d("DB에서 얻어온 정보로 통과되는 일", Date.substring(8));
                                         count += 1;
                                         d.setSche(Schedule);
