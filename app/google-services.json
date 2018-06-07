@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "690756456255",
+    "firebase_url": "https://travel-maker-dbebb.firebaseio.com",
+    "project_id": "travel-maker-dbebb",
+    "storage_bucket": "travel-maker-dbebb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:690756456255:android:74e8b375087c7cfd",
+        "android_client_info": {
+          "package_name": "com.ellalee.travelmaker"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "690756456255-tq8v6a9e0vap8sura1fj7a2mkvrepam5.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "690756456255-tq8v6a9e0vap8sura1fj7a2mkvrepam5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaTjNUUwpBWJQYSP1pFpRxDx_GPktRT3U"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
