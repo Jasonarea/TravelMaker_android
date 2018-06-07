@@ -54,6 +54,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-places:15.0.0'
     implementation 'com.google.android.gms:play-services-auth:15.0.0'
     implementation 'pub.devrel:easypermissions:0.3.0'
+    implementation 'com.google.android.gms:play-services-places:15.0.0'
     implementation('com.google.api-client:google-api-client-android:1.23.0') {
         exclude group: 'org.apache.httpcomponents'
     }
@@ -78,6 +79,10 @@ dependencies {
     implementation 'com.google.oauth-client:google-oauth-client-jetty:1.22.0'
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support:support-vector-drawable:27.1.1'
+
+//    implementation 'com.android.support:design:26.1.0'
+//    implementation 'com.android.support:support-vector-drawable:26.1.0'
+
     testImplementation 'junit:junit:4.12'
 
     androidTestImplementation 'com.android.support.test:runner:+'

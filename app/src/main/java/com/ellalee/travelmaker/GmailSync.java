@@ -37,27 +37,24 @@ import java.util.Locale;
 public class GmailSync implements Runnable {
 
     private static final String TAG = "PlayHelloActivity";
-
     protected final static String GMAIL_SCOPE
             = "https://www.googleapis.com/auth/gmail.readonly";
     protected final static String SCOPE
             = "oauth2:" + GMAIL_SCOPE;
-    public Context mContext;
     public static int count = 0;
     HttpTransport mHttpTransport;
+    Context mContext;
     JsonFactory mJsonFactory;
     TextView test;
     GoogleAccountCredential mCredential;
     List<Email> allMail;
-    MySQLiteHelper db;
+    MySQLiteHelper db = new MySQLiteHelper(mContext);
     ArrayList<String> sub, bod;
-
-    public GmailSync(Context mContext, HttpTransport mHttpTrans, JsonFactory mJasonfact, GoogleAccountCredential mCredential, TextView test) {
-        this.mContext = mContext;
+    public GmailSync(HttpTransport mHttpTrans, JsonFactory mJasonfact, GoogleAccountCredential mCredential, Context mContext) {
         this.mHttpTransport = mHttpTrans;
         this.mJsonFactory = mJasonfact;
         this.mCredential = mCredential;
-        this.test = test;
+        this.mContext = mContext;
         Log.d("Gmail Sync access", "Gmail Sync Access Complete");
 
     }
@@ -76,8 +73,8 @@ public class GmailSync implements Runnable {
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void fetchNameFromProfileServer() throws IOException, JSONException {
         int cou = 0;
-        db = new MySQLiteHelper(mContext);
-        db.deleteEverything();
+
+        //db.deleteEverything();
         final String[] total = new String[10];
         for (int j = 0; j < 10; j++) total[j] = "";
         Gmail service = new Gmail.Builder(mHttpTransport, mJsonFactory, mCredential).setApplicationName("GmailApiTP").build();
@@ -187,7 +184,7 @@ public class GmailSync implements Runnable {
             }*/
             // 항공사에서 티켓을 예매했을경우
             if (finalSub.contains("제주항공")) {
-                if(db.select(sub)) continue;
+                if(db.select(finalBod)) continue;
                 else db.addBook(new Email(sub,bod,author,emailDate[0],emailDate[1],emailDate[2],1));
                 //제주항공
                 cou++;
@@ -217,8 +214,9 @@ public class GmailSync implements Runnable {
                 Log.d("JejuSE", total[cou]);
                 total[cou] += nationCheck[0] + "\n";
                 total[cou] += nationCheck[1] + "\n";
+                db.addBook(new Email(sub,bod,author,emailDate[0],emailDate[1],emailDate[2],1));
             } else if (finalSub.contains("티웨이항공")) {
-                if(db.select(sub)) continue;
+                if(db.select(finalBod)) continue;
                 else db.addBook(new Email(sub,bod,author,emailDate[0],emailDate[1],emailDate[2],1));
                 cou++;
                 String[] split = new String[5];
@@ -245,7 +243,7 @@ public class GmailSync implements Runnable {
             }
             //발권대행사를 이용했을 경우
             if (finalSub.contains("항공 결제요청") || finalSub.contains("항공권 결제요청")) {
-                if(db.select(sub)) continue;
+                if(db.select(finalBod)) continue;
                 else db.addBook(new Email(sub,bod,author,emailDate[0],emailDate[1],emailDate[2],1));
                 cou++;
                 String[] bods = finalBod.split("\n");
@@ -263,7 +261,6 @@ public class GmailSync implements Runnable {
                                 break;
                             }
                         }
-
                         nation[nationCo++] = bods[k - 2].substring(isNumIndex);
                         total[cou] += nation[nationCo - 1] + '\n';
                         Log.d("Nation", nation[nationCo - 1]);

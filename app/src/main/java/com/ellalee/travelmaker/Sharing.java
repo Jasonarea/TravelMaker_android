@@ -35,16 +35,16 @@ public class Sharing extends AppCompatActivity {
            @Override
            public void onClick(View v) {
                FeedTemplate params = FeedTemplate
-                       .newBuilder(ContentObject.newBuilder("진"/*��진*/,
+                       .newBuilder(ContentObject.newBuilder("travel",
                                "http://mud-kage.kakao.co.kr/dn/NTmhS/btqfEUdFAUf/FjKzkZsnoeE4o19klTOVI1/openlink_640x640s.jpg",
                                LinkObject.newBuilder().setWebUrl("https://developers.kakao.com")
                                        .setMobileWebUrl("https://developers.kakao.com").build())
-                               .setDescrption("메리카  케"/*�메리카 � 케*/)
+                               .setDescrption("Let's Travel Maker")
                                .build())
                        .setSocial(SocialObject.newBuilder().setLikeCount(10).setCommentCount(20)
                                .setSharedCount(30).setViewCount(40).build())
-                       .addButton(new ButtonObject("에보기"/*�에보기*/, LinkObject.newBuilder().setWebUrl("'https://developers.kakao.com").setMobileWebUrl("'https://developers.kakao.com").build()))
-                       .addButton(new ButtonObject("에보기"/*�에보기*/, LinkObject.newBuilder()
+                       .addButton(new ButtonObject("travel", LinkObject.newBuilder().setWebUrl("'https://developers.kakao.com").setMobileWebUrl("'https://developers.kakao.com").build()))
+                       .addButton(new ButtonObject("maker", LinkObject.newBuilder()
                                .setWebUrl("'https://developers.kakao.com")
                                .setMobileWebUrl("'https://developers.kakao.com")
                                .setAndroidExecutionParams("key1=value1")
