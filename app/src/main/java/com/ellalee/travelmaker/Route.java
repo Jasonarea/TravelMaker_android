@@ -24,7 +24,7 @@ public class Route{
     private Polyline polyline;
     private String routeColor = new String();
 
-//    Route(int idx,String color, GoogleMap map){
+//  Route(int idx,String color, GoogleMap map){
     Route(int idx,String color){
         index = idx;
         markerList = new ArrayList<>();
@@ -32,9 +32,6 @@ public class Route{
         polylineOptions = new PolylineOptions();
         setPolylineOptions();
         polyline = null;
-//        polyline = map.addPolyline(polylineOptions);
-//        polyline.setClickable(true);
-//        polyline.setTag(index);
     }
 
     public void setId(long id){
@@ -54,6 +51,11 @@ public class Route{
         this.markerList = markerList;
         init(map);
     }
+    public void setMarkerList(ArrayList<Marker> markerList) {
+        this.markerList = markerList;
+    }
+
+
     public void setMarkerOptions(ArrayList<MarkerOptions> mopt){this.mOpts = mopt;}
     public long getId(){
         return id;
@@ -65,6 +67,7 @@ public class Route{
         return routeColor;
     }
     public Polyline getPolyline(){return polyline;}
+    public PolylineOptions getPolylineOptions(){setPolylineOptions(); return this.polylineOptions;}
     public ArrayList<Marker> getMarkerList(){
         return markerList;
     }
@@ -72,7 +75,6 @@ public class Route{
     public boolean add(Marker marker){
         return markerList.add(marker);
     }
-
     public void init(GoogleMap map){
         if(polyline==null){
         //    if(mOpts!=null&&markerList.isEmpty()) setMarkerList(map);

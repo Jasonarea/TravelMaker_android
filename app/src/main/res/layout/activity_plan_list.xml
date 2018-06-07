@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
     android:orientation="vertical">
 
     <TextView
@@ -10,10 +10,16 @@
         android:layout_height="wrap_content"
         android:text="MY PLANS"/>
 
-    <ListView
-        android:layout_width="match_parent"
+    <ImageButton
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/planListView"/>
+        android:src="@drawable/close_bin"
+        android:id="@+id/btnActivateDelete"/>
 
+    <GridView
+        android:id="@+id/planListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:numColumns="auto_fit" />
 
 </LinearLayout>

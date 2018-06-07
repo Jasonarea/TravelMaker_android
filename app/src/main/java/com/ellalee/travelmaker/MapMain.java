@@ -66,6 +66,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+//import static com.ellalee.travelmaker.MapMain.Rcolor.getRouteColor;
 
 public class MapMain extends FragmentActivity implements OnMapReadyCallback,GoogleMap.OnMarkerClickListener{
 
@@ -87,7 +88,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 
     private ArrayList<Route> routes = new ArrayList<>(); //multi
 //   private ArrayList<Route> routes; //multi
-    private String[] routeColor;
+    public String[] routeColor;
     private BitmapDescriptor[] markerIcon;
 
     Animation slidingOpen;
@@ -169,7 +170,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         FragmentManager fragmentManager = getFragmentManager();
         MapFragment mapFragment = (MapFragment) fragmentManager.findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
     }
 
     @Override
@@ -183,8 +183,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         Log.d("MAPMAIN ROUTES NUM: ",plan.getRoutesList().size()+"********");
 
         routes = plan.getRoutesList();
-        db.getALLMarkers(plan.getId(),map,markerIcon);
-
+        newIndex = routes.size();
+//        db.getALLMarkers(plan.getId(),map,markerIcon);
 /*
         //initialize when plan is created
         //initial route setting (default route)
@@ -268,10 +268,13 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         googleMap.setOnMarkerClickListener(this);
         googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
             float alpha;
+            LatLng pre;
 
             @Override
             public void onMarkerDragStart(Marker marker) {
                 alpha = marker.getAlpha();
+                pre = marker.getPosition();
+                Toast.makeText(MapMain.this, "LAT:"+pre.latitude+" LOG:"+pre.longitude, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -283,7 +286,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             public void onMarkerDragEnd(Marker marker) {
                 //find every route which include the marker
                 marker.setAlpha(alpha);
-                db.updateMarker(marker,plan.getId());
+                Toast.makeText(MapMain.this, "LAT:"+marker.getPosition().latitude+" LOG:"+marker.getPosition().longitude, Toast.LENGTH_SHORT).show();
+
+                db.updateMarker(marker);
 
                 Iterator<Route> route_iterator = routes.iterator(); //route iterator
                 Route cur;
@@ -444,7 +449,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         if (item.getItemId() == -1) {
 
             //maximum route number is 20
-            if(newIndex<20) {
+            if(newIndex<10) {
                 newIndex = routes.size();
 //                Route route = new Route(newIndex, routeColor[newIndex], googleMap);
 
@@ -552,4 +557,57 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         db.insert("TABLE_PLAN",null,values);
         */
     }
+    public static class Rcolor {
+        static final String[] routeColor = new String[]{
+                "#3C989E",
+                "#fcc244",
+                "#2e98d1",
+                "#ED5276",
+                "#F4CDA5",
+                "#259c49",
+                "#dde91616",
+                "#dd0c24f9",
+                "#259c49",
+                "#3C989F",
+                "#fcc249",
+                "#2e98dF",
+                "#ED5270",
+                "#F4CD05",
+                "#259009",
+                "#dde92616",
+                "#dd0EE4f9",
+                "#259FE9",
+        };
+
+        public static String getRouteColor(int idx){
+            return routeColor[idx];
+        }
+    }
+    /*
+    public static class Micon {
+        static final BitmapDescriptor[] mIcon = new BitmapDescriptor[]{
+                BitmapDescriptorFactory.
+                "#fcc244",
+                "#2e98d1",
+                "#ED5276",
+                "#F4CDA5",
+                "#259c49",
+                "#dde91616",
+                "#dd0c24f9",
+                "#259c49",
+                "#3C989F",
+                "#fcc249",
+                "#2e98dF",
+                "#ED5270",
+                "#F4CD05",
+                "#259009",
+                "#dde92616",
+                "#dd0EE4f9",
+                "#259FE9",
+        };
+
+        public static String getMarkerIcon(int idx){
+            return routeColor[idx];
+        }
+    }*/
 }

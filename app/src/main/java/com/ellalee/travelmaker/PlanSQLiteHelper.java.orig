@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Environment;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -16,12 +15,14 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
+
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+
+/**
+ * Created by tyu54 on 2018-05-30.
+ */
 
 public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelper*/ {
 
@@ -74,6 +75,7 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
 //  private static final String KEY_TITLE =  "title"; //duplicate field
     private static final String KEY_ICON =  "icon";
 
+
     // Table Create Statements
     // Plan table create statement
     private static final String CREATE_TABLE_PLAN = "CREATE TABLE " + TABLE_PLAN + "( "
@@ -85,6 +87,14 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
             + KEY_MONTH + " INTEGER, "
             + KEY_YEAR + " INTEGER, "
             + KEY_DAY + " INTEGER )"; // foreign key
+
+    /*
+    // RouteList table create statement
+    private static final String CREATE_TABLE_ROUTELIST = "CREATE TABLE " + TABLE_ROUTELIST + "("
+            + KEY_ID + " INTEGER PRIMARY KEY,"
+            + KEY_PLAN_ID + " INTEGER, "   //fk
+            + KEY_ROUTE_ID + " INTEGER" + ")";  //fk
+*/
 
     // Route table create statement
     private static final String CREATE_TABLE_ROUTE = "CREATE TABLE " + TABLE_ROUTE + "("
@@ -115,6 +125,7 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_TABLE_PLAN);
+     //   db.execSQL(CREATE_TABLE_ROUTELIST);
         db.execSQL(CREATE_TABLE_ROUTE);
         db.execSQL(CREATE_TABLE_MARKERLIST);
         db.execSQL(CREATE_TABLE_MARKER);
@@ -141,7 +152,6 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         values.put(KEY_YEAR,plan.getYear());
         values.put(KEY_MONTH,plan.getMonth());
         values.put(KEY_DAY,plan.getDay());
-        //put(.getMarker) info
 
         //insert a row to table plan
         long plan_id = db.insert(TABLE_PLAN,null,values);
@@ -180,7 +190,8 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         long route_id = db.insert(TABLE_ROUTE,null,values);
         route.setId(route_id);
 
- /*     //assigning markerlist
+
+ /*       //assigning markerlist
         ArrayList<Marker> markers = route.getMarkerList();
         Iterator<Marker> iterator = markers.iterator();
         Marker cur;
@@ -265,14 +276,12 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         values.put(KEY_TITLE,marker.getTitle());
         values.put(KEY_ICON,Integer.parseInt(marker.getTag().toString())); //0-3
 
-        long marker_id = db.insert(TABLE_MARKER,null,values);
-        marker.setTag(new MarkerTag(Integer.parseInt(marker.getTag().toString()),marker_id));
-        marker.setSnippet(marker.getTag().toString());
-
-        return marker_id;
+        return db.insert(TABLE_MARKER,null,values);
     }
 
+
     /////////read DB
+
     public Plan getPlan(long plan_id){ //light version
         SQLiteDatabase db = getReadableDatabase();
 
@@ -311,25 +320,33 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         Plan plan = new Plan();
         plan.setId(c.getInt(c.getColumnIndex(KEY_ID)));
         plan.setTitle(c.getString(c.getColumnIndex(KEY_TITLE)));
+<<<<<<< HEAD
         plan.setCity(c.getString(c.getColumnIndex(KEY_CITY)));
 
         double lat = c.getDouble(c.getColumnIndex(KEY_LATITUDE));
         double log = c.getDouble(c.getColumnIndex(KEY_LONGITUDE));
         plan.setCentre(new LatLng(lat,log));
 
-        plan.setAllMarkers(getALLMarkers(plan.getId(),map,icon));
-
-        plan.setRoutesList(getRouteList(plan.getAllMarkers(),plan_id,map,icon));
+        plan.setRoutesList(getRouteList(plan_id,map,icon));
+=======
+       //plan.setRoutesList(getRouteList(plan_id));
+>>>>>>> a655105b80377628e7da567d9a2695c574952396
         plan.setY(c.getInt(c.getColumnIndex(KEY_YEAR)));
         plan.setM(c.getInt(c.getColumnIndex(KEY_MONTH)));
         plan.setD(c.getInt(c.getColumnIndex(KEY_DAY)));
         Log.d("get plan init : ",plan.init()+"");
+        //plan.init();
 
         return plan;
         }
         return null;
     }
-    public ArrayList<Route> getRouteList(ArrayList<Marker> allMarkers,long plan_id,GoogleMap map,BitmapDescriptor[] icon){
+
+<<<<<<< HEAD
+    public ArrayList<Route> getRouteList(long plan_id,GoogleMap map,BitmapDescriptor[] icon){
+=======
+    /*public ArrayList<Route> getRouteList(long plan_id){
+>>>>>>> a655105b80377628e7da567d9a2695c574952396
         SQLiteDatabase db = getReadableDatabase();
         ArrayList<Route> list = new ArrayList<>();
 
@@ -340,13 +357,14 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         if (c!=null && c.getCount()!=0) {
             c.moveToFirst();
             do {
-                Route r =  getRoute(allMarkers,c.getLong(c.getColumnIndex(KEY_ID)),map);
+                Route r =  getRoute(c.getLong(c.getColumnIndex(KEY_ID)),map,icon);
                 list.add(r);
             } while (c.moveToNext());
         }
-        return list;
+        return null;
     }
 
+<<<<<<< HEAD
     public int getRouteListCount(long plan_id){
         SQLiteDatabase db = getReadableDatabase();
 
@@ -355,8 +373,11 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
 
         return c.getCount();
     }
+=======
+    }*/
+>>>>>>> a655105b80377628e7da567d9a2695c574952396
 
-    public Route getRoute(ArrayList<Marker> allMarkers,long route_id,GoogleMap map){
+    public Route getRoute(long route_id,GoogleMap map,BitmapDescriptor[] icon){
         SQLiteDatabase db = getReadableDatabase();
 
         String selectQuery = "SELECT * FROM "+TABLE_ROUTE+ " WHERE "+ KEY_ID + " = '" +route_id+"'";
@@ -364,17 +385,12 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
 
         if(c!=null && c.getCount()!=0) {
             c.moveToFirst();
-            Route route = new Route(-1, "#3C989E");
+            Route route = new Route(-1, "#000000");
             route.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-            route.setRouteColor(MapMain.Rcolor.getRouteColor(c.getInt(c.getColumnIndex(KEY_INDEX))));
+            route.setRouteColor("#3C989E");
             route.setIndex(c.getInt(c.getColumnIndex(KEY_INDEX)));
-            route.setMarkerList(getMarkerList(allMarkers,route_id));
-            Log.d(route_id+"루트마커는?! : ",route.getMarkerList().size()+" ");
-
-            Polyline p = map.addPolyline(route.getPolylineOptions());
-            p.setClickable(true);
-            p.setTag(route.getIndex());
-            route.setPolyline(p);
+            route.setMarkerList(map,getMarkerList(route_id,map,icon));
+            route.init(map);
 
             return route;
         }
@@ -399,8 +415,6 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         }
         return list;
     }*/
-/*
-    //XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
     public ArrayList<Marker> getMarkerList(long route_id,GoogleMap map,BitmapDescriptor[] icon){
         SQLiteDatabase db = getReadableDatabase();
         ArrayList<Marker> mlist = new ArrayList<>();
@@ -412,31 +426,13 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         if (c!=null && c.getCount()!=0) {
             c.moveToFirst();
             do {
-                mlist.add(getMarker(c.getLong(c.getColumnIndex(KEY_MARKER_ID))));
+                mlist.add(getMarker(c.getLong(c.getColumnIndex(KEY_MARKER_ID)),map,icon));
             } while (c.moveToNext());
         }
+        Log.d(route_id+" NUM : ",mlist.size()+"*****************");
         return mlist;
     }
-*/
-    public ArrayList<Marker> getMarkerList(ArrayList<Marker> allMarkers,long route_id){
-        SQLiteDatabase db = getReadableDatabase();
-        ArrayList<Marker> mlist = new ArrayList<>();
-
-        String selectQuery = "SELECT * FROM "+TABLE_MARKERLIST+ " WHERE "+ KEY_ROUTE_ID + " = '" +route_id+"'";
-        Cursor c = db.rawQuery(selectQuery,null);
-
-        // looping through all rows and adding to list
-        if (c!=null && c.getCount()!=0) {
-            c.moveToFirst();
-            do {
-                mlist.add(getMarker(allMarkers,c.getLong(c.getColumnIndex(KEY_MARKER_ID))));
-            } while (c.moveToNext());
-        }
-        return mlist;
-    }
-
-    //XXXXXXXXXXXXXXXXXXXXxxx
-    /*public Marker getMarker(long marker_id,GoogleMap map,BitmapDescriptor[] icon){
+    public Marker getMarker(long marker_id,GoogleMap map,BitmapDescriptor[] icon){
         SQLiteDatabase db = getReadableDatabase();
 
         String selectQuery = "SELECT * FROM "+ TABLE_MARKER + " WHERE "+KEY_ID+ " = '"+marker_id+"'";
@@ -457,30 +453,9 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
             return m;
         }
         return null;
-    }*/
-    public Marker getMarker(ArrayList<Marker> mList,LatLng pos){
-        Iterator<Marker> iterator = mList.iterator();
-        Marker cur;
-        while (iterator.hasNext()){
-            cur=iterator.next();
-            if(cur.getPosition().equals(pos))
-                return cur;
-        }
-        return null;
     }
-    public Marker getMarker(ArrayList<Marker> mList,long marker_id){
-        Iterator<Marker> iterator = mList.iterator();
-        Marker cur;
-        while (iterator.hasNext()){
-            cur=iterator.next();
-            if(cur.getTag().equals(marker_id))
-                return cur;
-        }
-        return null;
-    }
-    public ArrayList<Marker> getALLMarkers(long plan_id, GoogleMap map, BitmapDescriptor[] icon){ //include even if not assign with any route.
+    public void getALLMarkers(long plan_id, GoogleMap map, BitmapDescriptor[] icon){ //include even if not assign with any route.
         SQLiteDatabase db = getReadableDatabase();
-        ArrayList<Marker> mList = new ArrayList<>();
 
         String selectQuery = "SELECT * FROM "+ TABLE_MARKER +" WHERE "+KEY_PLAN_ID+" = '"+plan_id+"'";
         Cursor c = db.rawQuery(selectQuery,null);
@@ -495,14 +470,12 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
                 opt.icon(icon[c.getInt(c.getColumnIndex(KEY_ICON))]);
 
                 Marker m =map.addMarker(opt);
-                m.setTag(new MarkerTag(c.getInt(c.getColumnIndex(KEY_ICON)),c.getLong(c.getColumnIndex(KEY_ID))));
-                m.setSnippet(m.getTag().toString());
-
-                mList.add(m);
+                m.setTag(c.getInt(c.getColumnIndex(KEY_ICON)));
+                m.setSnippet(c.getString(c.getColumnIndex(KEY_ID)));
             } while (c.moveToNext());
         }
-        return mList;
     }
+
 
     //update
     public int updatePlan(Plan plan) {
@@ -520,26 +493,9 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         // updating plan date
         return db.update(TABLE_PLAN, values, KEY_ID + " = ?", new String[] { String.valueOf(plan.getId()) });
     }
-    public int updateMarker(Marker marker){
+    public int updateMarker(Marker marker,long plan_id){
         SQLiteDatabase db = this.getWritableDatabase();
-        String selectQuery = "SELECT * FROM "+ TABLE_MARKER + " WHERE " + KEY_ID +" = '"+marker.getTag().toString()+"'";
-        Cursor c = db.rawQuery(selectQuery,null);
-
-        if(c!=null && c.getCount()!=0){
-            c.moveToFirst();
-
-            Log.d("마커위치변경","***********");
-            ContentValues values = new ContentValues();
-            values.put(KEY_LATITUDE,marker.getPosition().latitude);
-            values.put(KEY_LONGITUDE,marker.getPosition().longitude);
-
-            return db.update(TABLE_MARKER,values,KEY_ID + " = ?",new String[]{ String.valueOf(c.getLong(c.getColumnIndex(KEY_ID))) });
-        }
-        return -1;
-    }
-    public int updateMarker(long plan_id,Marker marker){
-        SQLiteDatabase db = this.getWritableDatabase();
-        String selectQuery = "SELECT * FROM "+ TABLE_MARKER + " WHERE " + KEY_PLAN_ID +" ='"+plan_id+"'"
+        String selectQuery = "SELECT * FROM "+ TABLE_MARKER + " WHERE " + KEY_PLAN_ID +" '"+plan_id+"' "
                 +" AND "+KEY_LATITUDE + " = '" +marker.getPosition().latitude+"'"
                 +" AND "+KEY_LONGITUDE+ " = '" +marker.getPosition().longitude+"'";
         Cursor c = db.rawQuery(selectQuery,null);
@@ -548,6 +504,9 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
             c.moveToFirst();
 
             ContentValues values = new ContentValues();
+            values.put(KEY_GET_ID,marker.getId());
+            values.put(KEY_LATITUDE,marker.getPosition().latitude);
+            values.put(KEY_LONGITUDE,marker.getPosition().longitude);
             values.put(KEY_TITLE,marker.getTitle());
             values.put(KEY_ICON,Integer.parseInt(marker.getTag().toString()));
 
@@ -633,32 +592,5 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         deleteMarkerList(route);
        // deleteRouteList(route);
         db.delete(TABLE_ROUTE,KEY_ROUTE_ID+" = ?",new String[]{String.valueOf(route.getId())});
-    }
-
-
-    public class MarkerTag{
-        public int icon;
-        public final long dbId;
-
-        MarkerTag(int i,long id){
-            icon =i;
-            dbId=id;
-        }
-        public long getId(){
-            return dbId;
-        }
-        public int getIcon(){
-            return icon;
-        }
-        @Override
-        public boolean equals(Object obj) {
-            return (obj.equals(dbId))? true : false;
-            //return super.equals(obj);
-        }
-        @Override
-        public String toString() {
-            return String.valueOf(dbId);
-//            return "ICON: "+icon+", ID: "+dbId;
-        }
     }
 }

@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -12,6 +13,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class Plan {
 
@@ -20,6 +22,7 @@ public class Plan {
     private LatLng centre;
     private String city;
     private ArrayList<Route> routesList;
+    private ArrayList<Marker> markersList;
     private int y,m,d;
 
     public String firstRouteColor = "#3C989E";
@@ -58,6 +61,7 @@ public class Plan {
     public long getId(){
         return id;
     }
+    public ArrayList<Marker> getAllMarkers() {return markersList;}
 
     public void setId(long ID){
         this.id=ID;
@@ -83,6 +87,7 @@ public class Plan {
     public void setCity(String city){
         this.city = city;
     }
+    public void setAllMarkers(ArrayList<Marker> list){this.markersList = list;}
 
     public boolean init(){
         if(routesList==null|| routesList.isEmpty()){

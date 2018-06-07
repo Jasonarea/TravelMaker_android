@@ -23,7 +23,11 @@ import com.kakao.util.helper.log.Logger;
 
 public class Sharing extends AppCompatActivity {
 
-    private String encoding = "UTF-8";
+<<<<<<< HEAD
+   // private String encoding = "UTF-8";
+=======
+    //private String encoding = "UTF-8";
+>>>>>>> a655105b80377628e7da567d9a2695c574952396
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,19 +35,28 @@ public class Sharing extends AppCompatActivity {
 
         Button btnBTShare = (Button)findViewById(R.id.btnBTShare);
 
-        /*btnBTShare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                kakao();
-            }
-        });*/
-    }
+        btnBTShare.setOnClickListener(new View.OnClickListener(){
+           @Override
+           public void onClick(View v) {
+               FeedTemplate params = FeedTemplate
+                       .newBuilder(ContentObject.newBuilder("디저트 사진",
+                               "http://mud-kage.kakao.co.kr/dn/NTmhS/btqfEUdFAUf/FjKzkZsnoeE4o19klTOVI1/openlink_640x640s.jpg",
+                               LinkObject.newBuilder().setWebUrl("https://developers.kakao.com")
+                                       .setMobileWebUrl("https://developers.kakao.com").build())
+                               .setDescrption("아메리카노, 빵, 케익")
+                               .build())
+                       .setSocial(SocialObject.newBuilder().setLikeCount(10).setCommentCount(20)
+                               .setSharedCount(30).setViewCount(40).build())
+                       .addButton(new ButtonObject("웹에서 보기", LinkObject.newBuilder().setWebUrl("'https://developers.kakao.com").setMobileWebUrl("'https://developers.kakao.com").build()))
+                       .addButton(new ButtonObject("앱에서 보기", LinkObject.newBuilder()
+                               .setWebUrl("'https://developers.kakao.com")
+                               .setMobileWebUrl("'https://developers.kakao.com")
+                               .setAndroidExecutionParams("key1=value1")
+                               .setIosExecutionParams("key1=value1")
+                               .build()))
+                       .build();
 
-    public void shareKakao(){
-        try{
-            final KakaoLink kakaoLink = KakaoLink.getKakaoLink(this);
-            final KakaoTalkLinkMessageBuilder kakaoBuilder = kakaoLink.createKakaoTalkLinkMessageBuilder();
-
+<<<<<<< HEAD
             kakaoBuilder.addText("kakao link test");
             kakaoBuilder.addAppButton("app excute or download");
 
@@ -54,47 +67,36 @@ public class Sharing extends AppCompatActivity {
     }
     /*public void kakao() {
         FeedTemplate params = FeedTemplate
-<<<<<<< HEAD
-                .newBuilder(ContentObject.newBuilder("진"/*"��진"*/,
+                .newBuilder(ContentObject.newBuilder("���,
                         "http://mud-kage.kakao.co.kr/dn/NTmhS/btqfEUdFAUf/FjKzkZsnoeE4o19klTOVI1/openlink_640x640s.jpg",
                         LinkObject.newBuilder().setWebUrl("https://developers.kakao.com")
                                 .setMobileWebUrl("https://developers.kakao.com").build())
-                        .setDescrption("메리카 케"/*"�메리카 � 케"*/)
-                        .build())
-                .setSocial(SocialObject.newBuilder().setLikeCount(10).setCommentCount(20)
-                        .setSharedCount(30).setViewCount(40).build())
-                .addButton(new ButtonObject("에보기"/*"�에보기"*/, LinkObject.newBuilder().setWebUrl("'https://developers.kakao.com").setMobileWebUrl("'https://developers.kakao.com").build()))
-                .addButton(new ButtonObject("에보기"/*"�에보기"*/, LinkObject.newBuilder()
-=======
-                .newBuilder(ContentObject.newBuilder("��진",
-                        "http://mud-kage.kakao.co.kr/dn/NTmhS/btqfEUdFAUf/FjKzkZsnoeE4o19klTOVI1/openlink_640x640s.jpg",
-                        LinkObject.newBuilder().setWebUrl("https://developers.kakao.com")
-                                .setMobileWebUrl("https://developers.kakao.com").build())
-                        .setDescrption("�메리카 � 케)
+                        .setDescrption("�메리카 �케)
                         .build())
                 .setSocial(SocialObject.newBuilder().setLikeCount(10).setCommentCount(20)
                         .setSharedCount(30).setViewCount(40).build())
                 .addButton(new ButtonObject("�에보기", LinkObject.newBuilder().setWebUrl("'https://developers.kakao.com").setMobileWebUrl("'https://developers.kakao.com").build()))
                 .addButton(new ButtonObject("�에보기", LinkObject.newBuilder()
->>>>>>> d676a9997d595460b9117d6f810a43cc6caa099b
                         .setWebUrl("'https://developers.kakao.com")
                         .setMobileWebUrl("'https://developers.kakao.com")
                         .setAndroidExecutionParams("key1=value1")
                         .setIosExecutionParams("key1=value1")
                         .build()))
                 .build();
+=======
+               KakaoLinkService.getInstance().sendDefault(getApplicationContext(), params, new ResponseCallback<KakaoLinkResponse>() {
+                   @Override
+                   public void onFailure(ErrorResult errorResult) {
+                       Logger.e(errorResult.toString());
+                   }
+                   @Override
+                   public void onSuccess(KakaoLinkResponse result) {
+>>>>>>> a655105b80377628e7da567d9a2695c574952396
 
-        KakaoLinkService.getInstance().sendDefault(this, params, new ResponseCallback<KakaoLinkResponse>() {
-            @Override
-            public void onFailure(ErrorResult errorResult) {
-                Logger.e(errorResult.toString());
-            }
-
-            @Override
-            public void onSuccess(KakaoLinkResponse result) {
-
-            }
+                   }
+               });
+           }
         });
-    }*/
+    }
 }
 
