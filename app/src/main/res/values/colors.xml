@@ -14,7 +14,8 @@
     <color name="colorRouteInfo">#FFFFFF</color>
     <color name="colorRouteInfoPlace">#ecf4a632</color>
     <color name="colorRouteInfoText">#000000</color>
-it
+    <color name="colorRoute1">#3C989E</color>
+
     <!--add 20 routes color info later!!-->
     <string-array  name="routeColor">
         <item>#3C989E</item>
@@ -27,6 +28,7 @@ it
         <item>#dd0c24f9</item>
         <item>#259c49</item>
     </string-array>
+
     <color name="violetblue"></color>
 </resources>
 

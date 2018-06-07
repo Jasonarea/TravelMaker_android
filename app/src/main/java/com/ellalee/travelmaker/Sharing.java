@@ -1,7 +1,6 @@
 package com.ellalee.travelmaker;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -24,7 +23,7 @@ import com.kakao.util.helper.log.Logger;
 
 public class Sharing extends AppCompatActivity {
 
-    private String encoding = "UTF-8";
+    //private String encoding = "UTF-8";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,56 +31,38 @@ public class Sharing extends AppCompatActivity {
 
         Button btnBTShare = (Button)findViewById(R.id.btnBTShare);
 
-        btnBTShare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                kakao();
-            }
-        });
-    }
+        btnBTShare.setOnClickListener(new View.OnClickListener(){
+           @Override
+           public void onClick(View v) {
+               FeedTemplate params = FeedTemplate
+                       .newBuilder(ContentObject.newBuilder("travel",
+                               "http://mud-kage.kakao.co.kr/dn/NTmhS/btqfEUdFAUf/FjKzkZsnoeE4o19klTOVI1/openlink_640x640s.jpg",
+                               LinkObject.newBuilder().setWebUrl("https://developers.kakao.com")
+                                       .setMobileWebUrl("https://developers.kakao.com").build())
+                               .setDescrption("Let's Travel Maker")
+                               .build())
+                       .setSocial(SocialObject.newBuilder().setLikeCount(10).setCommentCount(20)
+                               .setSharedCount(30).setViewCount(40).build())
+                       .addButton(new ButtonObject("travel", LinkObject.newBuilder().setWebUrl("'https://developers.kakao.com").setMobileWebUrl("'https://developers.kakao.com").build()))
+                       .addButton(new ButtonObject("maker", LinkObject.newBuilder()
+                               .setWebUrl("'https://developers.kakao.com")
+                               .setMobileWebUrl("'https://developers.kakao.com")
+                               .setAndroidExecutionParams("key1=value1")
+                               .setIosExecutionParams("key1=value1")
+                               .build()))
+                       .build();
 
-    public void shareKakao(){
-        try{
-            final KakaoLink kakaoLink = KakaoLink.getKakaoLink(this);
-            final KakaoTalkLinkMessageBuilder kakaoBuilder = kakaoLink.createKakaoTalkLinkMessageBuilder();
+               KakaoLinkService.getInstance().sendDefault(getApplicationContext(), params, new ResponseCallback<KakaoLinkResponse>() {
+                   @Override
+                   public void onFailure(ErrorResult errorResult) {
+                       Logger.e(errorResult.toString());
+                   }
+                   @Override
+                   public void onSuccess(KakaoLinkResponse result) {
 
-            kakaoBuilder.addText("kakao link test");
-            kakaoBuilder.addAppButton("app excute or download");
-
-            kakaoLink.sendMessage(kakaoBuilder,this);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-    }
-    public void kakao() {
-        FeedTemplate params = FeedTemplate
-                .newBuilder(ContentObject.newBuilder("디저트 사진",
-                        "http://mud-kage.kakao.co.kr/dn/NTmhS/btqfEUdFAUf/FjKzkZsnoeE4o19klTOVI1/openlink_640x640s.jpg",
-                        LinkObject.newBuilder().setWebUrl("https://developers.kakao.com")
-                                .setMobileWebUrl("https://developers.kakao.com").build())
-                        .setDescrption("아메리카노, 빵, 케익")
-                        .build())
-                .setSocial(SocialObject.newBuilder().setLikeCount(10).setCommentCount(20)
-                        .setSharedCount(30).setViewCount(40).build())
-                .addButton(new ButtonObject("웹에서 보기", LinkObject.newBuilder().setWebUrl("'https://developers.kakao.com").setMobileWebUrl("'https://developers.kakao.com").build()))
-                .addButton(new ButtonObject("앱에서 보기", LinkObject.newBuilder()
-                        .setWebUrl("'https://developers.kakao.com")
-                        .setMobileWebUrl("'https://developers.kakao.com")
-                        .setAndroidExecutionParams("key1=value1")
-                        .setIosExecutionParams("key1=value1")
-                        .build()))
-                .build();
-
-        KakaoLinkService.getInstance().sendDefault(this, params, new ResponseCallback<KakaoLinkResponse>() {
-            @Override
-            public void onFailure(ErrorResult errorResult) {
-                Logger.e(errorResult.toString());
-            }
-
-            @Override
-            public void onSuccess(KakaoLinkResponse result) {
-
-            }
+                   }
+               });
+           }
         });
     }
 }
