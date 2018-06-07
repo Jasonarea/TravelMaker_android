@@ -58,6 +58,4 @@ dependencies {
     implementation files('libs/activation.jar')
     implementation files('libs/additionnal.jar')
     implementation files('libs/mail.jar')
-    compile 'com.google.firebase:firebase-core:16.0.0'
 }
-apply plugin: 'com.google.gms.google-services'
