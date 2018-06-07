@@ -158,20 +158,24 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         return emails;
     }
     public boolean select(String bod) {
-        String sql = "SELECT * FROM " +TABLE_BOOKS+ " WHERE body LIKE '%"+bod+"%'";
+        String sql = "SELECT * FROM " +TABLE_BOOKS;
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor result = db.rawQuery(sql, null);
-
-        result.moveToFirst();
-        // result(Cursor 객체)가 비어 있으면 false 리턴
-        while(result.moveToNext()) {
-            String name = result.getString(1);
-            result.close();
-            return true;
+        String result = "";
+        Cursor cursor = db.rawQuery(sql, null);
+        if(cursor.moveToFirst()) {
+            do {
+                Log.d("HelloDB", cursor.getString(1));
+                if (bod.equals(cursor.getString(2))) {
+                    Log.d("HelloDB", cursor.getString(1));
+                    cursor.close();
+                    return true;
+                }
+            } while (cursor.moveToNext());
         }
-        result.close();
+        cursor.close();
         return false;
     }
+
     public void deleteEverything(){
         SQLiteDatabase db = this.getWritableDatabase();
         if (db != null) {

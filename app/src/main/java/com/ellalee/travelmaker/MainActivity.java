@@ -16,6 +16,8 @@ import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -132,19 +134,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         account = GoogleSignIn.getLastSignedInAccount(this);
-        mCredential = GoogleAccountCredential.usingOAuth2(
-                getApplicationContext(), Arrays.asList(SCOPES))
-                .setBackOff(new ExponentialBackOff());
-        getResultsFromApi();
+        if(account==null || !loadSavedPreferences().equals("EmailStuff")) {
+            mCredential = GoogleAccountCredential.usingOAuth2(
+                    getApplicationContext(), Arrays.asList(SCOPES))
+                    .setBackOff(new ExponentialBackOff());
+            getResultsFromApi();
+        }
         btn.setOnClickListener(new OnClickListener() {
-
             @Override
-
             public void onClick(View v) {
                 dlDrawer.openDrawer(lvNavList);
-
             }
-
         });
 
         dlDrawer = (DrawerLayout)findViewById(R.id.dl_activity_main_drawer);
@@ -158,9 +158,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             Thread calendar = new Thread(calendarThread);
             calendar.start();
         }
-        else navItems[0] = "LogIn";
+        else {
+            signIn();
+            navItems[0] = "LogOut";
+        }
         lvNavList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
-
         lvNavList.setOnItemClickListener(new MainActivity.DrawerItemClickListener());
 
     }
@@ -194,10 +196,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                         signIn();
                         navItems[0] = "LogOut";
                         lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
-
                     }
                     else{
                         signOut();
+                        Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
+                        nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(nextScreen);
+                        ActivityCompat.finishAffinity(MainActivity.this);
                     }
                     break;
                 case 1:
@@ -211,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         }
     }
-    private void signIn() {
+    void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, SIGN_IN);
 
@@ -225,7 +230,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        navItems[0] = "LogIn";lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
 
                     }
                 });
@@ -337,14 +341,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
         try {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-
             // Signed in successfully, show authenticated UI.
-
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.w("TAG", "signInResult:failed code=" + e.getStatusCode());
-
         }
     }
     /**
@@ -519,8 +520,5 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
         }
     }
-
-
-
 }
 

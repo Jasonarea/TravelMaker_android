@@ -2,6 +2,7 @@ package com.ellalee.travelmaker;
 
 import android.Manifest;
 import android.accounts.AccountManager;
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -20,11 +21,18 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
@@ -47,6 +55,7 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static com.ellalee.travelmaker.CalendarSync.REQUEST_GOOGLE_PLAY_SERVICES;
+import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig.Prompt.SIGN_IN;
 
 public class LoginPage extends AppCompatActivity implements EasyPermissions.PermissionCallbacks{
     Button loginBtn;
@@ -60,6 +69,7 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
     boolean createOneSchedule = true;
     GmailSync gmailThread;
     private TextView testHandler;
+    CalendarSync calendarThread;
 
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
@@ -69,10 +79,13 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
     private static final String PREF_ACCOUNT_NAME = "AccountName";
     private static final String[] SCOPES = { "https://www.googleapis.com/auth/calendar" };
     private String mEmail;
+    private GoogleSignInClient mGoogleSignInClient;
+    private GoogleSignInAccount account;
 
-    /*public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final LinearLayout activityLayout = new LinearLayout(this);
+
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
@@ -84,18 +97,25 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
                 ViewGroup.LayoutParams.WRAP_CONTENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        String email = loadSavedPreferences();
-        if(email.equals("EmailStuff")){
+        String email = loadSavedPreferences();      //mCredential ID 가 set이 안되있을 경우 가져오기.
+       /* if(email.equals("EmailStuff")){
             Log.d("Email", email);
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
-        }
-
+        }*/
+        mCredential = GoogleAccountCredential.usingOAuth2(
+                getApplicationContext(), Arrays.asList(SCOPES))
+                .setBackOff(new ExponentialBackOff());
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+        account = GoogleSignIn.getLastSignedInAccount(this);
         Log.d("Email", email);
 
         mCallApiButton = new Button(this);
         mOutputText = new TextView(this);
-        mCallApiButton.setText("Google Login");
+        mCallApiButton.setText("구글 아이디로 로그인");
 
         mOutputText.setText("");
         mCallApiButton.setOnClickListener(new View.OnClickListener() {
@@ -104,6 +124,7 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
                 mCallApiButton.setEnabled(false);
                 getResultsFromApi();
                 mCallApiButton.setEnabled(true);
+
                 //mProgress.show();
             }
         });
@@ -115,8 +136,12 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
-    }*/
 
+    }
+    private void signIn() {
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, SIGN_IN);
+    }
     /**
      * Attempt to call the API, after verifying that all the preconditions are
      * satisfied. The preconditions are: Google Play Services installed, an
@@ -134,6 +159,7 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
         } else {
             //new MakeRequestTask(mCredential).execute();
             mOutputText.setText("Login Finish");
+            signIn();
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
             //mProgress.hide();
@@ -219,6 +245,9 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
                     getResultsFromApi();
                 }
                 break;
+            case SIGN_IN :
+                Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+                handleSignInResult(task);
         }
     }
 
@@ -250,7 +279,17 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
     public void onPermissionsGranted(int requestCode, List<String> list) {
         // Do nothing.
     }
-
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            // Signed in successfully, show authenticated UI.
+            mOutputText.setText("Sign In Complete");
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Log.w("TAG", "signInResult:failed code=" + e.getStatusCode());
+        }
+    }
     /**
      * Callback for when a permission is denied using the EasyPermissions
      * library.
