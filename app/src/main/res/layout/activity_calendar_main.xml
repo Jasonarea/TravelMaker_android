@@ -48,7 +48,8 @@
         android:layout_height="0dp"
         android:layout_width="match_parent"
         android:numColumns="7"
-        android:listSelector = "@color/gray">
+        android:listSelector = "@color/gray"
+        android:onClcik = "">
     </GridView>
 
     <android.support.design.widget.FloatingActionButton

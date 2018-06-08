@@ -10,49 +10,6 @@
         android:layout_marginTop="40dp"
         android:layout_marginLeft="40dp"
         android:text="날짜 :"/>
-    <!--<DatePicker-->
-        <!--android:id="@+id/datePicker"-->
-        <!--android:layout_toRightOf="@id/DateSetting"-->
-        <!--android:layout_marginLeft="5dp"-->
-        <!--android:layout_width="150dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:textSize="12sp"-->
-        <!--android:datePickerMode="spinner"/>-->
-    <!--<TextView-->
-        <!--android:id="@+id/Year"-->
-        <!--android:layout_toRightOf="@+id/setYear"-->
-        <!--android:layout_alignBottom="@id/DateSetting"-->
-        <!--android:layout_marginLeft="5dp"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="년"/>-->
-    <!--<EditText-->
-        <!--android:id="@+id/setMonth"-->
-        <!--android:layout_toRightOf="@+id/Year"-->
-        <!--android:layout_alignBaseline="@+id/DateSetting"-->
-        <!--android:layout_marginLeft="5dp"-->
-        <!--android:layout_width="60dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:hint="ex)2"-->
-        <!--android:textSize="12sp"/>-->
-    <!--<TextView-->
-        <!--android:id="@+id/Month"-->
-        <!--android:layout_toRightOf="@+id/setMonth"-->
-        <!--android:layout_alignBottom="@+id/DateSetting"-->
-        <!--android:layout_marginLeft = "5dp"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="월"/>-->
-    <!--<EditText-->
-        <!--android:id="@+id/setDay"-->
-        <!--android:layout_toRightOf="@+id/Month"-->
-        <!--android:layout_alignBaseline="@+id/DateSetting"-->
-        <!--android:layout_marginLeft="5dp"-->
-        <!--android:layout_width="60dp"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:hint="ex)23"-->
-        <!--android:textSize="12sp"/>-->
-
     <TextView
         android:id="@+id/scheSetting"
         android:layout_marginLeft="40dp"
