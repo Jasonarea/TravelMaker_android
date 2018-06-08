@@ -72,11 +72,7 @@ import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
-<<<<<<< HEAD
-    private String[] navItems = {"LogIn", "산관"};
-=======
-    private String[] navItems = {"LogIn", "예산관리"};
->>>>>>> 50c4aee49ab978f8717a5a4dbdc3c0335fa298d9
+    private String[] navItems = {"LogIn", "�산관�, "공유�기"};
 
     private ListView lvNavList;
     private FrameLayout flContainer;
@@ -132,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         flContainer = (FrameLayout)findViewById(R.id.fl_activity_main_container);
 
         btn = (ImageButton)findViewById(R.id.menu_action_button);
-
+        Log.d("Main Access", "Hello Main");
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -142,9 +138,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
-        getResultsFromApi();
+        //getResultsFromApi();
 
-        if(mCredential.getSelectedAccountName() != null){
+        if(mCredential != null){
             navItems[0] = "LogOut";
             lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1  , navItems));
         }
@@ -161,11 +157,12 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         });
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-        if(acct != null && mCredential.getSelectedAccountName() != null){
+        if(mCredential != null){
             navItems[0] = "LogOut";
+
         }
         else {
-            navItems[0] = "LogOut";
+            navItems[0] = "LogIn";
         }
         lvNavList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
         lvNavList.setOnItemClickListener(new MainActivity.DrawerItemClickListener());
@@ -197,14 +194,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             switch (position) {
                 case 0:
                     GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-                    if(mCredential.getSelectedAccountName() == null){
+                    if(mCredential== null){
                         navItems[0] = "LogOut";
                         lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
                     }
                     else{
+                        Log.d("What is the matter", "WHat is the MATTER");
                         SharedPreferences settings =
                                 getPreferences(Context.MODE_PRIVATE);
-                        settings.edit().clear().commit();
+                        settings.edit().remove(PREF_ACCOUNT_NAME).commit();
                         Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
                         nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(nextScreen);
@@ -265,12 +263,12 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             list = geocoder.getFromLocationName(city, 10);
         } catch (IOException e) {
             e.printStackTrace();
-            makeText(MainActivity.this, "어디로 가실 건가요?", LENGTH_SHORT).show();
+            makeText(MainActivity.this, "I/O Error", LENGTH_SHORT).show();
         }
 
         if (list != null) {
             if (list.size() == 0) {
-                makeText(MainActivity.this, "해당하는 정보가 없습니다. 다른 이름으로 검색 해주세요.", LENGTH_SHORT).show();
+                makeText(MainActivity.this, "No matching area info", LENGTH_SHORT).show();
             }
             else {
                 plan = new Plan();
@@ -340,15 +338,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     }
                 }
                 GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-                if(acct != null && mCredential.getSelectedAccountName() != null){
+                if(mCredential.getSelectedAccountName() != null){
                     navItems[0] = "LogOut";
+
 
                     calendarThread = new CalendarSync(mCredential, getApplicationContext());
                     Thread calendar = new Thread(calendarThread);
                     calendar.start();
                 }
                 else {
-                    signIn();
                     navItems[0] = "LogOut";
                 }
                 lvNavList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));

@@ -85,7 +85,7 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final LinearLayout activityLayout = new LinearLayout(this);
-
+        Log.d("Hello Main", "Login PAge");
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
@@ -116,7 +116,9 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
         mCallApiButton = new Button(this);
         mOutputText = new TextView(this);
         mCallApiButton.setText("구글 아이디로 로그인");
-
+        mCredential = GoogleAccountCredential.usingOAuth2(
+                getApplicationContext(), Arrays.asList(SCOPES))
+                .setBackOff(new ExponentialBackOff());
         mOutputText.setText("");
         mCallApiButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,14 +135,8 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
         setContentView(activityLayout);
 
         // Initialize credentials and service object.
-        mCredential = GoogleAccountCredential.usingOAuth2(
-                getApplicationContext(), Arrays.asList(SCOPES))
-                .setBackOff(new ExponentialBackOff());
 
-    }
-    private void signIn() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, SIGN_IN);
+
     }
     /**
      * Attempt to call the API, after verifying that all the preconditions are
@@ -159,10 +155,8 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
         } else {
             //new MakeRequestTask(mCredential).execute();
             mOutputText.setText("Login Finish");
-            signIn();
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
-            //mProgress.hide();
+            Intent newIntent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(newIntent);
         }
     }
     /**
@@ -239,6 +233,9 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
                         getResultsFromApi();
                     }
                 }
+                calendarThread = new CalendarSync(mCredential, getApplicationContext());
+                Thread calendar = new Thread(calendarThread);
+                calendar.start();
                 break;
             case REQUEST_AUTHORIZATION:
                 if (resultCode == RESULT_OK) {
