@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         flContainer = (FrameLayout)findViewById(R.id.fl_activity_main_container);
 
         btn = (ImageButton)findViewById(R.id.menu_action_button);
-
+        Log.d("Main Access", "Hello Main");
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -138,9 +138,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
-        getResultsFromApi();
+        //getResultsFromApi();
 
-        if(mCredential.getSelectedAccountName() != null){
+        if(mCredential != null){
             navItems[0] = "LogOut";
             lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1  , navItems));
         }
@@ -157,11 +157,12 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         });
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-        if(acct != null && mCredential.getSelectedAccountName() != null){
+        if(mCredential != null){
             navItems[0] = "LogOut";
+
         }
         else {
-            navItems[0] = "LogOut";
+            navItems[0] = "LogIn";
         }
         lvNavList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
         lvNavList.setOnItemClickListener(new MainActivity.DrawerItemClickListener());
@@ -193,14 +194,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             switch (position) {
                 case 0:
                     GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-                    if(mCredential.getSelectedAccountName() == null){
+                    if(mCredential== null){
                         navItems[0] = "LogOut";
                         lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
                     }
                     else{
                         SharedPreferences settings =
                                 getPreferences(Context.MODE_PRIVATE);
-                        settings.edit().clear().commit();
+                        settings.edit().remove(mCredential).commit();
                         Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
                         nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(nextScreen);
@@ -338,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     }
                 }
                 GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-                if(acct != null && mCredential.getSelectedAccountName() != null){
+                if(mCredential.getSelectedAccountName() != null){
                     navItems[0] = "LogOut";
 
 
@@ -347,7 +348,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     calendar.start();
                 }
                 else {
-                    signIn();
                     navItems[0] = "LogOut";
                 }
                 lvNavList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
