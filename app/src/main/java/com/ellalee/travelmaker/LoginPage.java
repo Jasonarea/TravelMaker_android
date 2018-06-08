@@ -12,8 +12,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
@@ -228,8 +230,10 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
                 calendarThread = new CalendarSync(mCredential, getApplicationContext());
                 Thread calendar = new Thread(calendarThread);
                 calendar.start();
-                Intent newIntent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(newIntent);
+                Intent nextScreen = new Intent(LoginPage.this, MainActivity.class);
+                nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(nextScreen);
+                ActivityCompat.finishAffinity(LoginPage.this);
                 break;
             case REQUEST_AUTHORIZATION:
                 if (resultCode == RESULT_OK) {
