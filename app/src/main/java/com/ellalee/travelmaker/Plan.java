@@ -66,20 +66,20 @@ public class Plan {
     }
     public ArrayList<Marker> getAllMarkers() {return markersList;}
     public String getDateString(){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/mm/dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/ mm/ dd");
         Calendar cal = new GregorianCalendar(y,m,d);
 
         return sdf.format(cal.getTime());
     }
     public String getDateString(int n){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/mm/dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/ mm/ dd");
         Calendar cal = new GregorianCalendar(y,m,d);
         cal.add(Calendar.DAY_OF_MONTH,n);
 
         return sdf.format(cal.getTime());
     }
     public boolean doesDateSet(){
-        if(y==0&&m==0&&d==0){
+        if(y==0 && m==0 && d==0){
             return false;
         }
         return true;
