@@ -30,11 +30,6 @@ import android.widget.Toast;
 
 public class CalendarMain extends Activity {
 
-//    // 캘린더 DB에 schedule 테이블 생성
-//    private final String dbName = "calendar";
-//    private final String tableName = "schedule";
-//    // DB 초기화
-//    SQLiteDatabase sampleDB = null;
 //    ListAdapter adapter;
 
     SQLiteDatabase db;
@@ -367,14 +362,6 @@ public class CalendarMain extends Activity {
             String schedule = data.getStringExtra("schedule");
             String memo = data.getStringExtra("memo");
                 insert(year + "-" + month + "-" + day, schedule, memo);
-//            try {
-//                writeDB.execSQL("INSERT INTO " + tableName + " (date, schedule, memo) Values ('"
-//                        + year + "-" + month + "-" + day + "', '" + schedule + "', '" + memo + "');");
-//                writeDB.close();
-//            }catch (SQLiteException se) {
-//                Toast.makeText(getApplicationContext(), se.getMessage(), Toast.LENGTH_LONG).show();
-//                Log.e("DB exception : ", se.getMessage());
-//            }
         }
 //        gridAdapter = new GridAdapter(getApplicationContext(), dayList);
 //        gridView.setAdapter(gridAdapter);
@@ -418,38 +405,7 @@ public class CalendarMain extends Activity {
                     }
 
                 }
-
-//            try {
-//                SQLiteDatabase ReadDB = this.openOrCreateDatabase(dbName, MODE_PRIVATE, null);
-//
-//                Cursor c = ReadDB.rawQuery("SELECT * FROM "+ tableName, null);
-//
-//                if (c != null) {
-//                    if (c.moveToFirst()) {
-//                        do {
-//                            String Date = c.getString(c.getColumnIndex("date"));
-//                            String Schedule = c.getString(c.getColumnIndex("schedule"));
-//                            String Memo = c.getString(c.getColumnIndex("memo"));
-//
-//
-//                            if (Integer.parseInt(Date.substring(0, 4)) == mCal.get(Calendar.YEAR)) {
-//                                if (Integer.parseInt(Date.substring(5, 7).replace('-',' ').trim()) == month) {
-//                                    if (Integer.parseInt(Date.substring(8).trim()) == Integer.parseInt(d.getDay())) {
-//                                        Log.d("DB에서 얻어온 정보로 통과되는 일", Date.substring(8));
-//                                        count += 1;
-//                                        d.setSche(Schedule);
-//                                        d.setMemo(Memo);
-//                                    }
-//                                }
-//                            }
-//                        } while (c.moveToNext());
-//                    }
-//                }
                 dayList.add(d);
-//            } catch (SQLiteException se) {
-//                Toast.makeText(getApplicationContext(), se.getMessage(), Toast.LENGTH_LONG).show();
-//                Log.e("DB exception : ", se.getMessage());
-//            }
         }
     }
 
