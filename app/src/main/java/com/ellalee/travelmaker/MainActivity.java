@@ -78,14 +78,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private DrawerLayout dlDrawer;
     private ImageButton btn;
     static GoogleAccountCredential mCredential;
-    // SQLiteDatabase db;
+
     PlanSQLiteHelper helper;
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
     static  com.google.api.services.calendar.Calendar mService = null;
-    private static final String PREF_ACCOUNT_NAME = "AccountName";
+    private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = { "https://www.googleapis.com/auth/calendar" };
     private String mEmail;
     private GoogleSignInClient mGoogleSignInClient;
@@ -93,8 +93,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private GoogleApiClient mGoogleApiClient;
     CalendarSync calendarThread;
 
-    //   SQLiteDatabase db;
-    PlanSQLiteHelper db;
+   PlanSQLiteHelper db;
 
     @Override
 
@@ -120,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         setContentView(R.layout.activity_main);
 
 
-        helper = new PlanSQLiteHelper(getApplicationContext());
+ //       helper = new PlanSQLiteHelper(getApplicationContext());
         db = new PlanSQLiteHelper(getApplicationContext());
 
         lvNavList = (ListView)findViewById(R.id.lv_activity_main_nav_list);
@@ -140,6 +139,16 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 .setBackOff(new ExponentialBackOff());
         getResultsFromApi();
 
+        if(mCredential.getSelectedAccountName() == null){
+            navItems[0] = "LogOut";
+            lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1  , navItems));
+        }
+        else{
+            Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
+            nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(nextScreen);
+            ActivityCompat.finishAffinity(MainActivity.this);
+        }
         btn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -183,11 +192,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             switch (position) {
                 case 0:
                     GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-                    if(acct==null){
+                    if(mCredential.getSelectedAccountName() == null){
                         navItems[0] = "LogOut";
                         lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
                     }
                     else{
+                        SharedPreferences settings =
+                                getPreferences(Context.MODE_PRIVATE);
+                        settings.edit().clear().commit();
                         Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
                         nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(nextScreen);

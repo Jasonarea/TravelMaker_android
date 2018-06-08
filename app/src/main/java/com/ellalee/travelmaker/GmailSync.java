@@ -59,7 +59,6 @@ public class GmailSync implements Runnable {
 
     }
 
-
     public void run() {
         try {
             fetchNameFromProfileServer();
