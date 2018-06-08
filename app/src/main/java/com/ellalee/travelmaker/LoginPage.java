@@ -85,7 +85,6 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final LinearLayout activityLayout = new LinearLayout(this);
-        Log.d("Hello Main", "Login PAge");
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
@@ -103,15 +102,11 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
         }*/
+       mCredential.setSelectedAccountName(null);
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        account = GoogleSignIn.getLastSignedInAccount(this);
-        Log.d("Email", email);
+
 
         mCallApiButton = new Button(this);
         mOutputText = new TextView(this);

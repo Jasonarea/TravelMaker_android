@@ -200,9 +200,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     }
                     else{
                         Log.d("What is the matter", "WHat is the MATTER");
-                        SharedPreferences settings =
-                                getPreferences(Context.MODE_PRIVATE);
-                        settings.edit().remove(PREF_ACCOUNT_NAME).commit();
+                        mCredential = null;
                         Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
                         nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(nextScreen);
