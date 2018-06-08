@@ -199,9 +199,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                         lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
                     }
                     else{
+                        Log.d("What is the matter", "WHat is the MATTER");
                         SharedPreferences settings =
                                 getPreferences(Context.MODE_PRIVATE);
-                        settings.edit().remove(mCredential).commit();
+                        settings.edit().remove(PREF_ACCOUNT_NAME).commit();
                         Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
                         nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(nextScreen);
