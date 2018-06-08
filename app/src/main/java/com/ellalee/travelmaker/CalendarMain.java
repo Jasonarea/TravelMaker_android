@@ -395,6 +395,10 @@ public class CalendarMain extends Activity {
         doList = d;
     }
 
+    public static List<String> getDoList() {
+        return doList;
+    }
+
 
     /** 그리드뷰 어댑터 */
 
