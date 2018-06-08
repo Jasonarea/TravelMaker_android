@@ -72,7 +72,11 @@ import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
+<<<<<<< HEAD
     private String[] navItems = {"LogIn", "산관"};
+=======
+    private String[] navItems = {"LogIn", "예산관리"};
+>>>>>>> 50c4aee49ab978f8717a5a4dbdc3c0335fa298d9
 
     private ListView lvNavList;
     private FrameLayout flContainer;
@@ -140,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 .setBackOff(new ExponentialBackOff());
         getResultsFromApi();
 
-        if(mCredential.getSelectedAccountName() == null){
+        if(mCredential.getSelectedAccountName() != null){
             navItems[0] = "LogOut";
             lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1  , navItems));
         }
