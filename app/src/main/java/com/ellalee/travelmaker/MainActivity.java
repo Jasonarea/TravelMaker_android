@@ -55,6 +55,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.util.ExponentialBackOff;
+import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.gmail.Gmail;
 
 import java.io.IOException;
@@ -72,6 +73,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
     private String[] navItems = {"LogIn", "�산관�"};
+
     private ListView lvNavList;
     private FrameLayout flContainer;
     private DrawerLayout dlDrawer;
@@ -138,6 +140,16 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 .setBackOff(new ExponentialBackOff());
         getResultsFromApi();
 
+        if(mCredential.getSelectedAccountName() == null){
+            navItems[0] = "LogOut";
+            lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1  , navItems));
+        }
+        else{
+            Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
+            nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(nextScreen);
+            ActivityCompat.finishAffinity(MainActivity.this);
+        }
         btn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,7 +159,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
         if(acct != null && mCredential.getSelectedAccountName() != null){
             navItems[0] = "LogOut";
-
         }
         else {
             navItems[0] = "LogOut";
@@ -155,7 +166,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         lvNavList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
         lvNavList.setOnItemClickListener(new MainActivity.DrawerItemClickListener());
         dlDrawer = (DrawerLayout)findViewById(R.id.dl_activity_main_drawer);
-
 
     }
 
@@ -180,15 +190,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         @Override
 
         public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-
             switch (position) {
                 case 0:
                     GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-                    if(acct==null){
+                    if(mCredential.getSelectedAccountName() == null){
                         navItems[0] = "LogOut";
                         lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
                     }
                     else{
+                        SharedPreferences settings =
+                                getPreferences(Context.MODE_PRIVATE);
+                        settings.edit().clear().commit();
                         Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
                         nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(nextScreen);
@@ -199,8 +211,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     flContainer.setBackgroundColor(Color.parseColor("#5F9EA0"));
 
                     break;
+                case 2:
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
+                    sendIntent.setType("text/plain");
+                    startActivity(sendIntent);
             }
-
             dlDrawer.closeDrawer(lvNavList);
 
         }
@@ -323,6 +340,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
                 if(acct != null && mCredential.getSelectedAccountName() != null){
                     navItems[0] = "LogOut";
+
+
                     calendarThread = new CalendarSync(mCredential, getApplicationContext());
                     Thread calendar = new Thread(calendarThread);
                     calendar.start();
