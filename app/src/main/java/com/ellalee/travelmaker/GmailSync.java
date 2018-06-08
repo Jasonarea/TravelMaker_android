@@ -48,7 +48,7 @@ public class GmailSync implements Runnable {
     TextView test;
     GoogleAccountCredential mCredential;
     List<Email> allMail;
-    MySQLiteHelper db = new MySQLiteHelper(mContext);
+    MySQLiteHelper db;
     ArrayList<String> sub, bod;
     public GmailSync(HttpTransport mHttpTrans, JsonFactory mJasonfact, GoogleAccountCredential mCredential, Context mContext) {
         this.mHttpTransport = mHttpTrans;
@@ -73,7 +73,7 @@ public class GmailSync implements Runnable {
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void fetchNameFromProfileServer() throws IOException, JSONException {
         int cou = 0;
-
+        db = new MySQLiteHelper(mContext);
         //db.deleteEverything();
         final String[] total = new String[10];
         for (int j = 0; j < 10; j++) total[j] = "";
@@ -169,7 +169,7 @@ public class GmailSync implements Runnable {
                         for(int lo = 0;lo<8;lo++){
                             if(Character.isDigit(bods[k].charAt(lo)))
                                 if(bods[k].contains("체크인")) {checkInOut[0] += bods[k].charAt(lo);Log.d("checkinout", checkInOut[0]);}
-                               
+
                         }
                         if(bods[k].contains("체크인")) {
                             total[cou] += "체크인" + checkInOut[0].substring(0,4) + "/" +"0" +
@@ -178,7 +178,6 @@ public class GmailSync implements Runnable {
                         else
                             total[cou] += "체크아웃"+ checkInOut[1].substring(0,4) + "/" +"0" +
                                     checkInOut[1].substring(4,5) + "/" + checkInOut[1].substring(5, 7) + "\n";
-
                     }
                 }
             }*/

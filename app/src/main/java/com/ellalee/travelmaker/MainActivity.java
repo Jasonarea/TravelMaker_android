@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private DrawerLayout dlDrawer;
     private ImageButton btn;
     static GoogleAccountCredential mCredential;
-   // SQLiteDatabase db;
+    // SQLiteDatabase db;
     PlanSQLiteHelper helper;
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private GoogleApiClient mGoogleApiClient;
     CalendarSync calendarThread;
 
- //   SQLiteDatabase db;
+    //   SQLiteDatabase db;
     PlanSQLiteHelper db;
 
     @Override
@@ -274,7 +274,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
                 long plan_id = db.createPlan(plan);
 /*                db = helper.getWritableDatabase();
-
                 ContentValues values = new ContentValues();
                 values.put("KEY_ID",plan_id);
                 db.insert("TABLE_PLAN",null,values);
@@ -355,7 +354,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
      * @param permissions The requested permissions. Never null.
      * @param grantResults The grant results for the corresponding permissions
      *
-
     /**
      * Callback for when a permission is denied using the EasyPermissions
      * library.
@@ -521,4 +519,3 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         }
     }
 }
-
