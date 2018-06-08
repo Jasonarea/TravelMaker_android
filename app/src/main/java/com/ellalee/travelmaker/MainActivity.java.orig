@@ -55,6 +55,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.util.ExponentialBackOff;
+import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.gmail.Gmail;
 
 import java.io.IOException;
@@ -71,17 +72,22 @@ import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+    private String[] navItems = {"LogIn", "산관"};
+=======
     private String[] navItems = {"LogIn", "예산관리"};
+>>>>>>> 50c4aee49ab978f8717a5a4dbdc3c0335fa298d9
+=======
+    private String[] navItems = {"LogIn", "예산관리", "공유하기"};
+>>>>>>> 5a17d78e76970afb8fb07377597b39f0f72fa7b7
+
     private ListView lvNavList;
     private FrameLayout flContainer;
     private DrawerLayout dlDrawer;
     private ImageButton btn;
     static GoogleAccountCredential mCredential;
-<<<<<<< HEAD
 
-=======
-    // SQLiteDatabase db;
->>>>>>> 3832a43a5d0f6467e17d6ea64ff33e042f4602bd
     PlanSQLiteHelper helper;
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
@@ -96,12 +102,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private GoogleApiClient mGoogleApiClient;
     CalendarSync calendarThread;
 
-<<<<<<< HEAD
    PlanSQLiteHelper db;
-=======
-    //   SQLiteDatabase db;
-    PlanSQLiteHelper db;
->>>>>>> 3832a43a5d0f6467e17d6ea64ff33e042f4602bd
 
     @Override
 
@@ -135,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         flContainer = (FrameLayout)findViewById(R.id.fl_activity_main_container);
 
         btn = (ImageButton)findViewById(R.id.menu_action_button);
-
+        Log.d("Main Access", "Hello Main");
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
@@ -145,8 +146,18 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
-        getResultsFromApi();
+        //getResultsFromApi();
 
+        if(mCredential != null){
+            navItems[0] = "LogOut";
+            lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1  , navItems));
+        }
+        else{
+            Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
+            nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(nextScreen);
+            ActivityCompat.finishAffinity(MainActivity.this);
+        }
         btn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -154,17 +165,16 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         });
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-        if(acct != null && mCredential.getSelectedAccountName() != null){
+        if(mCredential != null){
             navItems[0] = "LogOut";
 
         }
         else {
-            navItems[0] = "LogOut";
+            navItems[0] = "LogIn";
         }
         lvNavList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
         lvNavList.setOnItemClickListener(new MainActivity.DrawerItemClickListener());
         dlDrawer = (DrawerLayout)findViewById(R.id.dl_activity_main_drawer);
-
 
     }
 
@@ -189,15 +199,18 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         @Override
 
         public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-
             switch (position) {
                 case 0:
                     GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-                    if(acct==null){
+                    if(mCredential== null){
                         navItems[0] = "LogOut";
                         lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
                     }
                     else{
+                        Log.d("What is the matter", "WHat is the MATTER");
+                        SharedPreferences settings =
+                                getPreferences(Context.MODE_PRIVATE);
+                        settings.edit().remove(PREF_ACCOUNT_NAME).commit();
                         Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
                         nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(nextScreen);
@@ -208,8 +221,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     flContainer.setBackgroundColor(Color.parseColor("#5F9EA0"));
 
                     break;
+                case 2:
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
+                    sendIntent.setType("text/plain");
+                    startActivity(sendIntent);
             }
-
             dlDrawer.closeDrawer(lvNavList);
 
         }
@@ -253,12 +271,12 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             list = geocoder.getFromLocationName(city, 10);
         } catch (IOException e) {
             e.printStackTrace();
-            makeText(MainActivity.this, "I/O Error", LENGTH_SHORT).show();
+            makeText(MainActivity.this, "어디로 가실 건가요?", LENGTH_SHORT).show();
         }
 
         if (list != null) {
             if (list.size() == 0) {
-                makeText(MainActivity.this, "No matching area info", LENGTH_SHORT).show();
+                makeText(MainActivity.this, "해당하는 정보가 없습니다. 다른 이름으로 검색 해주세요.", LENGTH_SHORT).show();
             }
             else {
                 plan = new Plan();
@@ -273,15 +291,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 plan.setTitle(city); //default title is a city name
 
                 long plan_id = db.createPlan(plan);
-/*                db = helper.getWritableDatabase();
+/*              db = helper.getWritableDatabase();
                 ContentValues values = new ContentValues();
                 values.put("KEY_ID",plan_id);
                 db.insert("TABLE_PLAN",null,values);
 */
                 Intent intent = new Intent(getApplicationContext(),MapMain.class);
                 intent.putExtra("plan_id",plan_id);
-                //putSerializable("newPlan",plan);
-//                intent.putExtras(bundle);
 
                 startActivity(intent);
             }
@@ -330,14 +346,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     }
                 }
                 GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-                if(acct != null && mCredential.getSelectedAccountName() != null){
+                if(mCredential.getSelectedAccountName() != null){
                     navItems[0] = "LogOut";
+
                     calendarThread = new CalendarSync(mCredential, getApplicationContext());
                     Thread calendar = new Thread(calendarThread);
                     calendar.start();
                 }
                 else {
-                    signIn();
                     navItems[0] = "LogOut";
                 }
                 lvNavList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
@@ -396,6 +412,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         Intent intent = new Intent(MainActivity.this,planListActivity.class);
         startActivity(intent);
     }
+
     public void getResultsFromApi() {
         if (! isGooglePlayServicesAvailable()) {
             acquireGooglePlayServices();
