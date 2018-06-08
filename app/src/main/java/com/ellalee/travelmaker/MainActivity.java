@@ -139,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 .setBackOff(new ExponentialBackOff());
         getResultsFromApi();
 
-        if(mCredential.getSelectedAccountName() == null){
+        if(mCredential.getSelectedAccountName() != null){
             navItems[0] = "LogOut";
             lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1  , navItems));
         }
