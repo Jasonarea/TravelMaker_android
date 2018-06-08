@@ -173,8 +173,7 @@ public class CalendarSync extends Thread implements Runnable {
             if (output == null || output.size() == 0) {
                 Toast.makeText(mContext, "No results returned", Toast.LENGTH_LONG).show();
             } else {
-                output.add(0, "구글 캘린더 연동 완료");
-                Toast.makeText(mContext, TextUtils.join("\n", output), Toast.LENGTH_LONG).show();
+                Toast.makeText(mContext, "캘린더 수집 완료", Toast.LENGTH_LONG).show();
             }
         }
 /*

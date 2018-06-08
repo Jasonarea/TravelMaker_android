@@ -71,7 +71,7 @@ import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
-    private String[] navItems = {"LogIn", "예산관리"};
+    private String[] navItems = {"LogIn", "�산관�};
     private ListView lvNavList;
     private FrameLayout flContainer;
     private DrawerLayout dlDrawer;
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
     static  com.google.api.services.calendar.Calendar mService = null;
-    private static final String PREF_ACCOUNT_NAME = "AccountName";
+    private static final String PREF_ACCOUNT_NAME = "accountName";
     private static final String[] SCOPES = { "https://www.googleapis.com/auth/calendar" };
     private String mEmail;
     private GoogleSignInClient mGoogleSignInClient;
@@ -133,36 +133,29 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 .build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         account = GoogleSignIn.getLastSignedInAccount(this);
-        if(account==null || !loadSavedPreferences().equals("EmailStuff")) {
-            mCredential = GoogleAccountCredential.usingOAuth2(
-                    getApplicationContext(), Arrays.asList(SCOPES))
-                    .setBackOff(new ExponentialBackOff());
-            getResultsFromApi();
-        }
+        mCredential = GoogleAccountCredential.usingOAuth2(
+                getApplicationContext(), Arrays.asList(SCOPES))
+                .setBackOff(new ExponentialBackOff());
+        getResultsFromApi();
+
         btn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 dlDrawer.openDrawer(lvNavList);
             }
         });
-
-        dlDrawer = (DrawerLayout)findViewById(R.id.dl_activity_main_drawer);
-
-        String email = loadSavedPreferences();
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-
-        if(acct != null){
+        if(acct != null && mCredential.getSelectedAccountName() != null){
             navItems[0] = "LogOut";
-            calendarThread = new CalendarSync(mCredential, getApplicationContext());
-            Thread calendar = new Thread(calendarThread);
-            calendar.start();
+
         }
         else {
-            signIn();
             navItems[0] = "LogOut";
         }
         lvNavList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
         lvNavList.setOnItemClickListener(new MainActivity.DrawerItemClickListener());
+        dlDrawer = (DrawerLayout)findViewById(R.id.dl_activity_main_drawer);
+
 
     }
 
@@ -192,12 +185,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 case 0:
                     GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
                     if(acct==null){
-                        signIn();
                         navItems[0] = "LogOut";
                         lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
                     }
                     else{
-                        signOut();
                         Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
                         nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(nextScreen);
@@ -208,7 +199,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     flContainer.setBackgroundColor(Color.parseColor("#5F9EA0"));
 
                     break;
-
             }
 
             dlDrawer.closeDrawer(lvNavList);
@@ -219,9 +209,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, SIGN_IN);
 
-        calendarThread = new CalendarSync(mCredential, getApplicationContext());
-        Thread calendar = new Thread(calendarThread);
-        calendar.start();
+        /*if(mCredential != null) {
+            calendarThread = new CalendarSync(mCredential, getApplicationContext());
+            Thread calendar = new Thread(calendarThread);
+            calendar.start();
+        }*/
     }
 
     private void signOut() {
@@ -273,7 +265,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
                 long plan_id = db.createPlan(plan);
 /*                db = helper.getWritableDatabase();
-
                 ContentValues values = new ContentValues();
                 values.put("KEY_ID",plan_id);
                 db.insert("TABLE_PLAN",null,values);
@@ -329,6 +320,19 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                         getResultsFromApi();
                     }
                 }
+                GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+                if(acct != null && mCredential.getSelectedAccountName() != null){
+                    navItems[0] = "LogOut";
+                    calendarThread = new CalendarSync(mCredential, getApplicationContext());
+                    Thread calendar = new Thread(calendarThread);
+                    calendar.start();
+                }
+                else {
+                    signIn();
+                    navItems[0] = "LogOut";
+                }
+                lvNavList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
+                lvNavList.setOnItemClickListener(new MainActivity.DrawerItemClickListener());
                 break;
             case REQUEST_AUTHORIZATION:
                 if (resultCode == RESULT_OK) {
@@ -354,7 +358,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
      * @param permissions The requested permissions. Never null.
      * @param grantResults The grant results for the corresponding permissions
      *
-
     /**
      * Callback for when a permission is denied using the EasyPermissions
      * library.
@@ -392,6 +395,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         } else if (! isDeviceOnline()) {
             Toast.makeText(getApplicationContext(), "No network connection available.", Toast.LENGTH_LONG).show();
         } else {
+            calendarThread = new CalendarSync(mCredential, getApplicationContext());
+            Thread calendar = new Thread(calendarThread);
+            calendar.start();
         }
     }
     /**
@@ -520,4 +526,3 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         }
     }
 }
-
