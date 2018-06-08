@@ -140,7 +140,7 @@ public class planListActivity extends AppCompatActivity {
             title = p.getTitle();
             startDate = new Date(p.getYear(),p.getMonth(),p.getDay());
             routeNum = p.getRoutesList().size();
-            plan_id=p.getId();
+            plan_id = p.getId();
             imgSrc = R.drawable.plan_img_default;
         }
 
@@ -161,6 +161,9 @@ public class planListActivity extends AppCompatActivity {
         }
         public int getImgSrc(){
             return this.imgSrc;
+        }
+        public long getPlan_id(){
+            return this.plan_id;
         }
         public void setTitle(String newTitle){
             this.title = newTitle;
@@ -228,7 +231,22 @@ public class planListActivity extends AppCompatActivity {
             btnDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Toast.makeText(planListActivity.this, "delete plan "+viewId, Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder alert = new AlertDialog.Builder(planListActivity.this);
+                    alert.setMessage("정말 삭제하시겠습니까?");
+                    alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Toast.makeText(planListActivity.this, "delete plan "+plans.get(viewId).getPlan_id(), Toast.LENGTH_SHORT).show();
+                            db = helper.getWritableDatabase();
+                            helper.deletePlan(plans.get(viewId).getPlan_id());
+                        }
+                    });
+                    alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                        }
+                    });
+                    alert.show();
                 }
             });
 
@@ -237,7 +255,7 @@ public class planListActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     AlertDialog.Builder alert = new AlertDialog.Builder(planListActivity.this);
-                    alert.setTitle("Edit plan title.");
+                    alert.setTitle("일정 제목을 알려주세요.");
 
                     final EditText editTitle = new EditText(planListActivity.this);
                     alert.setView(editTitle);
@@ -247,7 +265,7 @@ public class planListActivity extends AppCompatActivity {
                             db = helper.getWritableDatabase();
                             String newTitle = editTitle.getText().toString();
                             plans.get(viewId).setTitle(newTitle);
-                            helper.updatePlan(viewId+1,newTitle); //plan_id starts from 1.
+                            helper.updatePlan(plans.get(viewId).getPlan_id(),newTitle); //plan_id starts from 1.
                         }
                     });
 
@@ -273,7 +291,7 @@ public class planListActivity extends AppCompatActivity {
                             db = helper.getWritableDatabase();
                             Date newDate = new Date(datePicker.getYear(),datePicker.getMonth(),datePicker.getDayOfMonth());
                             plans.get(viewId).setDate(newDate);
-                            helper.updatePlan(viewId+1,newDate); //plan_id starts from 1.
+                            helper.updatePlan(plans.get(viewId).getPlan_id(),newDate); //plan_id starts from 1.
                         }
                     });
 
@@ -289,6 +307,7 @@ public class planListActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getApplicationContext(),MapMain.class);
+                    Log.d("INTENT PLAN_ID",plans.get(viewId).plan_id+" ");
                     intent.putExtra("plan_id",plans.get(viewId).plan_id);
                     startActivity(intent);
                 }
@@ -296,8 +315,6 @@ public class planListActivity extends AppCompatActivity {
             return view;
         }
 
-
     }
-
 
 }

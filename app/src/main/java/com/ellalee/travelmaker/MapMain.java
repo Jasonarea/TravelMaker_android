@@ -179,11 +179,12 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 
         db = new PlanSQLiteHelper(getApplicationContext());
         plan = db.getPlan(plan.getId(),googleMap,markerIcon);
+        db.getRouteListCount(plan.getId());
 
         Log.d("MAPMAIN ROUTES NUM: ",plan.getRoutesList().size()+"********");
 
         routes = plan.getRoutesList();
-        newIndex = routes.size();
+        newIndex = (routes.size()==1)? 0 :routes.size();
 //        db.getALLMarkers(plan.getId(),map,markerIcon);
 /*
         //initialize when plan is created
@@ -394,7 +395,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             Iterator<Route> route_iterator = routes.iterator();
             Route cur;
 
-            db.deleteMarker(plan.getId(),marker);
+            db.deleteMarker(marker);
             marker.remove();
 
             while (route_iterator.hasNext()){
