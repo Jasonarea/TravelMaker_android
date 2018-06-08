@@ -351,7 +351,7 @@ public class CalendarMain extends Activity {
 
 
                             if (Integer.parseInt(Date.substring(0, 4)) == mCal.get(Calendar.YEAR)) {
-                                if (Integer.parseInt(Date.substring(5, 7).trim()) == month) {
+                                if (Integer.parseInt(Date.substring(5, 7).replace('-',' ').trim()) == month) {
                                     if (Integer.parseInt(Date.substring(8).trim()) == Integer.parseInt(d.getDay())) {
                                         Log.d("DB에서 얻어온 정보로 통과되는 일", Date.substring(8));
                                         count += 1;
@@ -393,6 +393,10 @@ public class CalendarMain extends Activity {
 
     public static void setDoList(List<String> d) {
         doList = d;
+    }
+
+    public static List<String> getDoList() {
+        return doList;
     }
 
 
