@@ -14,15 +14,18 @@ import com.google.api.client.util.DateTime;
 
 import com.google.api.services.calendar.model.*;
 
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import pub.devrel.easypermissions.EasyPermissions;
@@ -41,7 +44,7 @@ public class CalendarSync extends Thread implements Runnable {
     static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
     static  com.google.api.services.calendar.Calendar mService = null;
     private static final String BUTTON_TEXT = "Call Google Calendar API";
-    private static final String PREF_ACCOUNT_NAME = "accountName";
+    private static final String PREF_ACCOUNT_NAME = "AccountName";
     public static final String[] SCOPES = { "https://www.googleapis.com/auth/calendar",
             "https://www.googleapis.com/auth/calendar.readonly" };
     //public static String calendarName = "";
@@ -57,6 +60,7 @@ public class CalendarSync extends Thread implements Runnable {
         Thread gmail = new Thread(gmailThread);
         gmail.start();
     }
+
     public static void createEvent(com.google.api.services.calendar.Calendar mService,
                                    String startD, String endD, String nation, String fromNation) throws IOException {
         Event event = new Event().setSummary("Travel to " + nation)
@@ -156,7 +160,7 @@ public class CalendarSync extends Thread implements Runnable {
                         String.format("%s (%s)", event.getSummary(), start));
             }
             if(createOneSchedule) {
-                //createEvent(mService);`
+                CalendarMain.setDoList(eventStrings);
                 createOneSchedule = false;
             }
             return eventStrings;
@@ -176,25 +180,5 @@ public class CalendarSync extends Thread implements Runnable {
                 Toast.makeText(mContext, "캘린더 수집 완료", Toast.LENGTH_LONG).show();
             }
         }
-/*
-        @Override
-        protected void onCancelled() {
-            mProgress.hide();
-            if (mLastError != null) {
-                if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
-                    showGooglePlayServicesAvailabilityErrorDialog(
-                            ((GooglePlayServicesAvailabilityIOException) mLastError)
-                                    .getConnectionStatusCode());
-                } else if (mLastError instanceof UserRecoverableAuthIOException) {
-                    startActivityForResult(
-                            ((UserRecoverableAuthIOException) mLastError).getIntent(),
-                            CalendarSync.REQUEST_AUTHORIZATION);
-                } else {
-                    Toast.makeText(mContext, "The following error occurred:\n" + mLastError.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            } else {
-                Toast.makeText(mContext, "Request Canceled", Toast.LENGTH_LONG).show();
-            }
-        }*/
     }
 }
