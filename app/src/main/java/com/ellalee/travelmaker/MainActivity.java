@@ -72,7 +72,7 @@ import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
-    private String[] navItems = {"LogIn", "�산관�};
+    private String[] navItems = {"LogIn", "예산관리"};
 
     private ListView lvNavList;
     private FrameLayout flContainer;
