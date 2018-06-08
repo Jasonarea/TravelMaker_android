@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -520,6 +521,30 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         // updating plan date
         return db.update(TABLE_PLAN, values, KEY_ID + " = ?", new String[] { String.valueOf(plan.getId()) });
     }
+    public int updatePlan(long plan_id, String newTitle){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_TITLE,newTitle);
+
+        Log.d("UPDATE","PLAN "+plan_id);
+        // updating plan date
+        return db.update(TABLE_PLAN, values, KEY_ID + " = ? ", new String[] { String.valueOf(plan_id) });
+    }
+    public int updatePlan(long plan_id, Date newDate){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_YEAR,newDate.getYear());
+        values.put(KEY_MONTH,newDate.getMonth());
+        values.put(KEY_DAY,newDate.getDate());
+
+        Log.d("UPDATE","PLAN "+plan_id+" :"+newDate.getMonth()+"/"+newDate.getDate());
+
+        // updating plan date
+        return db.update(TABLE_PLAN, values, KEY_ID + " = ? ", new String[] { String.valueOf(plan_id) });
+    }
+
     public int updateMarker(Marker marker){
         SQLiteDatabase db = this.getWritableDatabase();
         String selectQuery = "SELECT * FROM "+ TABLE_MARKER + " WHERE " + KEY_ID +" = '"+marker.getTag().toString()+"'";

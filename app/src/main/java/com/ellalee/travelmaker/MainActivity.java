@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private DrawerLayout dlDrawer;
     private ImageButton btn;
     static GoogleAccountCredential mCredential;
-   // SQLiteDatabase db;
+
     PlanSQLiteHelper helper;
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
@@ -92,8 +92,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private GoogleApiClient mGoogleApiClient;
     CalendarSync calendarThread;
 
- //   SQLiteDatabase db;
-    PlanSQLiteHelper db;
+   PlanSQLiteHelper db;
 
     @Override
 
@@ -119,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         setContentView(R.layout.activity_main);
 
 
-        helper = new PlanSQLiteHelper(getApplicationContext());
+ //       helper = new PlanSQLiteHelper(getApplicationContext());
         db = new PlanSQLiteHelper(getApplicationContext());
 
         lvNavList = (ListView)findViewById(R.id.lv_activity_main_nav_list);

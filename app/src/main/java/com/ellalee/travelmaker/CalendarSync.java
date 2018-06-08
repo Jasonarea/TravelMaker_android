@@ -53,10 +53,10 @@ public class CalendarSync extends Thread implements Runnable {
 
     public void run() {
         getResultsFromApi(mCredential);
-        gmailThread = new GmailSync(transport, jsonFactory, mCredential, mContext);
+  /*      gmailThread = new GmailSync(transport, jsonFactory, mCredential, mContext);
         Thread gmail = new Thread(gmailThread);
         gmail.start();
-    }
+    */}
     public static void createEvent(com.google.api.services.calendar.Calendar mService,
                                    String startD, String endD, String nation, String fromNation) throws IOException {
         Event event = new Event().setSummary("Travel to " + nation)

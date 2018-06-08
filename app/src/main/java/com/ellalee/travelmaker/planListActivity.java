@@ -1,5 +1,6 @@
 package com.ellalee.travelmaker;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -28,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.zip.Inflater;
 
@@ -42,7 +45,6 @@ public class planListActivity extends AppCompatActivity {
     ArrayList<planListItem> plans;
     GridView planListView;
     ImageButton activateDelete;
-    ImageButton btnDelete;
 
     boolean delete_mode = false;
 
@@ -115,7 +117,7 @@ public class planListActivity extends AppCompatActivity {
     public void invalidate(){
         select();
         //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,planList);
-        Log.d("PLAN NUM : ",plans.size()+"*******");
+        Log.d("INVALIDATE PLAN NUM : ",plans.size()+"*******");
         planListView.setAdapter(new PlanGridAdapter(delete_mode));
     }
 
@@ -149,16 +151,23 @@ public class planListActivity extends AppCompatActivity {
             plan_id = id;
             imgSrc = R.drawable.plan_img_default;
         }
+
         public String getTitle(){
             return this.title;
         }
         public String getDate(){
-            return startDate.getYear()+"/ "+startDate.getMonth()+"/ "+startDate.getDay();
+            int m=(this.startDate.getMonth()+1)%13;
+            return this.startDate.getYear()+"/ "+m+"/ "+this.startDate.getDate();
         }
         public int getImgSrc(){
             return this.imgSrc;
         }
-
+        public void setTitle(String newTitle){
+            this.title = newTitle;
+        }
+        public void setDate(Date newDate){
+            this.startDate = newDate;
+        }
         public String toString() {
             String msg;
 //            msg = "*"+this.plan_id+"* "+this.title+"\n"+routeNum+"days plan "+startDate.toString();
@@ -199,6 +208,7 @@ public class planListActivity extends AppCompatActivity {
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             final int viewId =i;
+            final Boolean mode = delete_mode;
             if(view == null){
                 view=inflater.inflate(R.layout.plan_grid_item,viewGroup,false);
             }
@@ -208,35 +218,36 @@ public class planListActivity extends AppCompatActivity {
             imgPlan = view.findViewById(R.id.imgPlanNote);
 
             Log.d("DELETE MODE "," "+mode);
+
+            if(mode){
+                btnDelete.setVisibility(View.GONE);
+            }else{
+                btnDelete.setVisibility(VISIBLE);
+            }
+
             btnDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(mode){
-                        delete_mode=false;
-                        btnDelete.setVisibility(INVISIBLE);
-                    }else{
-                        delete_mode=true;
-                        btnDelete.setVisibility(VISIBLE);
-                    }
+                    Toast.makeText(planListActivity.this, "delete plan "+viewId, Toast.LENGTH_SHORT).show();
                 }
             });
 
             title.setText(plans.get(i).getTitle());
-/*
             title.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    AlertDialog.Builder alert = new AlertDialog.Builder(getApplicationContext());
-                    alert.setTitle("Edit plan title");
+                    AlertDialog.Builder alert = new AlertDialog.Builder(planListActivity.this);
+                    alert.setTitle("Edit plan title.");
 
-                    final EditText editTitle = new EditText(getApplicationContext());
+                    final EditText editTitle = new EditText(planListActivity.this);
                     alert.setView(editTitle);
 
                     alert.setPositiveButton("저장", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
+                            db = helper.getWritableDatabase();
                             String newTitle = editTitle.getText().toString();
-                            title.setText(newTitle);
-                            //db작업필요
+                            plans.get(viewId).setTitle(newTitle);
+                            helper.updatePlan(viewId+1,newTitle); //plan_id starts from 1.
                         }
                     });
 
@@ -247,22 +258,41 @@ public class planListActivity extends AppCompatActivity {
                     alert.show();
                 }
             });
-*/
+
             date.setText(plans.get(i).getDate());
-            imgPlan.setImageResource(plans.get(i).getImgSrc());
+            date.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AlertDialog.Builder alert = new AlertDialog.Builder(planListActivity.this);
+
+                    final DatePicker datePicker = new DatePicker(planListActivity.this);
+                    alert.setView(datePicker);
+                    
+                    alert.setPositiveButton("저장", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton){
+                            db = helper.getWritableDatabase();
+                            Date newDate = new Date(datePicker.getYear(),datePicker.getMonth(),datePicker.getDayOfMonth());
+                            plans.get(viewId).setDate(newDate);
+                            helper.updatePlan(viewId+1,newDate); //plan_id starts from 1.
+                        }
+                    });
+
+                    alert.setNegativeButton("취소",new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int whichButton) {
+                        }
+                    });
+                    alert.show();
+                }
+            });
+            imgPlan.setImageResource(plans.get(viewId).getImgSrc());
             imgPlan.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-//                    TextView tv = view.findViewById(R.id.getViewId);
-//                    int id = Integer.parseInt(String.valueOf(tv.getText()));
-
                     Intent intent = new Intent(getApplicationContext(),MapMain.class);
                     intent.putExtra("plan_id",plans.get(viewId).plan_id);
                     startActivity(intent);
                 }
             });
-            //btnDelete.//img로 이후에 변경 //onclick도 추가
-
             return view;
         }
 
