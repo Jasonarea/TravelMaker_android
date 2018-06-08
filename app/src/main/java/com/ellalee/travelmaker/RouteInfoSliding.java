@@ -82,6 +82,7 @@ public class RouteInfoSliding extends View{
         for(int i=0;i<num;i++){
             circle.add(i,cur);
             area.add(new Rect(cur,y-rad,cur+rad*2,y+rad));
+
             cur+=x;
         }
     }
@@ -184,12 +185,5 @@ public class RouteInfoSliding extends View{
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(MeasureSpec.makeMeasureSpec(4000, MeasureSpec.AT_MOST), heightMeasureSpec);
 //      super.onMeasure(MeasureSpec.makeMeasureSpec(widthMeasureSpec,MeasureSpec.EXACTLY),heightMeasureSpec);
-    }
-    public class PlacePoint{
-        private Marker marker;
-        private BitmapDescriptor icon;
-
-        PlacePoint(){
-        }
     }
 }

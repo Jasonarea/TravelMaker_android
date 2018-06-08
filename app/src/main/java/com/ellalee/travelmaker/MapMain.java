@@ -318,8 +318,13 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                     Route cur;
                     while(iterator.hasNext()){
                         cur=iterator.next();
+                        int n = cur.contains(polyline,googleMap);
                         if(cur.contains(polyline,googleMap)!=-1){
-                            title.setText("Route info of Day "+cur.contains(polyline,googleMap));
+                            if(!plan.doesDateSet()){
+                                title.setText("Route info of Day "+(n+1));
+                            }else{
+                                title.setText(plan.getDateString(n));
+                            }
                             RouteInfoSliding indicator = findViewById(R.id.routeInfoDraw);
                             indicator.setRoute(cur);
                             cur.setMarkerList(map,indicator.getModified()); //get the modified route info
@@ -371,17 +376,13 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                                 marker.setTag(0);
                                 break;
                         }
-
                     }
                 });
                 popInput.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
+                    public void onClick(DialogInterface dialog, int which) {}
                 }  );
                 popInput.show();
-
             }
         });
     }
@@ -416,7 +417,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                 routes.get(routeIndex).setPoints(googleMap);
 
                 db.createMarkerList(plan.getId(),routes.get(routeIndex).getId(),marker);
-//                routes.get(routeIndex).drawPolyline(googleMap);
             }
 
         }
@@ -432,12 +432,22 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         contextMenu = menu;
 
         menu.add(0,-1,0,"New Day");
-        menu.add(0,0,0,"Day1");
+        if(plan.doesDateSet()){
+            menu.add(0,0,0,plan.getDateString());
 
-        int day;
-        for (int i=1;i<=newIndex;i++){
-            day= i+1;
-            contextMenu.add(0,i,0,"Day"+day);
+            int day;
+            for (int i=1;i<=newIndex;i++){
+                day= i+1;
+                contextMenu.add(0,i,0,plan.getDateString(i));
+            }
+        }else {
+            menu.add(0,0,0,"Day1");
+
+            int day;
+            for (int i=1;i<=newIndex;i++){
+                day= i+1;
+                contextMenu.add(0,i,0,"Day"+day);
+            }
         }
     }
 
@@ -450,10 +460,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         if (item.getItemId() == -1) {
 
             //maximum route number is 20
-            if(newIndex<10) {
+            if(newIndex<20) {
                 newIndex = routes.size();
-//                Route route = new Route(newIndex, routeColor[newIndex], googleMap);
-
                 Route route = new Route(newIndex, routeColor[newIndex]);
                 routes.add(newIndex, route);
                 db.createRoute(plan.getId(),route);

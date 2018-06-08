@@ -72,7 +72,7 @@ import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
-    private String[] navItems = {"LogIn", "�산관�};
+    private String[] navItems = {"LogIn", "산관"};
 
     private ListView lvNavList;
     private FrameLayout flContainer;
@@ -261,12 +261,12 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             list = geocoder.getFromLocationName(city, 10);
         } catch (IOException e) {
             e.printStackTrace();
-            makeText(MainActivity.this, "I/O Error", LENGTH_SHORT).show();
+            makeText(MainActivity.this, "어디로 가실 건가요?", LENGTH_SHORT).show();
         }
 
         if (list != null) {
             if (list.size() == 0) {
-                makeText(MainActivity.this, "No matching area info", LENGTH_SHORT).show();
+                makeText(MainActivity.this, "해당하는 정보가 없습니다. 다른 이름으로 검색 해주세요.", LENGTH_SHORT).show();
             }
             else {
                 plan = new Plan();
@@ -281,15 +281,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 plan.setTitle(city); //default title is a city name
 
                 long plan_id = db.createPlan(plan);
-/*                db = helper.getWritableDatabase();
+/*              db = helper.getWritableDatabase();
                 ContentValues values = new ContentValues();
                 values.put("KEY_ID",plan_id);
                 db.insert("TABLE_PLAN",null,values);
 */
                 Intent intent = new Intent(getApplicationContext(),MapMain.class);
                 intent.putExtra("plan_id",plan_id);
-                //putSerializable("newPlan",plan);
-//                intent.putExtras(bundle);
 
                 startActivity(intent);
             }
@@ -340,7 +338,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
                 if(acct != null && mCredential.getSelectedAccountName() != null){
                     navItems[0] = "LogOut";
-
 
                     calendarThread = new CalendarSync(mCredential, getApplicationContext());
                     Thread calendar = new Thread(calendarThread);
@@ -406,6 +403,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         Intent intent = new Intent(MainActivity.this,planListActivity.class);
         startActivity(intent);
     }
+
     public void getResultsFromApi() {
         if (! isGooglePlayServicesAvailable()) {
             acquireGooglePlayServices();
