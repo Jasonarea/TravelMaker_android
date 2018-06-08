@@ -70,7 +70,7 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
     GmailSync gmailThread;
     private TextView testHandler;
     CalendarSync calendarThread;
-
+    static boolean checkAccount;
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
@@ -79,6 +79,7 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
     private static final String PREF_ACCOUNT_NAME = "AccountName";
     private static final String[] SCOPES = { "https://www.googleapis.com/auth/calendar" };
     private String mEmail;
+
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInAccount account;
 
@@ -102,8 +103,8 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(intent);
         }*/
-       mCredential.setSelectedAccountName(null);
-        mCredential = GoogleAccountCredential.usingOAuth2(
+
+       mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
 
@@ -141,17 +142,16 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
      * appropriate.
      */
     public void getResultsFromApi() {
+
         if (! isGooglePlayServicesAvailable()) {
             acquireGooglePlayServices();
-        } else if (mCredential.getSelectedAccountName() == null) {
-            chooseAccount();
         } else if (! isDeviceOnline()) {
             mOutputText.setText("No network connection available.");
         } else {
             //new MakeRequestTask(mCredential).execute();
-            mOutputText.setText("Login Finish");
-            Intent newIntent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(newIntent);
+            //mOutputText.setText("Login Finish");
+            chooseAccount();
+
         }
     }
     /**
@@ -168,17 +168,14 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
     private void chooseAccount() {
         if (EasyPermissions.hasPermissions(
                 this, Manifest.permission.GET_ACCOUNTS)) {
-            String accountName = getPreferences(Context.MODE_PRIVATE)
+            /*String accountName = getPreferences(Context.MODE_PRIVATE)
                     .getString(PREF_ACCOUNT_NAME, null);
             if (accountName != null) {
                 mCredential.setSelectedAccountName(accountName);
-                getResultsFromApi();
-            } else {
-                // Start a dialog from which the user can choose an account
-                startActivityForResult(
-                        mCredential.newChooseAccountIntent(),
-                        REQUEST_ACCOUNT_PICKER);
-            }
+                getResultsFromApi();*/
+            startActivityForResult(
+                    mCredential.newChooseAccountIntent(),
+                    REQUEST_ACCOUNT_PICKER);
         } else {
             // Request the GET_ACCOUNTS permission via a user dialog
             EasyPermissions.requestPermissions(
@@ -231,6 +228,8 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
                 calendarThread = new CalendarSync(mCredential, getApplicationContext());
                 Thread calendar = new Thread(calendarThread);
                 calendar.start();
+                Intent newIntent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(newIntent);
                 break;
             case REQUEST_AUTHORIZATION:
                 if (resultCode == RESULT_OK) {

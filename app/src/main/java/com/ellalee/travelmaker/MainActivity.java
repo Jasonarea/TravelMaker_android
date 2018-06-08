@@ -72,7 +72,7 @@ import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
-    private String[] navItems = {"LogIn", "산관", "공유기"};
+    private String[] navItems = {"LogIn", "예산관리", "공유하기", "GMail 동기화"};
 
     private ListView lvNavList;
     private FrameLayout flContainer;
@@ -200,7 +200,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     }
                     else{
                         Log.d("What is the matter", "WHat is the MATTER");
-                        mCredential = null;
                         Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
                         nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(nextScreen);
@@ -217,6 +216,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
                     sendIntent.setType("text/plain");
                     startActivity(sendIntent);
+                case 3:
+                    mCredential = GoogleAccountCredential.usingOAuth2(
+                            getApplicationContext(), Arrays.asList(SCOPES))
+                            .setBackOff(new ExponentialBackOff());
+                    getResultsFromApi();
             }
             dlDrawer.closeDrawer(lvNavList);
 

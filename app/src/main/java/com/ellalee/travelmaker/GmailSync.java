@@ -147,6 +147,7 @@ public class GmailSync implements Runnable {
                 }
             }
             ++count;
+            if(count>30) return;
             Log.d("count", String.valueOf(count));
 
             final String finalBod = bod;
