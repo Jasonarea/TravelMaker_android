@@ -528,7 +528,7 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         values.put(KEY_TITLE,newTitle);
 
         Log.d("UPDATE","PLAN "+plan_id);
-        // updating plan date
+        // updating plan title
         return db.update(TABLE_PLAN, values, KEY_ID + " = ? ", new String[] { String.valueOf(plan_id) });
     }
     public int updatePlan(long plan_id, Date newDate){
@@ -540,7 +540,6 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         values.put(KEY_DAY,newDate.getDate());
 
         Log.d("UPDATE","PLAN "+plan_id+" :"+newDate.getMonth()+"/"+newDate.getDate());
-
         // updating plan date
         return db.update(TABLE_PLAN, values, KEY_ID + " = ? ", new String[] { String.valueOf(plan_id) });
     }
@@ -564,9 +563,7 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
     }
     public int updateMarker(long plan_id,Marker marker){
         SQLiteDatabase db = this.getWritableDatabase();
-        String selectQuery = "SELECT * FROM "+ TABLE_MARKER + " WHERE " + KEY_PLAN_ID +" ='"+plan_id+"'"
-                +" AND "+KEY_LATITUDE + " = '" +marker.getPosition().latitude+"'"
-                +" AND "+KEY_LONGITUDE+ " = '" +marker.getPosition().longitude+"'";
+        String selectQuery = "SELECT * FROM "+ TABLE_MARKER + " WHERE " + KEY_ID +" ='"+marker.getTag().toString()+"'";
         Cursor c = db.rawQuery(selectQuery,null);
 
         if(c!=null && c.getCount()!=0){
@@ -581,61 +578,10 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         return -1;
     }
 
+
     //delete
-    public void deleteMarkerList(long plan_id,Marker marker){ //because the marker was removed
-        SQLiteDatabase db = this.getWritableDatabase();
-        String selectQuery = "SELECT * FROM "+ TABLE_MARKER + " WHERE " + KEY_PLAN_ID +" '"+plan_id+"' "
-                +" AND "+KEY_LATITUDE + " = '" +marker.getPosition().latitude+"'"
-                +" AND "+KEY_LONGITUDE+ " = '" +marker.getPosition().longitude+"'";
-        Cursor c = db.rawQuery(selectQuery,null);
 
-        if(c!=null && c.getCount()!=0){
-            c.moveToFirst();
-
-            while(db.delete(TABLE_MARKERLIST,KEY_MARKER_ID+" = ?",new String[]{ String.valueOf(c.getLong(c.getColumnIndex(KEY_ID)))})>0){
-            }
-/*            do {
-                db.delete(TABLE_MARKERLIST, KEY_MARKER_ID + " = ?", new String[]{String.valueOf(c.getLong(c.getColumnIndex(KEY_MARKER_ID)))});
-            }while (c.moveToNext());
-*/        }
-    }
-    public void deleteMarkerList(long plan_id,long marker_id){ //because the marker was removed
-        SQLiteDatabase db = this.getWritableDatabase();
-
-            while(db.delete(TABLE_MARKERLIST,KEY_MARKER_ID+" = ?",new String[]{ String.valueOf(marker_id) })>0){
-            }
-    }
-
-    public void deleteMarkerList(Route route){ //because the route was removed
-        SQLiteDatabase db = this.getWritableDatabase();
-     /*   String selectQuery = "SELECT * FROM "+TABLE_MARKERLIST+ " WHERE "+ KEY_ROUTE_ID + " = '" +route.getId()+"' ";
-        Cursor c = db.rawQuery(selectQuery,null);
-
-        if(c!=null && c.getCount()!=0){
-            c.moveToFirst();
-            do {
-            */
-
-     while(db.delete(TABLE_MARKERLIST,KEY_ROUTE_ID+" = ?",new String[]{String.valueOf(route.getId())})>0){
-     }
-                ;
-         /*   }while (c.moveToNext());
-        }*/
-    }
-    public void deleteMarkerList(Route route,Marker marker){ // the marker was removed just from the route.
-        SQLiteDatabase db = this.getWritableDatabase();
-        String selectQuery = "SELECT * FROM " + TABLE_MARKERLIST + " ml, " + TABLE_MARKER + " tm "
-                + "WHERE ml." +KEY_ROUTE_ID + " = '" +route.getId() +"' "
-                +" AND tm."+KEY_LATITUDE + " = '" +marker.getPosition().latitude+"'"
-                +" AND tm."+KEY_LONGITUDE+ " = '" +marker.getPosition().longitude+"'";
-
-        Cursor c = db.rawQuery(selectQuery,null);
-        if(c!=null && c.getCount()!=0 ){
-            c.moveToFirst();
-            db.delete(TABLE_MARKERLIST,KEY_ID+" = ?",new String[]{ String.valueOf(c.getInt(c.getColumnIndex(KEY_ID)))});
-        }
-    }
-    public void deleteMarker(long plan_id,Marker marker){
+    /*public void deleteMarker(long plan_id,Marker marker){
         SQLiteDatabase db = this.getWritableDatabase();
         String selectQuery = "SELECT * FROM "+ TABLE_MARKER + " WHERE " + KEY_PLAN_ID +" = '"+plan_id+"'"
                 +" AND "+KEY_LATITUDE + " = '" +marker.getPosition().latitude+"'"
@@ -647,17 +593,68 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
             deleteMarkerList(plan_id, c.getLong(c.getColumnIndex(KEY_ID)));
             db.delete(TABLE_MARKER, KEY_ID + " = ?", new String[]{String.valueOf(c.getLong(c.getColumnIndex(KEY_ID)))});
         }
+    }*/
+    public void deleteMarker(Marker marker){
+        SQLiteDatabase db = this.getWritableDatabase();
+        deleteMarkerList(Long.getLong(marker.getTag().toString()));
+        db.delete(TABLE_MARKER, KEY_ID + " = ?", new String[]{ marker.getTag().toString() });
+    }
+    public void deleteALLMarker(long plan_id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        while (db.delete(TABLE_MARKER, KEY_PLAN_ID + " = ?", new String[]{ String.valueOf(plan_id) })>0){
+        }
+    }
+
+    public void deleteMarkerList(long marker_id){ //because the marker was removed
+        SQLiteDatabase db = this.getWritableDatabase();
+        while(db.delete(TABLE_MARKERLIST,KEY_MARKER_ID+" = ?",new String[]{ String.valueOf(marker_id) })>0){
+            }
+    }
+    public void deleteMarkerListR(long route_id){ //because the route was removed
+        SQLiteDatabase db = this.getWritableDatabase();
+        while(db.delete(TABLE_MARKERLIST,KEY_ROUTE_ID+" = ?",new String[]{String.valueOf(route_id)})>0){
+        }
+    }
+    public int deleteMarkerList(Route route,Marker marker){ // the marker was removed just from the route.
+        SQLiteDatabase db = this.getWritableDatabase();
+        String selectQuery = "SELECT * FROM " + TABLE_MARKERLIST + "WHERE " +KEY_ROUTE_ID + " = '" +route.getId() +"' "
+                +" AND "+KEY_MARKER_ID + " = '" +marker.getTag().toString()+"'";
+
+        Cursor c = db.rawQuery(selectQuery,null);
+        if(c!=null && c.getCount()!=0 ){
+            c.moveToFirst();
+            return db.delete(TABLE_MARKERLIST,KEY_ID+" = ?",new String[]{ String.valueOf(c.getInt(c.getColumnIndex(KEY_ID)))});
+        }
+        return 0;
     }
     /*
     public void deleteRouteList(Route route){
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_ROUTELIST,KEY_ROUTE_ID+" = ?",new String[]{String.valueOf(route.getId())});
     }*/
-    public void deleteRoute(Route route){
+    public int deleteRoute(Route route){
         SQLiteDatabase db = this.getWritableDatabase();
-        deleteMarkerList(route);
-       // deleteRouteList(route);
-        db.delete(TABLE_ROUTE,KEY_ROUTE_ID+" = ?",new String[]{String.valueOf(route.getId())});
+        deleteMarkerListR(route.getId());
+        return db.delete(TABLE_ROUTE,KEY_ROUTE_ID+" = ?",new String[]{String.valueOf(route.getId())});
+    }
+    public void deleteRoute(long plan_id){ //because the plan was deleted
+        SQLiteDatabase db = this.getWritableDatabase();
+        String selectQuery = "SELECT * FROM " + TABLE_ROUTE + " WHERE " +KEY_PLAN_ID + " = '" +plan_id+"' ";
+
+        Cursor c = db.rawQuery(selectQuery,null);
+        if(c!=null && c.getCount()!=0 ){
+            c.moveToFirst();
+            do{
+                db.delete(TABLE_ROUTE,KEY_ID+" = ?",new String[]{ String.valueOf(c.getInt(c.getColumnIndex(KEY_ID)))});
+                deleteMarkerListR(c.getInt(c.getColumnIndex(KEY_ID)));
+            }while (c.moveToNext());
+        }
+    }
+    public int deletePlan(long plan_id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        deleteRoute(plan_id);
+        deleteALLMarker(plan_id);
+        return db.delete(TABLE_PLAN,KEY_ID+" = ?",new String[] {String.valueOf(plan_id)});
     }
 
 
