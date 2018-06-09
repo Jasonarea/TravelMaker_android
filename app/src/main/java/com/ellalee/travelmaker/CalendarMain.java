@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
@@ -189,6 +190,19 @@ public class CalendarMain extends Activity {
             Log.d("DB에 들어가는 doList", date + " " + sched);
             insert(date, sched, "");
         }
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(CalendarMain.this, CalendarListMain.class);
+                intent.putExtra("day", position - mCal.get(Calendar.DAY_OF_WEEK));
+                intent.putExtra("year", mCal.get(Calendar.YEAR));
+                intent.putExtra("month", mCal.get(Calendar.MONTH));
+
+                Log.d("그리드뷰 클릭 시 전달되는 날짜 : ", String.valueOf(mCal.get(Calendar.YEAR)) + String.valueOf(mCal.get(Calendar.MONTH)) + String.valueOf(position - mCal.get(Calendar.DAY_OF_WEEK)));
+                startActivity(intent);
+            }
+        });
         // DB 생성-----------------------------------------------------------------------------------------------------------------------
 //        try {
 //            sampleDB = this.openOrCreateDatabase(dbName, MODE_PRIVATE, null);
@@ -351,7 +365,6 @@ public class CalendarMain extends Activity {
      */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-//        SQLiteDatabase writeDB = this.openOrCreateDatabase(dbName, MODE_PRIVATE, null);
 
         if(resultCode != RESULT_CANCELED) {
 
@@ -402,7 +415,6 @@ public class CalendarMain extends Activity {
                         }
                     }
                 }
-
             }
             dayList.add(d);
         }
@@ -608,6 +620,5 @@ public class CalendarMain extends Activity {
             return memo;
         }
     }
-
 }
 
