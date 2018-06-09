@@ -12,6 +12,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class CalendarDBHelper extends SQLiteOpenHelper {
 
+    private static final String DATABASE_NAME = "MyDB";
+    static final String DATABASE_TABLE = "contacts";
+    static final int DATABASE_VERSION = 1;
+    static final String DATABASE_CREATE = "create table contacts (_id integer primary key autoin";
     public CalendarDBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, name, null, version);
     }
