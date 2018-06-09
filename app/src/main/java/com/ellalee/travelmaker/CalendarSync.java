@@ -233,7 +233,7 @@ public class CalendarSync extends Thread implements Runnable {
                 eventStrings.add(
                         String.format("%s (%s)", event.getSummary(), start));
                 Log.d("Calendar Insert", event.getSummary() + " " + start.toString());
-                CalendarMain.insert("(" + start.toString() + ")", event.getSummary(), "");
+                //CalendarMain.insert(start.toString(), event.getSummary(), "");
             }
             if(createOneSchedule) {
                 //createOneSchedule = false;
@@ -255,7 +255,7 @@ public class CalendarSync extends Thread implements Runnable {
                 output.add(0, "Data retrieved using the Google Calendar API:");
                 Log.d("Calendar Test", TextUtils.join("\n", output));
                 Toast.makeText(mContext, "캘린더 수집 완료", Toast.LENGTH_LONG).show();
-                //CalendarMain.setDoList(eventStrings);
+                CalendarMain.setDoList(eventStrings);
             }
         }
     }

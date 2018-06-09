@@ -98,11 +98,8 @@ import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
-<<<<<<< HEAD
     private String[] navItems = {"LogIn", "예산관리", "공유하기", "GMail 동기화", "PDF문서화"};
-=======
-    private String[] navItems = {"LogIn", "�산관�, "공유�기", "GMail �기};
->>>>>>> 187d1dffe55729dae73c7948ea4333b0cffee502
+
 
     private ListView lvNavList;
     private FrameLayout flContainer;
@@ -143,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
-
+       // setTheme(R.style.SplashTheme);
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
@@ -225,10 +222,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setIcon(android.R.drawable.ic_dialog_alert);
                     builder.setTitle("Travel Maker");
-                    builder.setMessage("�말 로그�웃 �시겠습�까?");
-                    builder.setPositiveButton(", dialogListener);
+                    builder.setMessage("정말 로그아웃하시겠습니까?");
+                    builder.setPositiveButton("네", dialogListener);
 
-                    builder.setNegativeButton("�니, null);
+                    builder.setNegativeButton("아니요", null);
                     customDialog = builder.create();
                     customDialog.show();
                     break;
@@ -276,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     startActivity(nextScreen);
                     ActivityCompat.finishAffinity(MainActivity.this);
                 }
-                Toast.makeText(getApplicationContext(), "로그�웃�었�니", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "로그�웃�었�니", Toast.LENGTH_SHORT).show();
             }
         }
     };

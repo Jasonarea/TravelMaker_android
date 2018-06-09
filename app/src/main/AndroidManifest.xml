@@ -14,7 +14,7 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/travelicon"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
@@ -29,31 +29,22 @@
             android:value="@string/kakao_app_key" />
 
         <activity android:name=".MainActivity">
+
+        </activity>
+        <activity android:name=".MapMain" />
+        <activity android:name=".planListActivity" />
+        <activity android:name=".CalendarMain"></activity>
+        <activity android:name=".LoginPage"></activity>
+        <activity android:name=".CalendarListMain"></activity>
+
+        <activity android:name = ".Splash"
+            android:theme = "@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MapMain" />
-        <activity android:name=".planListActivity" />
-        <activity android:name=".CalendarMain"></activity>
-        <activity android:name=".LoginPage"></activity>
-        <activity android:name=".CalendarSync"></activity>
-        <activity android:name=".CalendarListMain"></activity>
-        <activity android:name=".Sharing">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="@string/kakaolink_host"
-                    android:scheme="@string/kakao_scheme" />
-            </intent-filter>
-        </activity>
-
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_app_key" />
