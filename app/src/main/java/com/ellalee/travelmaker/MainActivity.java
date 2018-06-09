@@ -125,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
    PlanSQLiteHelper db;
    Button btnSearch;
+    CalendarMain.set
 
     @Override
 

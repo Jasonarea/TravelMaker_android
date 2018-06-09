@@ -44,7 +44,7 @@ public class CalendarMain extends Activity {
     /**
      * 그리드뷰 어댑터
      */
-    private GridAdapter gridAdapter;
+    private static GridAdapter gridAdapter;
 
 
     /**
@@ -61,13 +61,13 @@ public class CalendarMain extends Activity {
     /**
      * 그리드뷰
      */
-    private GridView gridView;
+    private static GridView gridView;
 
 
     /**
      * 캘린더 변수
      */
-    private Calendar mCal;
+    private static Calendar mCal;
 
 
     /*
@@ -184,14 +184,16 @@ public class CalendarMain extends Activity {
 
         gridView.setAdapter(gridAdapter);
 
-        for (int i = 0; i < doList.size(); i++) {
-
-            String date = doList.get(i).replace(" ", "").substring(doList.get(i).length() - 29, doList.get(i).length() - 19);
-            String sched = doList.get(i).substring(8, doList.get(i).replace(" ", "").length() - 29);
-            Log.d("DB에 들어가는 doList", date + " " + sched);
-
-            insert(date, sched, "");
-        }
+//        doList = getDoList();
+//
+//        for (int i = 0; i < doList.size(); i++) {
+//
+//            String date = doList.get(i).replace(" ", "").substring(doList.get(i).length() - 29, doList.get(i).length() - 19);
+//            String sched = doList.get(i).substring(8, doList.get(i).replace(" ", "").length() - 29);
+//            Log.d("DB에 들어가는 doList", date + " " + sched);
+//
+//            insert(date, sched, "");
+//        }
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -319,7 +321,7 @@ public class CalendarMain extends Activity {
             db.insert("calendar", null, values);
         }
         else {
-            //Toast.makeText(getApplicationContext(), "이미 저장되어 있는 스케줄입니다!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "이미 저장되어 있는 스케줄입니다!", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -396,7 +398,7 @@ public class CalendarMain extends Activity {
      * @param month
      */
 
-    private void setCalendarDate(int year, int month) {
+    private static void setCalendarDate(int year, int month) {
 
         mCal.set(Calendar.YEAR, year);
         mCal.set(Calendar.MONTH, month - 1);
@@ -453,6 +455,20 @@ public class CalendarMain extends Activity {
 
     public static void setDoList(List<String> d) {
         doList = d;
+        Log.d("dolist 1번째 인자", doList.get(0));
+
+        for (int i = 0; i < doList.size(); i++) {
+
+            String date = doList.get(i).replace(" ", "").substring(doList.get(i).length() - 29, doList.get(i).length() - 19);
+            String sched = doList.get(i).substring(8, doList.get(i).replace(" ", "").length() - 29);
+            Log.d("DB에 들어가는 doList", date + " " + sched);
+
+                insert(date, sched, "");
+        }
+        setCalendarDate(mCal.get(Calendar.YEAR), mCal.get(Calendar.MONTH) + 1);
+        gridAdapter = new GridAdapter(getApplicationContext(), dayList);
+        gridView.setAdapter(gridAdapter);
+
     }
 
     public static List<String> getDoList() { return doList; }
