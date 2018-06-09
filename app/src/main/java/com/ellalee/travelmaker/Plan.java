@@ -2,6 +2,7 @@ package com.ellalee.travelmaker;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
@@ -65,14 +66,15 @@ public class Plan {
         return id;
     }
     public ArrayList<Marker> getAllMarkers() {return markersList;}
+
     public String getDateString(){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/ mm/ dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/ MM/ dd");
         Calendar cal = new GregorianCalendar(y,m,d);
 
         return sdf.format(cal.getTime());
     }
     public String getDateString(int n){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/ mm/ dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/ MM/ dd");
         Calendar cal = new GregorianCalendar(y,m,d);
         cal.add(Calendar.DAY_OF_MONTH,n);
 

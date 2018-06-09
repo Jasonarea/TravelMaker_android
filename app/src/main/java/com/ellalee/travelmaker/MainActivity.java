@@ -21,6 +21,7 @@ import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.app.Activity;
 import android.graphics.Color;
@@ -28,8 +29,10 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -95,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     CalendarSync calendarThread;
 
    PlanSQLiteHelper db;
+   Button btnSearch;
 
     @Override
 
@@ -119,9 +123,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         setContentView(R.layout.activity_main);
 
-
- //       helper = new PlanSQLiteHelper(getApplicationContext());
         db = new PlanSQLiteHelper(getApplicationContext());
+        btnSearch = findViewById(R.id.search_area);
 
         lvNavList = (ListView)findViewById(R.id.lv_activity_main_nav_list);
 
@@ -251,6 +254,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     public void mapMain(View v){
 
         EditText input = findViewById(R.id.EditWhereToGo);
+        input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if( i == EditorInfo.IME_ACTION_DONE){ 
+                    mapMain(btnSearch);
+                }
+                return false;
+            }
+        });
         String city = input.getText().toString();
         LatLng center;
         Plan plan;

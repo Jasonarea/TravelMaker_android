@@ -62,9 +62,11 @@ public class planListActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(delete_mode){
+                    planListView.setAdapter(new PlanGridAdapter(delete_mode));
                     delete_mode=false;
                     activateDelete.setImageResource(R.drawable.close_bin);
                 }else{
+                    planListView.setAdapter(new PlanGridAdapter(delete_mode));
                     delete_mode=true;
                     activateDelete.setImageResource(R.drawable.open_bin);
                 }
@@ -72,26 +74,10 @@ public class planListActivity extends AppCompatActivity {
         });
 
         invalidate();
-/*
-        planListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                db = helper.getReadableDatabase();
-                String msg = planList[i].substring(1,3);
-
-                Toast.makeText(planListActivity.this,msg, Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getApplicationContext(),MapMain.class);
-                intent.putExtra("plan_id",plans.get(i).plan_id);
-                startActivity(intent);
-            }
-        });
-*/
     }
     public void select(){
         db =helper.getReadableDatabase();
         Cursor cursor = db.query("plans",null,null,null,null,null,null);
-         planList = new String[cursor.getCount()];
-        int i=0;
         while(cursor.moveToNext()){
 
             plans.add(new planListItem(cursor.getString(cursor.getColumnIndex("title")),
@@ -101,8 +87,6 @@ public class planListActivity extends AppCompatActivity {
                     helper.getRouteListCount(cursor.getInt(cursor.getColumnIndex("id"))),
                     cursor.getInt(cursor.getColumnIndex("id"))));
 
-            planList[i]= plans.get(i).toString();
-            i++;
           /*  planList[i++]="*"+cursor.getInt(cursor.getColumnIndex("id"))+"* "
                     +cursor.getString(cursor.getColumnIndex("title"))+"\n"
                     +helper.getRouteListCount(cursor.getInt(cursor.getColumnIndex("id")))+"days plan "
@@ -116,9 +100,10 @@ public class planListActivity extends AppCompatActivity {
 
     public void invalidate(){
         select();
-        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,planList);
-        Log.d("INVALIDATE PLAN NUM : ",plans.size()+"*******");
-        planListView.setAdapter(new PlanGridAdapter(delete_mode));
+
+        PlanGridAdapter adapter =new PlanGridAdapter(delete_mode);
+        adapter.notifyDataSetChanged();
+        planListView.setAdapter(adapter);
     }
 
     public class planListItem{
@@ -156,7 +141,7 @@ public class planListActivity extends AppCompatActivity {
             return this.title;
         }
         public String getDate(){
-            int m=(this.startDate.getMonth()+1)%13;
+            int m=this.startDate.getMonth()+1;
             return this.startDate.getYear()+"/ "+m+"/ "+this.startDate.getDate();
         }
         public int getImgSrc(){
@@ -181,16 +166,16 @@ public class planListActivity extends AppCompatActivity {
 
     public class PlanGridAdapter extends BaseAdapter{
         LayoutInflater inflater;
-        boolean mode;
+        boolean mode =false;
 
         TextView title ;
         TextView date ;
         ImageButton btnDelete ;
         ImageView imgPlan ;
 
-        public PlanGridAdapter(boolean m){
+        public PlanGridAdapter(boolean delete_mode){
             inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            mode = m;
+            mode = delete_mode;
         }
 
         @Override
@@ -211,7 +196,7 @@ public class planListActivity extends AppCompatActivity {
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             final int viewId =i;
-            final Boolean mode = delete_mode;
+
             if(view == null){
                 view=inflater.inflate(R.layout.plan_grid_item,viewGroup,false);
             }
@@ -223,7 +208,7 @@ public class planListActivity extends AppCompatActivity {
             Log.d("DELETE MODE "," "+mode);
 
             if(mode){
-                btnDelete.setVisibility(View.GONE);
+                btnDelete.setVisibility(INVISIBLE);
             }else{
                 btnDelete.setVisibility(VISIBLE);
             }
@@ -239,6 +224,8 @@ public class planListActivity extends AppCompatActivity {
                             Toast.makeText(planListActivity.this, "delete plan "+plans.get(viewId).getPlan_id(), Toast.LENGTH_SHORT).show();
                             db = helper.getWritableDatabase();
                             helper.deletePlan(plans.get(viewId).getPlan_id());
+                            invalidate();
+
                         }
                     });
                     alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
@@ -292,6 +279,7 @@ public class planListActivity extends AppCompatActivity {
                             Date newDate = new Date(datePicker.getYear(),datePicker.getMonth(),datePicker.getDayOfMonth());
                             plans.get(viewId).setDate(newDate);
                             helper.updatePlan(plans.get(viewId).getPlan_id(),newDate); //plan_id starts from 1.
+                            planListView.invalidateViews();
                         }
                     });
 
@@ -314,7 +302,12 @@ public class planListActivity extends AppCompatActivity {
             });
             return view;
         }
-
+        /*
+        public void showBtnDelete(boolean visible){
+            this.mode = visible;
+            this.notifyDataSetChanged();
+        }
+*/
     }
 
 }

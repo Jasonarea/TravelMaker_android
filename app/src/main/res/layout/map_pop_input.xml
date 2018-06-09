@@ -7,36 +7,46 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:id="@+id/markerTitleInput"/>
 
     <RadioGroup
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/IconCategory"
+        android:id="@+id/iconCategory"
+        android:layout_centerInParent="true"
+        android:orientation="horizontal"
+        android:gravity="center"
         android:layout_below="@+id/markerTitleInput">
 
         <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/opt_residence"
-            android:text="숙소" />
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/opt_dining"
-            android:text="식당"/>
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/opt_shopping"
-            android:text="쇼핑"/>
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
             android:id="@+id/opt_default"
             android:checked="true"
+            android:drawableLeft="@drawable/marker_default"
             android:text="기본"/>
-
+        <RadioButton
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:id="@+id/opt_residence"
+            android:layout_margin="10dp"
+            android:drawableLeft="@drawable/marker_residence"
+            android:text="숙소" />
+        <RadioButton
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:id="@+id/opt_dining"
+            android:layout_margin="10dp"
+            android:drawableLeft="@drawable/marker_dining"
+           android:text="식당"/>
+        <RadioButton
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:id="@+id/opt_shopping"
+            android:layout_margin="10dp"
+            android:drawableLeft="@drawable/marker_shopping"
+            android:text="쇼핑"/>
     </RadioGroup>
 
 </RelativeLayout>

@@ -50,6 +50,7 @@ public class Route{
     public void setMarkerList(GoogleMap map,ArrayList<Marker> markerList) {
         this.markerList = markerList;
         init(map);
+        setPoints(map);
     }
     public void setMarkerList(ArrayList<Marker> markerList) {
         this.markerList = markerList;
