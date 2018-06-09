@@ -50,7 +50,6 @@ public class CalendarListMain extends AppCompatActivity {
         sched = received.getStringArrayListExtra("sche");
         memo =received.getStringArrayListExtra("memo");
 
-        Log.d("Calendar 리스트 띄울 달: ", String.valueOf(sched.get(0)));
         listView = (ListView)findViewById(R.id.listview);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, sched);
         listView.setAdapter(adapter);

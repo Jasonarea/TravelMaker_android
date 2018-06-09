@@ -77,9 +77,9 @@ public class CalendarSync extends Thread implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        gmailThread = new GmailSync(transport, jsonFactory, mCredential, mContext);
-//        Thread gmail = new Thread(gmailThread);
-//        gmail.start();
+        gmailThread = new GmailSync(transport, jsonFactory, mCredential, mContext);
+        Thread gmail = new Thread(gmailThread);
+        gmail.start();
     }
     public static String insertCal() throws IOException {
         // Initialize Calendar service with valid OAuth credentials
