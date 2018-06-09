@@ -100,6 +100,7 @@ public class GmailSync implements Runnable {
             e.printStackTrace();
         }
         String text = "";
+        count = 0;
         for (Thread thread : t) {
             String id = thread.getId();
             response = service.users().threads().get("me", id).execute();
@@ -147,10 +148,12 @@ public class GmailSync implements Runnable {
                 }
             }
             ++count;
+            if(count>30) break;
             Log.d("count", String.valueOf(count));
 
             final String finalBod = bod;
             final String finalSub = sub;
+
             int nationCo = 0;
             int splitCount = 0;
             String check = "";

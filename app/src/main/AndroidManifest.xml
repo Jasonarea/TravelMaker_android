@@ -33,34 +33,31 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MapMain"/>
-        <activity android:name=".planListActivity"/>
-        <activity android:name=".CalendarMain">
-        </activity>
-        <activity android:name=".LoginPage">
+        <activity android:name=".MapMain" />
+        <activity android:name=".planListActivity" />
+        <activity android:name=".CalendarMain"></activity>
+        <activity android:name=".LoginPage"></activity>
+        <activity android:name=".CalendarSync"></activity>
+        <activity android:name=".CalendarListMain"></activity>
+        <activity android:name=".Sharing">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="@string/kakaolink_host"
+                    android:scheme="@string/kakao_scheme" />
+            </intent-filter>
         </activity>
 
-        <activity android:name=".CalendarSync">
-        </activity>
+        <meta-data
+            android:name="com.kakao.sdk.AppKey"
+            android:value="@string/kakao_app_key" />
 
-        <activity android:name=".CalendarListMain">
-        </activity>
-            <activity android:name=".Sharing">
-                <intent-filter>
-                    <action android:name="android.intent.action.VIEW" />
-                    <category android:name="android.intent.category.DEFAULT" />
-                    <category android:name="android.intent.category.BROWSABLE" />
-
-                    <data android:scheme="@string/kakao_scheme"
-                        android:host="@string/kakaolink_host" />
-                </intent-filter>
-            </activity>
-            <meta-data
-                android:name="com.kakao.sdk.AppKey"
-                android:value="@string/kakao_app_key" />
-
-        <activity android:name=".CalendarAddSche">
-        </activity>
+        <activity android:name=".CalendarAddSche"></activity>
+        <activity android:name=".Budgeting"></activity>
     </application>
 
 </manifest>

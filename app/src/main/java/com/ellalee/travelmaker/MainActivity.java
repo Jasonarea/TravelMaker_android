@@ -2,9 +2,11 @@ package com.ellalee.travelmaker;
 
 import android.Manifest;
 import android.accounts.AccountManager;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,6 +15,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.preference.DialogPreference;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,6 +25,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.app.Activity;
 import android.graphics.Color;
@@ -70,12 +74,13 @@ import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
 import static android.widget.Toast.*;
+import static com.ellalee.travelmaker.GmailSync.SCOPE;
 import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig.Prompt.SIGN_IN;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
-    private String[] navItems = {"LogIn", "산관", "공유기"};
+    private String[] navItems = {"LogIn", "�산관�, "공유�기", "GMail �기};
 
     private ListView lvNavList;
     private FrameLayout flContainer;
@@ -95,7 +100,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInAccount account;
     private GoogleApiClient mGoogleApiClient;
+    private static boolean isLogin = false;
     CalendarSync calendarThread;
+    AlertDialog customDialog;
 
    PlanSQLiteHelper db;
    Button btnSearch;
@@ -105,13 +112,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     public void onBackPressed() {
 
         if (dlDrawer.isDrawerOpen(lvNavList)) {
-
             dlDrawer.closeDrawer(lvNavList);
-
         } else {
-
             super.onBackPressed();
-
         }
     }
 
@@ -123,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         setContentView(R.layout.activity_main);
 
+        //mContext = getApplicationContext();
         db = new PlanSQLiteHelper(getApplicationContext());
         btnSearch = findViewById(R.id.search_area);
 
@@ -142,17 +146,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
         //getResultsFromApi();
+        String email = loadSavedPreferences();
+            if (email.equals("EmailStuff")) {
+                navItems[0] = "LogOut";
+                lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
+            } else {
+                Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
+                nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(nextScreen);
+                ActivityCompat.finishAffinity(MainActivity.this);
+            }
 
-        if(mCredential != null){
-            navItems[0] = "LogOut";
-            lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1  , navItems));
-        }
-        else{
-            Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
-            nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(nextScreen);
-            ActivityCompat.finishAffinity(MainActivity.this);
-        }
         btn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -162,7 +166,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
         if(mCredential != null){
             navItems[0] = "LogOut";
-
         }
         else {
             navItems[0] = "LogIn";
@@ -196,24 +199,19 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
             switch (position) {
                 case 0:
-                    GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-                    if(mCredential== null){
-                        navItems[0] = "LogOut";
-                        lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
-                    }
-                    else{
-                        Log.d("What is the matter", "WHat is the MATTER");
-                        SharedPreferences settings =
-                                getPreferences(Context.MODE_PRIVATE);
-                        settings.edit().remove(PREF_ACCOUNT_NAME).commit();
-                        Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
-                        nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(nextScreen);
-                        ActivityCompat.finishAffinity(MainActivity.this);
-                    }
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                    builder.setIcon(android.R.drawable.ic_dialog_alert);
+                    builder.setTitle("Travel Maker");
+                    builder.setMessage("�말 로그�웃 �시겠습�까?");
+                    builder.setPositiveButton(", dialogListener);
+
+                    builder.setNegativeButton("�니, null);
+                    customDialog = builder.create();
+                    customDialog.show();
                     break;
                 case 1:
-                    flContainer.setBackgroundColor(Color.parseColor("#5F9EA0"));
+                    Intent intent = new Intent(getApplicationContext(), Budgeting.class);
+                    startActivity(intent);
 
                     break;
                 case 2:
@@ -222,11 +220,39 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
                     sendIntent.setType("text/plain");
                     startActivity(sendIntent);
+
+                    break;
+
+                case 3:
+                    mCredential = GoogleAccountCredential.usingOAuth2(
+                            getApplicationContext(), Arrays.asList(SCOPES))
+                            .setBackOff(new ExponentialBackOff());
+                    getResultsFromApi();
+                    break;
             }
             dlDrawer.closeDrawer(lvNavList);
-
         }
     }
+    DialogInterface.OnClickListener dialogListener = new DialogInterface.OnClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            if (dialog == customDialog && which == DialogInterface.BUTTON_POSITIVE) {
+                GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+                if (mCredential == null) {
+                    navItems[0] = "LogOut";
+                    lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
+                } else {
+
+
+                    Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
+                    nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(nextScreen);
+                    ActivityCompat.finishAffinity(MainActivity.this);
+                }
+                Toast.makeText(getApplicationContext(), "로그�웃�었�니", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
     void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, SIGN_IN);
