@@ -49,8 +49,16 @@
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_app_key" />
 
+<<<<<<< HEAD
         <activity android:name=".CalendarAddSche"></activity>
         <activity android:name=".Budgeting"></activity>
+=======
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".CalendarDayMain">
+        </activity>
+>>>>>>> UIDesign
     </application>
 
 </manifest>
