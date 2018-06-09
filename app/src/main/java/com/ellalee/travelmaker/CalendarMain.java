@@ -185,8 +185,8 @@ public class CalendarMain extends Activity {
         gridView.setAdapter(gridAdapter);
 
         for (int i = 0; i < doList.size(); i++) {
-            String date = doList.get(i).substring(doList.get(i).length() - 30, doList.get(i).length() - 20);
-            String sched = doList.get(i).substring(10, doList.get(i).length() - 31);
+            String date = doList.get(i).replace(" ", "").substring(doList.get(i).length() - 29, doList.get(i).length() - 19);
+            String sched = doList.get(i).substring(8, doList.get(i).replace(" ", "").length() - 29);
             Log.d("DB에 들어가는 doList", date + " " + sched);
             insert(date, sched, "");
         }
@@ -216,32 +216,6 @@ public class CalendarMain extends Activity {
                 startActivity(intent);
             }
         });
-
-        // DB 생성-----------------------------------------------------------------------------------------------------------------------
-//        try {
-//            sampleDB = this.openOrCreateDatabase(dbName, MODE_PRIVATE, null);
-//            // 테이블이 존재하지 않으면 새로 생성
-//            sampleDB.execSQL("CREATE TABLE IF NOT EXISTS " + tableName + " (date VARCHAR(20), schedule VARCAHR(30), memo VARCHAR(50) );");
-//
-//            //테이블이 존재하는 경우 기존 데이터를 지우기 위해 사용
-//            sampleDB.execSQL("DELETE FROM " + tableName);
-//
-            Log.d("dolist 사이즈 ", String.valueOf(doList.size()));
-            // doList가 비어있지 않으면
-            if(doList.size() != 0) {
-                // 모든 doList를 테이블에 집어넣음
-                for (int i = 0; i < doList.size(); i++) {
-                    Log.d("DB에 들어가는 doList", doList.get(i).substring(doList.get(i).length() - 30, doList.get(i).length() - 20) + " " + doList.get(i).substring(10, doList.get(i).length() - 31));
-                    insert(doList.get(i).substring(doList.get(i).length() - 30, doList.get(i).length() - 20), doList.get(i).substring(10, doList.get(i).length() - 31), "");
-                }
-            }
-//                sampleDB.close();
-//        }catch (SQLiteException se) {
-//            Toast.makeText(getApplicationContext(), se.getMessage(), Toast.LENGTH_LONG).show();
-//            Log.e("DB exception : ", se.getMessage());
-//        }
-        //----------------------------------------------------------------------------------------------------------------------------------
-
 
         //back button 눌렀을 때
         leftBtn.setOnClickListener(new View.OnClickListener() {
