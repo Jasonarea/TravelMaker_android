@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -21,7 +22,9 @@ public class CalendarDayMain extends Activity {
     int day, month, year;
     private TextView date;
     private TextView scheView, memoView;
-    private Button changeBtn, deleteBtn;
+    private EditText scheEdit, memoEdit;
+    private Button changeBtn, deleteBtn, completeBtn;
+    private String mode = "View";
     SQLiteDatabase db;
     CalendarDBHelper helper;
 
@@ -45,6 +48,9 @@ public class CalendarDayMain extends Activity {
         memoView = (TextView)findViewById(R.id.dayMain_memo);
         changeBtn = (Button)findViewById(R.id.dayMain_change);
         deleteBtn = (Button)findViewById(R.id.dayMain_delete);
+        scheEdit = (EditText)findViewById(R.id.change_editsche);
+        memoEdit = (EditText)findViewById(R.id.change_editmemo);
+        completeBtn = (Button)findViewById(R.id.complete_change);
 
         date.setText(String.valueOf(year) + "." + String.valueOf(month) + "." + String.valueOf(day));
         scheView.setText(sched);
@@ -53,8 +59,33 @@ public class CalendarDayMain extends Activity {
         changeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                update(String.valueOf(year) + "-" + String.valueOf(month) + "-" + String.valueOf(day),
-                        sched, memo);
+                mode = "Edit";
+                scheEdit.setVisibility(View.VISIBLE);
+                memoEdit.setVisibility(View.VISIBLE);
+                completeBtn.setVisibility(View.VISIBLE);
+                scheView.setVisibility(View.INVISIBLE);
+
+                completeBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String newSche = scheEdit.getText().toString();
+                        memo = memoEdit.getText().toString();
+                        if(!sched.replace(" ", "").equals("")) {
+                            update(String.valueOf(year) + "-" + String.valueOf(month) + "-" + String.valueOf(day),
+                                    sched, newSche,  memo);
+
+                            scheView.setText(sched);
+                            scheEdit.setVisibility(View.INVISIBLE);
+                            memoEdit.setVisibility(View.INVISIBLE);
+                            completeBtn.setVisibility(View.INVISIBLE);
+                            scheView.setVisibility(View.VISIBLE);
+                            Toast.makeText(getApplicationContext(), newSche + " 스케줄 수정완료!", Toast.LENGTH_LONG).show();
+                            finish();
+                        }
+                        else
+                            Toast.makeText(getApplicationContext(), "스케줄이 입력되지 않았습니다!", Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         });
 
@@ -72,12 +103,13 @@ public class CalendarDayMain extends Activity {
     /*
      * DB에 있는 값 업데이트 method
      */
-    public void update(String date, String sched, String memo) {
+    public void update(String date, String sched, String newSche, String memo) {
         db = helper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put("date", date);
-        values.put("schedule", sched);
-        db.update("calendar", values, "date=?", new String[]{date});
+//        ContentValues values = new ContentValues();
+//        values.put("date", date);
+//        values.put("schedule", sched);
+//        db.update("calendar", values, "date=?", new String[]{date});
+        db.execSQL("UPDATE calendar SET schedule = '"+ newSche + "', memo = '" + memo + "' WHERE (date = '" + date + "') AND (schedule = '" + sched + "');");
     }
 
     /*
@@ -85,6 +117,7 @@ public class CalendarDayMain extends Activity {
     */
     public void delete(String date, String sched) {
         db = helper.getWritableDatabase();
-        db.execSQL("DELETE FROM calendar WHERE (date=" + date + ") AND (schedule=" + sched + ");");
+        db.execSQL("DELETE FROM calendar WHERE (date='" + date + "') AND (schedule='" + sched + "');");
+        Toast.makeText(getApplicationContext(), "스케줄 삭제완료!", Toast.LENGTH_LONG).show();
     }
 }

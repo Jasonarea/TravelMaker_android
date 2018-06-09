@@ -185,8 +185,8 @@ public class CalendarMain extends Activity {
         gridView.setAdapter(gridAdapter);
 
         for (int i = 0; i < doList.size(); i++) {
-            String date = doList.get(i).substring(doList.get(i).length() - 30, doList.get(i).length() - 20);
-            String sched = doList.get(i).substring(10, doList.get(i).length() - 31);
+            String date = doList.get(i).substring(doList.get(i).replace(" ", "").length() - 29, doList.get(i).length() - 19);
+            String sched = doList.get(i).substring(8, doList.get(i).length() - 29);
             Log.d("DB에 들어가는 doList", date + " " + sched);
             insert(date, sched, "");
         }

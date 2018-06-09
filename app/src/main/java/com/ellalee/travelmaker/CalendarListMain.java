@@ -39,8 +39,8 @@ public class CalendarListMain extends AppCompatActivity {
 
         addSche.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent send = new Intent();
-                startActivityForResult(new Intent(getApplicationContext(), CalendarAddSche.class), 1);
+//                Intent send = new Intent();
+//                startActivityForResult(new Intent(getApplicationContext(), CalendarAddSche.class), 1);
             }
         });
     }
