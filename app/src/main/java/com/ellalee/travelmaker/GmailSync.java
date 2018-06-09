@@ -1,12 +1,14 @@
 package com.ellalee.travelmaker;
 
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
@@ -33,7 +35,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-
 public class GmailSync implements Runnable {
 
     private static final String TAG = "PlayHelloActivity";
@@ -46,6 +47,7 @@ public class GmailSync implements Runnable {
     Context mContext;
     JsonFactory mJsonFactory;
     TextView test;
+    Handler handler;
     GoogleAccountCredential mCredential;
     List<Email> allMail;
     MySQLiteHelper db;
@@ -147,8 +149,9 @@ public class GmailSync implements Runnable {
                 }
             }
             ++count;
-            if(count>30) break;
+            if(count>50) break;
             Log.d("count", String.valueOf(count));
+
 
             final String finalBod = bod;
             final String finalSub = sub;

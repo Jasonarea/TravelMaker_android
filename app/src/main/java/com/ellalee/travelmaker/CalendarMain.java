@@ -93,7 +93,6 @@ public class CalendarMain extends Activity {
     private int back_month_count = 0;
     private int next_month_count = 0;
 
-
     // 오늘에 날짜를 세팅
 
     long now = System.currentTimeMillis();
@@ -184,14 +183,7 @@ public class CalendarMain extends Activity {
 
         gridView.setAdapter(gridAdapter);
 
-        for (int i = 0; i < doList.size(); i++) {
 
-            String date = doList.get(i).replace(" ", "").substring(doList.get(i).length() - 29, doList.get(i).length() - 19);
-            String sched = doList.get(i).substring(8, doList.get(i).replace(" ", "").length() - 29);
-            Log.d("DB에 들어가는 doList", date + " " + sched);
-
-            insert(date, sched, "");
-        }
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -305,11 +297,11 @@ public class CalendarMain extends Activity {
      * DB에 값 insert하는 method
      */
     public static void insert(String date, String sched, String memo) {
+        helper = new CalendarDBHelper(MainActivity.mContext, "calendar.db", null, 1);
         db = helper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
         values.put("date", date);
-
         values.put("schedule", sched);
         values.put("memo", memo);
 
@@ -412,6 +404,7 @@ public class CalendarMain extends Activity {
 
             for(int j = 0; j < dbList.size(); j++) {
                 //date, sche, memo 분리
+                Log.d("디비리스트", dbList.get(j));
                 String []temp = dbList.get(j).split(",");
                 String[] dt = temp[0].substring(temp[0].indexOf(":")+1).split("-");
 
@@ -453,6 +446,17 @@ public class CalendarMain extends Activity {
 
     public static void setDoList(List<String> d) {
         doList = d;
+        String[] doLi = new String[4];
+        for (int i = 1; i < doList.size(); i++) {
+            Log.d("Dolist debug", doList.get(i));
+
+            doLi = doList.get(i).split(" ");
+            String date = doLi[3].substring(1, doLi[3].indexOf('T'));
+            String sched = doLi[2];
+            Log.d("DB에 들어가는 doList", date + " " + sched);
+
+            insert(date, sched, "");
+        }
     }
 
     public static List<String> getDoList() { return doList; }

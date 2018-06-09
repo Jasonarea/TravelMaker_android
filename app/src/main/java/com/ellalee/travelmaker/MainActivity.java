@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private static boolean isLogin = false;
     CalendarSync calendarThread;
     AlertDialog customDialog;
-
+    static Context mContext;
    PlanSQLiteHelper db;
    Button btnSearch;
 
@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-
+        mContext = this;
         //mContext = getApplicationContext();
         db = new PlanSQLiteHelper(getApplicationContext());
         btnSearch = findViewById(R.id.search_area);
