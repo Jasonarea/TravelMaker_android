@@ -19,6 +19,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -30,6 +32,13 @@ import java.util.List;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
+
+class UIUpdate implements Runnable {
+    @Override
+    public void run() {
+        Toast.makeText(MainActivity.mContext, "Calendar Sync is Succeeded", Toast.LENGTH_SHORT).show();
+    }
+}
 public class CalendarSync extends Thread implements Runnable {
     static GoogleAccountCredential mCredential;
     private static HttpTransport transport;
@@ -38,6 +47,7 @@ public class CalendarSync extends Thread implements Runnable {
     boolean createOneSchedule = true;
     GmailSync gmailThread;
     private Context mContext;
+    Handler handler = new Handler();
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
@@ -63,6 +73,7 @@ public class CalendarSync extends Thread implements Runnable {
         getResultsFromApi(mCredential);
         try {
             calendarList();
+            handler.post(new UIUpdate());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -84,7 +95,8 @@ public class CalendarSync extends Thread implements Runnable {
 
         com.google.api.services.calendar.model.Calendar createdCalendar = service.calendars().insert(calendar).execute();
         newCalId = createdCalendar.getId();
-        Log.d("Cal_ID", createdCalendar.getId());
+        Log.d("Cal_ID", "New Calendar is created");
+
         return createdCalendar.getId();
     }
 
@@ -104,11 +116,13 @@ public class CalendarSync extends Thread implements Runnable {
             for (CalendarListEntry calendarListEntry : items) {
                 if(calendarListEntry.getSummary().equals("Travel Maker")) {
                     id = calendarListEntry.getId();
+                    break;
                 }
                 else continue;
             }
             pageToken = calendarList.getNextPageToken();
         } while (pageToken != null);
+        Log.d("Get ID", "Travel Maker Calendar 생성 성공");
         return id;
     }
     public static void createEvent(com.google.api.services.calendar.Calendar mService,
@@ -161,6 +175,9 @@ public class CalendarSync extends Thread implements Runnable {
         } while (pageToken != null);
         if(!isTravelMaker) newCalId = insertCal();
         else newCalId = getCal();
+
+
+
     }
     /**
      * Attempt to call the API, after verifying that all the preconditions are
@@ -232,8 +249,6 @@ public class CalendarSync extends Thread implements Runnable {
                 }
                 eventStrings.add(
                         String.format("%s (%s)", event.getSummary(), start));
-                Log.d("Calendar Insert", event.getSummary() + " " + start.toString());
-                //CalendarMain.insert(start.toString(), event.getSummary(), "");
             }
             if(createOneSchedule) {
                 //createOneSchedule = false;
