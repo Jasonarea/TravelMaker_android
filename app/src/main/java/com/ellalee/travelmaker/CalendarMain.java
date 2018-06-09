@@ -194,25 +194,26 @@ public class CalendarMain extends Activity {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mCal.set(mCal.get(Calendar.YEAR), mCal.get(Calendar.MONTH), 1);
                 Intent intent = new Intent(CalendarMain.this, CalendarListMain.class);
-                intent.putExtra("day", position - mCal.get(Calendar.DAY_OF_WEEK));
+                intent.putExtra("day", position - 5 - mCal.get(Calendar.DAY_OF_WEEK));
                 intent.putExtra("year", mCal.get(Calendar.YEAR));
                 intent.putExtra("month", mCal.get(Calendar.MONTH) + 1);
 
-                String date = String.valueOf(mCal.get(Calendar.YEAR)) + "-" + String.valueOf(mCal.get(Calendar.MONTH) + 1) + "-" + String.valueOf(position - mCal.get(Calendar.DAY_OF_WEEK) - 7);
+                String date = String.valueOf(mCal.get(Calendar.YEAR)) + "-" + String.valueOf(mCal.get(Calendar.MONTH) + 1) + "-" + String.valueOf(position - mCal.get(Calendar.DAY_OF_WEEK) - 5);
                 ArrayList<String> s = new ArrayList<>();
                 ArrayList<String> m = new ArrayList<>();
 
-                Cursor c = db.rawQuery("SELECT schedule, memo FROM calendar WHERE date=" + date, null);
+                Cursor c = db.rawQuery("SELECT schedule, memo FROM calendar WHERE date='" + date + "'", null);
                 while(c.moveToNext()) {
-                    Log.d("DB에서 가져온 schedule", c.getString(c.getColumnIndex("schedule")));
+                    s.add(c.getString(c.getColumnIndex("schedule")));
                     m.add(c.getString(c.getColumnIndex("memo")));
                 }
 
-                intent.putExtra("sche", s);
-                intent.putExtra("memo", m);
+                intent.putStringArrayListExtra("sche", s);
+                intent.putStringArrayListExtra("memo", m);
 
-                Log.d("그리드뷰 클릭 시 전달되는 날짜 ", String.valueOf(mCal.get(Calendar.YEAR)) + String.valueOf(mCal.get(Calendar.MONTH)+1) + String.valueOf(mCal.get(Calendar.DAY_OF_WEEK)));
+                Log.d("그리드뷰 클릭 시 전달되는 날짜 ", String.valueOf(mCal.get(Calendar.YEAR)) + String.valueOf(mCal.get(Calendar.MONTH)+1) + " /" +String.valueOf(position - mCal.get(Calendar.DAY_OF_WEEK) - 5));
                 startActivity(intent);
             }
         });
@@ -225,15 +226,17 @@ public class CalendarMain extends Activity {
 //            //테이블이 존재하는 경우 기존 데이터를 지우기 위해 사용
 //            sampleDB.execSQL("DELETE FROM " + tableName);
 //
-            Log.d("dolist 사이즈 ", String.valueOf(doList.size()));
-            // doList가 비어있지 않으면
-            if(doList.size() != 0) {
-                // 모든 doList를 테이블에 집어넣음
-                for (int i = 0; i < doList.size(); i++) {
-                    Log.d("DB에 들어가는 doList", doList.get(i).substring(doList.get(i).length() - 30, doList.get(i).length() - 20) + " " + doList.get(i).substring(10, doList.get(i).length() - 31));
-                    insert(doList.get(i).substring(doList.get(i).length() - 30, doList.get(i).length() - 20), doList.get(i).substring(10, doList.get(i).length() - 31), "");
-                }
-            }
+//            Log.d("dolist 사이즈 ", String.valueOf(doList.size()));
+//            // doList가 비어있지 않으면
+//            doList = getDoList();
+//
+//            if(doList.size() != 0) {
+//                // 모든 doList를 테이블에 집어넣음
+//                for (int i = 0; i < doList.size(); i++) {
+//                    Log.d("DB에 들어가는 doList", doList.get(i).substring(doList.get(i).length() - 30, doList.get(i).length() - 20) + " " + doList.get(i).substring(10, doList.get(i).length() - 31));
+//                    insert(doList.get(i).substring(doList.get(i).length() - 30, doList.get(i).length() - 20), doList.get(i).substring(10, doList.get(i).length() - 31), "");
+//                }
+//            }
 //                sampleDB.close();
 //        }catch (SQLiteException se) {
 //            Toast.makeText(getApplicationContext(), se.getMessage(), Toast.LENGTH_LONG).show();

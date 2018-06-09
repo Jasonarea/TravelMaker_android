@@ -35,14 +35,14 @@ public class CalendarDBHelper extends SQLiteOpenHelper {
 
     public void update(String date, String sche, String memo) {
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("UPDATE CALENDAR SET memo=" + memo + " WHERE date='" + date + "' AND sche='" + sche +"';" );
+        db.execSQL("UPDATE CALENDAR SET memo='" + memo + "' WHERE date='" + date + "' AND schedule='" + sche +"';" );
         db.close();
     }
 
     public void delete(String date, String sche) {
         SQLiteDatabase db = getWritableDatabase();
 
-        db.execSQL("DELETE FROM CALENDAR WHERE date='" + date + "' AND sche='" + sche + "';");
+        db.execSQL("DELETE FROM CALENDAR WHERE date='" + date + "' AND schedule='" + sche + "';");
         db.close();
     }
 

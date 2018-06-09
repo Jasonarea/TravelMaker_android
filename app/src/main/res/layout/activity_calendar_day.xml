@@ -57,6 +57,8 @@
             android:id="@+id/dayMain_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/dayMain_change"
+            android:layout_marginLeft="15dp"
             android:text="삭제"
             android:textSize="20dp"/>
     </RelativeLayout>

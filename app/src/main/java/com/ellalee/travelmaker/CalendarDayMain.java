@@ -2,6 +2,7 @@ package com.ellalee.travelmaker;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +21,8 @@ public class CalendarDayMain extends Activity {
     private TextView date;
     private TextView scheView, memoView;
     private Button changeBtn, deleteBtn;
+    SQLiteDatabase db;
+    CalendarDBHelper helper;
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +30,7 @@ public class CalendarDayMain extends Activity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_calendar_day);
+        helper = new CalendarDBHelper(CalendarDayMain.this, "calendar.db", null, 1);
 
         Intent intent = getIntent();
         day = intent.getIntExtra("day", 0);

@@ -1,5 +1,6 @@
 package com.ellalee.travelmaker;
 
+import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.FloatingActionButton;
@@ -36,6 +37,7 @@ public class CalendarListMain extends AppCompatActivity {
 
         addSche.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                Intent send = new Intent();
                 startActivityForResult(new Intent(getApplicationContext(), CalendarAddSche.class), 1);
             }
         });
@@ -50,7 +52,6 @@ public class CalendarListMain extends AppCompatActivity {
         sched = received.getStringArrayListExtra("sche");
         memo =received.getStringArrayListExtra("memo");
 
-        Log.d("Calendar 리스트 띄울 달: ", String.valueOf(sched.get(0)));
         listView = (ListView)findViewById(R.id.listview);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, sched);
         listView.setAdapter(adapter);
@@ -84,7 +85,13 @@ public class CalendarListMain extends AppCompatActivity {
             String schedule = data.getStringExtra("schedule");
             String memo = data.getStringExtra("memo");
 
-            //db.execSQL();
+            String date = year + "-" + month + "-" + day;
+            ContentValues values = new ContentValues();
+            values.put("date", date);
+            values.put("schedule", schedule);
+            values.put("memo", memo);
+
+            db.insert("calendar", null, values);
         }
 //        gridAdapter = new GridAdapter(getApplicationContext(), dayList);
 //        gridView.setAdapter(gridAdapter);
