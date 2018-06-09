@@ -183,15 +183,12 @@ public class CalendarMain extends Activity {
 
         gridView.setAdapter(gridAdapter);
 
-<<<<<<< HEAD
-=======
         for (int i = 0; i < doList.size(); i++) {
             String date = doList.get(i).substring(doList.get(i).replace(" ", "").length() - 29, doList.get(i).length() - 19);
             String sched = doList.get(i).substring(8, doList.get(i).length() - 29);
             Log.d("DB에 들어가는 doList", date + " " + sched);
             insert(date, sched, "");
         }
->>>>>>> UIDesign
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -219,10 +216,6 @@ public class CalendarMain extends Activity {
                 startActivity(intent);
             }
         });
-<<<<<<< HEAD
-
-=======
->>>>>>> UIDesign
 
         //back button 눌렀을 때
         leftBtn.setOnClickListener(new View.OnClickListener() {
