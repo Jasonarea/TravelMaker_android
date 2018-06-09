@@ -34,9 +34,10 @@ public class CalendarDBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void update(String date, String sche, String memo) {
+
+    public void update(String date, String sche, String newSche, String memo) {
         SQLiteDatabase db = getWritableDatabase();
-        db.execSQL("UPDATE CALENDAR SET memo='" + memo + "' WHERE date='" + date + "' AND schedule='" + sche +"';" );
+        db.execSQL("UPDATE CALENDAR SET schedule='" + newSche + "', memo='" + memo + "' WHERE date='" + date + "' AND schedule='" + sche +"';" );
         db.close();
     }
 
@@ -46,23 +47,8 @@ public class CalendarDBHelper extends SQLiteOpenHelper {
         db.execSQL("DELETE FROM CALENDAR WHERE date='" + date + "' AND schedule='" + sche + "';");
         db.close();
     }
-    public boolean select(String dat, String sche) {
-        String sql = "SELECT * FROM calendar";
-        SQLiteDatabase db = this.getReadableDatabase();
-        String result = "";
-        Cursor cursor = db.rawQuery(sql, null);
-        if(cursor.moveToFirst()) {
-            do {
-                if (dat.equals(cursor.getString(0)) &&
-                        sche.equals(cursor.getString(1))) {
-                    cursor.close();
-                    return true;
-                }
-            } while (cursor.moveToNext());
-        }
-        cursor.close();
-        return false;
-    }
+
+
     public Cursor getResult() {
         SQLiteDatabase db = getReadableDatabase();
         // String result  = "";
@@ -77,4 +63,5 @@ public class CalendarDBHelper extends SQLiteOpenHelper {
 //        }
         return cursor;
     }
+
 }

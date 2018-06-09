@@ -23,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -177,7 +178,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         googleMap = map;
         geocoder = new Geocoder(this);
 
-        db = new PlanSQLiteHelper(getApplicationContext());
+        //db = new PlanSQLiteHelper(getApplicationContext());
         plan = db.getPlan(plan.getId(),googleMap,markerIcon);
         db.getRouteListCount(plan.getId());
 
@@ -200,7 +201,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         LatLng center = plan.getCentre();
 
         map.moveCamera(CameraUpdateFactory.newLatLng(center));
-        map.animateCamera(CameraUpdateFactory.zoomTo(12));
+        map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -234,9 +235,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 
                         //add marker
                         Marker m =googleMap.addMarker(mOptions);
-                        m.setTag(0);
-                        m.setSnippet(m.getId());
-
+                        MarkerTag tag = new MarkerTag(0,0);
+                        m.setTag(tag);
+                        //m.setSnippet(m.getId());
                         db.createMarker(m,plan.getId());
 
                         //zoom camera view
@@ -258,8 +259,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 
                 //add marker
                 Marker m = googleMap.addMarker(option);
-                m.setTag(0);
-                m.setSnippet(m.getId());
+                MarkerTag tag = new MarkerTag(0,0);
+                m.setTag(tag);
+//                m.setSnippet(m.getId());
                 db.createMarker(m,plan.getId());
 
                 //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
@@ -326,9 +328,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                                 title.setText(plan.getDateString(n));
                             }
                             RouteInfoSliding indicator = findViewById(R.id.routeInfoDraw);
-                            indicator.setRoute(cur);
-                            cur.setMarkerList(map,indicator.getModified()); //get the modified route info
-
+                            indicator.setRoute(cur,googleMap);
+                            cur.setMarkerList(googleMap,indicator.getModified()); //get the modified route info
                         }else{
                             cur.setPolylineWidth(10,googleMap);
                         }
@@ -340,7 +341,57 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         });
         googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
-            public void onInfoWindowClick(final Marker marker) { ///여기 더 수정
+            public void onInfoWindowClick(final Marker marker) {
+                //final Marker cMarker =marker;
+                final PlanSQLiteHelper db = new PlanSQLiteHelper(MapMain.this);
+
+                AlertDialog.Builder alert = new AlertDialog.Builder(MapMain.this);
+                LayoutInflater inflater = getLayoutInflater();
+                final View inputView = inflater.inflate(R.layout.map_pop_input,null);
+
+                if(marker.getTitle().equals(" ")){
+                    alert.setTitle("마커 편집");
+                }
+                else{
+                    alert.setTitle(marker.getTitle());
+                }
+                alert.setView(inputView);
+                alert.setPositiveButton("저장", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        EditText titleInput = (inputView).findViewById(R.id.markerTitleInput);
+                        RadioGroup iconInput = (inputView).findViewById(R.id.iconCategory);
+                        String mtitle = titleInput.getText().toString();
+                        int checkedIcon;
+                        switch (iconInput.getCheckedRadioButtonId()){
+                            case R.id.opt_default:
+                                checkedIcon=0;
+                                break;
+                            case R.id.opt_residence:
+                                checkedIcon=1;
+                                break;
+                            case R.id.opt_dining:
+                                checkedIcon=2;
+                                break;
+                            case R.id.opt_shopping:
+                                checkedIcon=3;
+                                break;
+                            default:
+                                    checkedIcon=0;
+                        }
+                        Log.d("ICON ID",checkedIcon+" ");
+
+                        marker.setIcon(Micon.getMarkerIcon(checkedIcon));
+                        marker.setTitle(mtitle);
+                        db.updateMarker(marker,checkedIcon);
+                    }
+                });
+                alert.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {}
+                });
+                alert.show();
+                /*
                 final View innerView = getLayoutInflater().inflate(R.layout.map_pop_input,null);
                 AlertDialog.Builder popInput = new AlertDialog.Builder(getApplicationContext());
                 final RadioGroup iconOpt = innerView.findViewById(R.id.IconCategory);
@@ -382,7 +433,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                     @Override
                     public void onClick(DialogInterface dialog, int which) {}
                 }  );
-                popInput.show();
+                popInput.show();*/
             }
         });
     }
@@ -391,8 +442,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     public boolean onMarkerClick(Marker marker) {
 
         if(edit_mode==1){  //remove a marker
-            marker.remove();
-
             Iterator<Route> route_iterator = routes.iterator();
             Route cur;
 
@@ -592,31 +641,16 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             return routeColor[idx];
         }
     }
-    /*
+
     public static class Micon {
         static final BitmapDescriptor[] mIcon = new BitmapDescriptor[]{
-                BitmapDescriptorFactory.
-                "#fcc244",
-                "#2e98d1",
-                "#ED5276",
-                "#F4CDA5",
-                "#259c49",
-                "#dde91616",
-                "#dd0c24f9",
-                "#259c49",
-                "#3C989F",
-                "#fcc249",
-                "#2e98dF",
-                "#ED5270",
-                "#F4CD05",
-                "#259009",
-                "#dde92616",
-                "#dd0EE4f9",
-                "#259FE9",
-        };
+                BitmapDescriptorFactory.fromResource(R.drawable.marker_default),
+                        BitmapDescriptorFactory.fromResource(R.drawable.marker_residence),
+                        BitmapDescriptorFactory.fromResource(R.drawable.marker_dining),
+                        BitmapDescriptorFactory.fromResource(R.drawable.marker_shopping) };
 
-        public static String getMarkerIcon(int idx){
-            return routeColor[idx];
+        public static BitmapDescriptor getMarkerIcon(int idx){
+            return mIcon[idx];
         }
-    }*/
+    }
 }
