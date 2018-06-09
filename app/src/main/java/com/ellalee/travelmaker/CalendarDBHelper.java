@@ -2,9 +2,9 @@ package com.ellalee.travelmaker;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 /**
  * Created by jiwon on 2018-06-06.
@@ -17,57 +17,64 @@ public class CalendarDBHelper extends SQLiteOpenHelper {
     static final int DATABASE_VERSION = 1;
     static final String DATABASE_CREATE = "create table contacts (_id integer primary key autoin";
     public CalendarDBHelper(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, name, null, version);
+        super(context, name, factory, version);
     }
 
     public void onCreate(SQLiteDatabase db) {
-        try {
-            String sql = "create table calendar (" + "date text, " + "sche text, " + "memo text);";
-            db.execSQL(sql);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        db.execSQL("CREATE TABLE CALENDAR (date VARCHAR(20), schedule VARCAHR(30), memo VARCHAR(50) );");
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-        String sql = "drop table if exists calendar";
-        db.execSQL(sql);
-        onCreate(db);
     }
 
+    public void insert(String date, String sche, String memo) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("INSERT INTO CALENDAR VALUES('" + date + "', " + sche + ", '" + memo + "');");
+        db.close();
+    }
+
+    public void update(String date, String sche, String memo) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("UPDATE CALENDAR SET memo='" + memo + "' WHERE date='" + date + "' AND schedule='" + sche +"';" );
+        db.close();
+    }
+
+    public void delete(String date, String sche) {
+        SQLiteDatabase db = getWritableDatabase();
+
+        db.execSQL("DELETE FROM CALENDAR WHERE date='" + date + "' AND schedule='" + sche + "';");
+        db.close();
+    }
+    public boolean select(String dat, String sche) {
+        String sql = "SELECT * FROM calendar";
+        SQLiteDatabase db = this.getReadableDatabase();
+        String result = "";
+        Cursor cursor = db.rawQuery(sql, null);
+        if(cursor.moveToFirst()) {
+            do {
+                if (dat.equals(cursor.getString(0)) &&
+                        sche.equals(cursor.getString(1))) {
+                    cursor.close();
+                    return true;
+                }
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return false;
+    }
+    public Cursor getResult() {
+        SQLiteDatabase db = getReadableDatabase();
+        // String result  = "";
+
+        Cursor cursor = db.rawQuery("SELECT * FROM CALENDAR", null);
+//        while(cursor.moveToNext()) {
+//            String Date = cursor.getString(cursor.getColumnIndex("date"));
+//            String Schedule = cursor.getString(cursor.getColumnIndex("schedule"));
+//            String Memo = cursor.getString(cursor.getColumnIndex("memo"));
+//
+//            result += Date + " " + Schedule + " " + Memo;
+//        }
+        return cursor;
+    }
 }
-//    public void insert(String date, String sche, String memo) {
-//        SQLiteDatabase db = getWritableDatabase();
-//        db.execSQL("INSERT INTO CALENDAR VALUES('" + date + "', " + sche + ", '" + memo + "');");
-//        db.close();
-//    }
-//
-//    public void update(String date, String sche, String memo) {
-//        SQLiteDatabase db = getWritableDatabase();
-//        db.execSQL("UPDATE CALENDAR SET memo=" + memo + " WHERE date='" + date + "' AND sche='" + sche +"';" );
-//        db.close();
-//    }
-//
-//    public void delete(String date, String sche) {
-//        SQLiteDatabase db = getWritableDatabase();
-//
-//        db.execSQL("DELETE FROM CALENDAR WHERE date='" + date + "' AND sche='" + sche + "';");
-//        db.close();
-//    }
-//
-//    public Cursor getResult() {
-//        SQLiteDatabase db = getReadableDatabase();
-//       // String result  = "";
-//
-//        Cursor cursor = db.rawQuery("SELECT * FROM CALENDAR", null);
-////        while(cursor.moveToNext()) {
-////            String Date = cursor.getString(cursor.getColumnIndex("date"));
-////            String Schedule = cursor.getString(cursor.getColumnIndex("schedule"));
-////            String Memo = cursor.getString(cursor.getColumnIndex("memo"));
-////
-////            result += Date + " " + Schedule + " " + Memo;
-////        }
-//        return cursor;
-//    }
-//}

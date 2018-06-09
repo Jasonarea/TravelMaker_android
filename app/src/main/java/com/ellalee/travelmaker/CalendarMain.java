@@ -32,8 +32,8 @@ public class CalendarMain extends Activity {
 
 //    ListAdapter adapter;
 
-    SQLiteDatabase db;
-    CalendarDBHelper helper;
+    static SQLiteDatabase db;
+    static CalendarDBHelper helper;
 
     /**
      * 연/월 텍스트뷰
@@ -187,7 +187,7 @@ public class CalendarMain extends Activity {
         for (int i = 0; i < doList.size(); i++) {
             String date = doList.get(i).substring(doList.get(i).length() - 30, doList.get(i).length() - 20);
             String sched = doList.get(i).substring(10, doList.get(i).length() - 31);
-            Log.d("DB에 들어가는 doList", date + " " + sched);
+            Log.d("DB에 들어가는 doList", date + "" + sched);
             insert(date, sched, "");
         }
 
@@ -226,15 +226,15 @@ public class CalendarMain extends Activity {
 //            //테이블이 존재하는 경우 기존 데이터를 지우기 위해 사용
 //            sampleDB.execSQL("DELETE FROM " + tableName);
 //
-            Log.d("dolist 사이즈 ", String.valueOf(doList.size()));
-            // doList가 비어있지 않으면
-            if(doList.size() != 0) {
-                // 모든 doList를 테이블에 집어넣음
-                for (int i = 0; i < doList.size(); i++) {
-                    Log.d("DB에 들어가는 doList", doList.get(i).substring(doList.get(i).length() - 30, doList.get(i).length() - 20) + " " + doList.get(i).substring(10, doList.get(i).length() - 31));
-                    insert(doList.get(i).substring(doList.get(i).length() - 30, doList.get(i).length() - 20), doList.get(i).substring(10, doList.get(i).length() - 31), "");
-                }
+        Log.d("dolist 사이즈 ", String.valueOf(doList.size()));
+        // doList가 비어있지 않으면
+        if(doList.size() != 0) {
+            // 모든 doList를 테이블에 집어넣음
+            for (int i = 0; i < doList.size(); i++) {
+                Log.d("DB에 들어가는 doList", doList.get(i).substring(doList.get(i).length() - 30, doList.get(i).length() - 20) + " " + doList.get(i).substring(10, doList.get(i).length() - 31));
+                insert(doList.get(i).substring(doList.get(i).length() - 30, doList.get(i).length() - 20), doList.get(i).substring(10, doList.get(i).length() - 31), "");
             }
+        }
 //                sampleDB.close();
 //        }catch (SQLiteException se) {
 //            Toast.makeText(getApplicationContext(), se.getMessage(), Toast.LENGTH_LONG).show();
@@ -327,7 +327,7 @@ public class CalendarMain extends Activity {
     /*
      * DB에 값 insert하는 method
      */
-    public void insert(String date, String sched, String memo) {
+    public static void insert(String date, String sched, String memo) {
         db = helper.getWritableDatabase();
         ContentValues values = new ContentValues();
 
@@ -342,7 +342,7 @@ public class CalendarMain extends Activity {
             db.insert("calendar", null, values);
         }
         else {
-            Toast.makeText(getApplicationContext(), "이미 저장되어 있는 스케줄입니다!", Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplicationContext(), "이미 저장되어 있는 스케줄입니다!", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -484,19 +484,18 @@ public class CalendarMain extends Activity {
     /** 그리드뷰 어댑터 */
 
     private class GridAdapter extends BaseAdapter {
+
         private final ArrayList<Day> daylist;
+
+
         private final LayoutInflater inflater;
 
 
 
         /**
-
          * 생성자
-
          * @param context
-
          * @param list
-
          */
 
         public GridAdapter(Context context, ArrayList<Day> list) {
@@ -652,4 +651,3 @@ public class CalendarMain extends Activity {
         }
     }
 }
-

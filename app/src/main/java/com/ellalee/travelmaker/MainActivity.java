@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Canvas;
@@ -72,6 +73,7 @@ import com.google.api.services.gmail.Gmail;
 import com.google.api.services.gmail.model.Label;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -84,10 +86,11 @@ import java.util.List;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.widget.Toast.*;
 import static com.ellalee.travelmaker.GmailSync.SCOPE;
 import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig.Prompt.SIGN_IN;
-import static com.kakao.network.StringSet.FILE;
+
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
@@ -158,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 .setBackOff(new ExponentialBackOff());
         //getResultsFromApi();
         String email = loadSavedPreferences();
-            if (email.equals("hyeonsuns123@gmail.com") && EasyPermissions.hasPermissions(
+            if (email.equals("EmailStuff") && EasyPermissions.hasPermissions(
                     this, Manifest.permission.GET_ACCOUNTS)) {
                 navItems[0] = "LogOut";
                 lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
@@ -525,6 +528,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(
                 requestCode, permissions, grantResults, this);
+
     }
 
     /**
@@ -592,21 +596,27 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void createPdf() {
-        PdfDocument document = new PdfDocument();
-        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(100, 100, 1).create();
-        PdfDocument.Page page = document.startPage(pageInfo);
-        View content = LoginPage.mOutputText;
-        content.draw(page.getCanvas());
-        document.finishPage(page);
-
-        try {
-            File f = new File(Environment.getExternalStorageDirectory().getPath() + "/pruebaAppModerator.pdf");
-            FileOutputStream fos = new FileOutputStream(f);
-            document.writeTo(fos);
-            document.close();
-            fos.close();
-        } catch (IOException e) {
-            throw new RuntimeException("Error generating file", e);
-        }
+//        PdfDocument document = new PdfDocument();
+//        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(100, 100, 1).create();
+//        PdfDocument.Page page = document.startPage(pageInfo);
+//        TextView tv = new TextView(getApplicationContext());
+//        tv.setText("Hello World");
+//
+//        View content = tv;
+//        content.draw(page.getCanvas());
+//        document.finishPage(page);
+//        if(Build.VERSION.SDK_INT>22){
+//            requestPermissions(new String[] {"WRITE_EXTERNAL_STORAGE", "READ_EXTERNAL_STORAGE"}, 1);
+//        }
+//        try {
+//            File f = new File(Environment.getExternalStorageDirectory().getPath() + "/pruebaAppModerator.pdf");
+//            FileOutputStream fos = new FileOutputStream(f);
+//            document.writeTo(fos);
+//            document.close();
+//            fos.close();
+//        } catch (IOException e) {
+//            throw new RuntimeException("Error generating file", e);
+//        }
     }
+
 }
