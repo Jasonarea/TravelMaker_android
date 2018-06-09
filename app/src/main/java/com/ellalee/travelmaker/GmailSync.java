@@ -100,6 +100,7 @@ public class GmailSync implements Runnable {
             e.printStackTrace();
         }
         String text = "";
+        count = 0;
         for (Thread thread : t) {
             String id = thread.getId();
             response = service.users().threads().get("me", id).execute();

@@ -45,9 +45,12 @@ public class CalendarSync extends Thread implements Runnable {
     static  com.google.api.services.calendar.Calendar mService = null;
     private static final String BUTTON_TEXT = "Call Google Calendar API";
     private static final String PREF_ACCOUNT_NAME = "AccountName";
+    private static boolean isTravelMaker = false;
     public static final String[] SCOPES = { "https://www.googleapis.com/auth/calendar",
             "https://www.googleapis.com/auth/calendar.readonly" };
     //public static String calendarName = "";
+    static com.google.api.services.calendar.Calendar service;
+    static String newCalId;
 
     public CalendarSync(GoogleAccountCredential mCredential, Context mContext) {
         this.mContext = mContext;
@@ -55,10 +58,57 @@ public class CalendarSync extends Thread implements Runnable {
     }
 
     public void run() {
+
         getResultsFromApi(mCredential);
+        try {
+            calendarList();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         gmailThread = new GmailSync(transport, jsonFactory, mCredential, mContext);
         Thread gmail = new Thread(gmailThread);
         gmail.start();
+    }
+    public static String insertCal() throws IOException {
+        // Initialize Calendar service with valid OAuth credentials
+        service = new com.google.api.services.calendar.Calendar.Builder(
+                transport, jsonFactory, mCredential)
+                .setApplicationName("Travel Maker")
+                .build();
+
+
+        com.google.api.services.calendar.model.Calendar calendar = new com.google.api.services.calendar.model.Calendar();
+        calendar.setSummary("Travel Maker");
+        calendar.setTimeZone("Asia/Seoul");
+
+        com.google.api.services.calendar.model.Calendar createdCalendar = service.calendars().insert(calendar).execute();
+        newCalId = createdCalendar.getId();
+        Log.d("Cal_ID", createdCalendar.getId());
+        return createdCalendar.getId();
+    }
+
+    public static String getCal() throws IOException{
+        service = new com.google.api.services.calendar.Calendar.Builder(
+                transport, jsonFactory, mCredential)
+                .setApplicationName("Travel Maker")
+                .build();
+
+// Iterate through entries in calendar list
+        String pageToken = null;
+        String id = null;
+        do {
+            CalendarList calendarList = service.calendarList().list().setPageToken(pageToken).execute();
+            List<CalendarListEntry> items = calendarList.getItems();
+
+            for (CalendarListEntry calendarListEntry : items) {
+                if(calendarListEntry.getSummary().equals("Travel Maker")) {
+                    id = calendarListEntry.getId();
+                }
+                else continue;
+            }
+            pageToken = calendarList.getNextPageToken();
+        } while (pageToken != null);
+        return id;
     }
     public static void createEvent(com.google.api.services.calendar.Calendar mService,
                                    String startD, String endD, String nation, String fromNation) throws IOException {
@@ -83,9 +133,33 @@ public class CalendarSync extends Thread implements Runnable {
                 new EventReminder().setMethod("popup").setMinutes(10),
         };
 
-        String calendarId = "primary";
+        String calendarId = newCalId;
         event = mService.events().insert(calendarId, event).execute();
         Log.d("create", "Event created : " + event.getHtmlLink());
+    }
+    public static void calendarList() throws IOException {
+        service = new com.google.api.services.calendar.Calendar.Builder(
+                transport, jsonFactory, mCredential)
+                .setApplicationName("Travel Maker")
+                .build();
+
+// Iterate through entries in calendar list
+        String pageToken = null;
+        do {
+            CalendarList calendarList = service.calendarList().list().setPageToken(pageToken).execute();
+            List<CalendarListEntry> items = calendarList.getItems();
+
+            for (CalendarListEntry calendarListEntry : items) {
+                if(calendarListEntry.getSummary().equals("Travel Maker")) {
+                    Log.d("List view", calendarListEntry.getSummary());
+                    isTravelMaker = true;
+                }
+                else continue;
+            }
+            pageToken = calendarList.getNextPageToken();
+        } while (pageToken != null);
+        if(!isTravelMaker) newCalId = insertCal();
+        else newCalId = getCal();
     }
     /**
      * Attempt to call the API, after verifying that all the preconditions are
