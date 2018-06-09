@@ -2,6 +2,7 @@ package com.ellalee.travelmaker;
 
 import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -91,7 +93,14 @@ public class CalendarListMain extends AppCompatActivity {
             values.put("schedule", schedule);
             values.put("memo", memo);
 
-            db.insert("calendar", null, values);
+            Cursor c = db.rawQuery("SELECT date, schedule FROM calendar WHERE date='"  + date + "' AND schedule='" + sched + "'", null);
+            c.moveToFirst();
+            if(c.getCount() == 0) {
+                db.insert("calendar", null, values);
+            }
+            else {
+                Toast.makeText(getApplicationContext(), "이미 저장되어 있는 스케줄입니다!", Toast.LENGTH_LONG).show();
+            }
         }
 //        gridAdapter = new GridAdapter(getApplicationContext(), dayList);
 //        gridView.setAdapter(gridAdapter);

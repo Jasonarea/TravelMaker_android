@@ -217,33 +217,6 @@ public class CalendarMain extends Activity {
                 startActivity(intent);
             }
         });
-        // DB 생성-----------------------------------------------------------------------------------------------------------------------
-//        try {
-//            sampleDB = this.openOrCreateDatabase(dbName, MODE_PRIVATE, null);
-//            // 테이블이 존재하지 않으면 새로 생성
-//            sampleDB.execSQL("CREATE TABLE IF NOT EXISTS " + tableName + " (date VARCHAR(20), schedule VARCAHR(30), memo VARCHAR(50) );");
-//
-//            //테이블이 존재하는 경우 기존 데이터를 지우기 위해 사용
-//            sampleDB.execSQL("DELETE FROM " + tableName);
-//
-//            Log.d("dolist 사이즈 ", String.valueOf(doList.size()));
-//            // doList가 비어있지 않으면
-//            doList = getDoList();
-//
-//            if(doList.size() != 0) {
-//                // 모든 doList를 테이블에 집어넣음
-//                for (int i = 0; i < doList.size(); i++) {
-//                    Log.d("DB에 들어가는 doList", doList.get(i).substring(doList.get(i).length() - 30, doList.get(i).length() - 20) + " " + doList.get(i).substring(10, doList.get(i).length() - 31));
-//                    insert(doList.get(i).substring(doList.get(i).length() - 30, doList.get(i).length() - 20), doList.get(i).substring(10, doList.get(i).length() - 31), "");
-//                }
-//            }
-//                sampleDB.close();
-//        }catch (SQLiteException se) {
-//            Toast.makeText(getApplicationContext(), se.getMessage(), Toast.LENGTH_LONG).show();
-//            Log.e("DB exception : ", se.getMessage());
-//        }
-        //----------------------------------------------------------------------------------------------------------------------------------
-
 
         //back button 눌렀을 때
         leftBtn.setOnClickListener(new View.OnClickListener() {
@@ -339,6 +312,7 @@ public class CalendarMain extends Activity {
 
         Cursor c = db.rawQuery("SELECT date, schedule FROM calendar WHERE date='"  + date + "' AND schedule='" + sched + "'", null);
         c.moveToFirst();
+
         if(c.getCount() == 0) {
             db.insert("calendar", null, values);
         }
@@ -435,7 +409,7 @@ public class CalendarMain extends Activity {
                 if(Integer.parseInt(dt[0]) == mCal.get(Calendar.YEAR)) {
                     if(Integer.parseInt(dt[1]) == month) {
                         if(Integer.parseInt(dt[2]) == Integer.parseInt(d.getDay())) {
-                            Log.d("DB에서 얻어온 정보로 통과되는 일", dt[2]);
+                            Log.d("DB에서 얻어온 정보로 통과되는 일", dt[1]);
                             count += 1;
                             d.setSche(temp[1].substring(temp[1].indexOf(":")+1));
                             d.setMemo(temp[2].substring(temp[2].indexOf(":")+1));
