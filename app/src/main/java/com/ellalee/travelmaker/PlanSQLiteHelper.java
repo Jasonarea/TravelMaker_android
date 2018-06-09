@@ -264,10 +264,10 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         values.put(KEY_LATITUDE,position.latitude);
         values.put(KEY_LONGITUDE,position.longitude);
         values.put(KEY_TITLE,marker.getTitle());
-        values.put(KEY_ICON,Integer.parseInt(marker.getTag().toString())); //0-3
+        values.put(KEY_ICON,marker.getTag().hashCode()); //0-3
 
         long marker_id = db.insert(TABLE_MARKER,null,values);
-        marker.setTag(new MarkerTag(Integer.parseInt(marker.getTag().toString()),marker_id));
+        marker.setTag(new MarkerTag(marker.getTag().hashCode(),marker_id));
         marker.setSnippet(marker.getTag().toString());
 
         return marker_id;
@@ -544,7 +544,7 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         return db.update(TABLE_PLAN, values, KEY_ID + " = ? ", new String[] { String.valueOf(plan_id) });
     }
 
-    public int updateMarker(Marker marker){
+    public int updateMarker(Marker marker){ //update position
         SQLiteDatabase db = this.getWritableDatabase();
         String selectQuery = "SELECT * FROM "+ TABLE_MARKER + " WHERE " + KEY_ID +" = '"+marker.getTag().toString()+"'";
         Cursor c = db.rawQuery(selectQuery,null);
@@ -552,7 +552,7 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         if(c!=null && c.getCount()!=0){
             c.moveToFirst();
 
-            Log.d("마커위치변경","***********");
+            Log.d("마커위치변경",marker.getTag().toString()+"***********");
             ContentValues values = new ContentValues();
             values.put(KEY_LATITUDE,marker.getPosition().latitude);
             values.put(KEY_LONGITUDE,marker.getPosition().longitude);
@@ -561,26 +561,20 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         }
         return -1;
     }
-    public int updateMarker(long plan_id,Marker marker){
+    public int updateMarker(Marker marker,int icon){ //update Icon & title
         SQLiteDatabase db = this.getWritableDatabase();
-        String selectQuery = "SELECT * FROM "+ TABLE_MARKER + " WHERE " + KEY_ID +" ='"+marker.getTag().toString()+"'";
-        Cursor c = db.rawQuery(selectQuery,null);
+        MarkerTag tag = (MarkerTag) marker.getTag();
+        ContentValues values = new ContentValues();
+        values.put(KEY_TITLE,marker.getTitle());
+        values.put(KEY_ICON,icon);
+        tag.setIcon(icon);
+        marker.setTag(tag);
 
-        if(c!=null && c.getCount()!=0){
-            c.moveToFirst();
-
-            ContentValues values = new ContentValues();
-            values.put(KEY_TITLE,marker.getTitle());
-            values.put(KEY_ICON,Integer.parseInt(marker.getTag().toString()));
-
-            return db.update(TABLE_MARKER,values,KEY_ID + " = ?",new String[]{ String.valueOf(c.getLong(c.getColumnIndex(KEY_ID))) });
-        }
-        return -1;
+        return db.update(TABLE_MARKER,values,KEY_ID + " = ?",new String[]{ String.valueOf(tag.getId())});
     }
 
 
     //delete
-
     /*public void deleteMarker(long plan_id,Marker marker){
         SQLiteDatabase db = this.getWritableDatabase();
         String selectQuery = "SELECT * FROM "+ TABLE_MARKER + " WHERE " + KEY_PLAN_ID +" = '"+plan_id+"'"
@@ -596,15 +590,25 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
     }*/
     public void deleteMarker(Marker marker){
         SQLiteDatabase db = this.getWritableDatabase();
-        deleteMarkerList(Long.getLong(marker.getTag().toString()));
-        db.delete(TABLE_MARKER, KEY_ID + " = ?", new String[]{ marker.getTag().toString() });
+        MarkerTag tag = (MarkerTag) marker.getTag();
+
+        Log.d("마커삭제",marker.getTag()+"***********");
+        deleteMarkerList(tag.getId());
+        //deleteMarkerList(marker);
+        db.delete(TABLE_MARKER, KEY_ID + " = ?", new String[]{ String.valueOf(tag.getId()) });
     }
     public void deleteALLMarker(long plan_id){
         SQLiteDatabase db = this.getWritableDatabase();
         while (db.delete(TABLE_MARKER, KEY_PLAN_ID + " = ?", new String[]{ String.valueOf(plan_id) })>0){
         }
     }
+    public void deleteMarkerList(Marker marker){ //because the marker was removed
+        SQLiteDatabase db = this.getWritableDatabase();
+        MarkerTag tag = (MarkerTag) marker.getTag();
 
+        while(db.delete(TABLE_MARKERLIST,KEY_MARKER_ID+" = ?",new String[]{ String.valueOf(tag.getId()) })>0){
+        }
+    }
     public void deleteMarkerList(long marker_id){ //because the marker was removed
         SQLiteDatabase db = this.getWritableDatabase();
         while(db.delete(TABLE_MARKERLIST,KEY_MARKER_ID+" = ?",new String[]{ String.valueOf(marker_id) })>0){
@@ -615,10 +619,10 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         while(db.delete(TABLE_MARKERLIST,KEY_ROUTE_ID+" = ?",new String[]{String.valueOf(route_id)})>0){
         }
     }
-    public int deleteMarkerList(Route route,Marker marker){ // the marker was removed just from the route.
+    public int deleteMarkerList(long route_id,long marker_id){ // the marker was removed just from the route.
         SQLiteDatabase db = this.getWritableDatabase();
-        String selectQuery = "SELECT * FROM " + TABLE_MARKERLIST + "WHERE " +KEY_ROUTE_ID + " = '" +route.getId() +"' "
-                +" AND "+KEY_MARKER_ID + " = '" +marker.getTag().toString()+"'";
+        String selectQuery = "SELECT * FROM " + TABLE_MARKERLIST + " WHERE " +KEY_ROUTE_ID + " = '" +route_id +"'"
+                +" AND "+KEY_MARKER_ID + " = '" +marker_id+"'";
 
         Cursor c = db.rawQuery(selectQuery,null);
         if(c!=null && c.getCount()!=0 ){
@@ -657,30 +661,4 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         return db.delete(TABLE_PLAN,KEY_ID+" = ?",new String[] {String.valueOf(plan_id)});
     }
 
-
-    public class MarkerTag{
-        public int icon;
-        public final long dbId;
-
-        MarkerTag(int i,long id){
-            icon =i;
-            dbId=id;
-        }
-        public long getId(){
-            return dbId;
-        }
-        public int getIcon(){
-            return icon;
-        }
-        @Override
-        public boolean equals(Object obj) {
-            return (obj.equals(dbId))? true : false;
-            //return super.equals(obj);
-        }
-        @Override
-        public String toString() {
-            return String.valueOf(dbId);
-//            return "ICON: "+icon+", ID: "+dbId;
-        }
-    }
 }

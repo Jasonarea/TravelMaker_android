@@ -24,6 +24,7 @@ import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.app.Activity;
@@ -32,8 +33,10 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -77,7 +80,7 @@ import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
-    private String[] navItems = {"LogIn", "예산관리", "공유하기", "GMail 동기화"};
+    private String[] navItems = {"LogIn", "�산관�, "공유�기", "GMail �기};
 
     private ListView lvNavList;
     private FrameLayout flContainer;
@@ -102,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     AlertDialog customDialog;
 
    PlanSQLiteHelper db;
+   Button btnSearch;
 
     @Override
 
@@ -123,8 +127,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         setContentView(R.layout.activity_main);
 
         //mContext = getApplicationContext();
- //       helper = new PlanSQLiteHelper(getApplicationContext());
         db = new PlanSQLiteHelper(getApplicationContext());
+        btnSearch = findViewById(R.id.search_area);
 
         lvNavList = (ListView)findViewById(R.id.lv_activity_main_nav_list);
 
@@ -198,10 +202,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setIcon(android.R.drawable.ic_dialog_alert);
                     builder.setTitle("Travel Maker");
-                    builder.setMessage("정말 로그아웃 하시겠습니까?");
-                    builder.setPositiveButton("네", dialogListener);
+                    builder.setMessage("�말 로그�웃 �시겠습�까?");
+                    builder.setPositiveButton(", dialogListener);
 
-                    builder.setNegativeButton("아니요", null);
+                    builder.setNegativeButton("�니, null);
                     customDialog = builder.create();
                     customDialog.show();
                     break;
@@ -245,7 +249,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     startActivity(nextScreen);
                     ActivityCompat.finishAffinity(MainActivity.this);
                 }
-                Toast.makeText(getApplicationContext(), "로그아웃되었습니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "로그�웃�었�니", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -276,6 +280,15 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     public void mapMain(View v){
 
         EditText input = findViewById(R.id.EditWhereToGo);
+        input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if( i == EditorInfo.IME_ACTION_DONE){ 
+                    mapMain(btnSearch);
+                }
+                return false;
+            }
+        });
         String city = input.getText().toString();
         LatLng center;
         Plan plan;

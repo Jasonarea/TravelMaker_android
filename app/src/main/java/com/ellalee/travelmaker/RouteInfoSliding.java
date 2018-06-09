@@ -1,12 +1,18 @@
 package com.ellalee.travelmaker;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.TypedArray;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.ScrollingView;
@@ -32,6 +38,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
@@ -43,14 +50,19 @@ import com.google.common.collect.MapMaker;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class RouteInfoSliding extends View{
+public class RouteInfoSliding extends View {
     private ArrayList<Marker> markerList;
-    private int mIndex;
     private String routeColor;
     private int num;
+
+    private Route route;
+
+    private GoogleMap map;
+    private PlanSQLiteHelper db;
+
     private ArrayList<Integer> circle = new ArrayList<>();
     private ArrayList<Rect> area = new ArrayList<>();
-    private int x=450,y=200,rad=40;
+    private final int x=450,y=200,rad=60,start=200;
 
     public RouteInfoSliding(Context context) {
         super(context);
@@ -58,6 +70,10 @@ public class RouteInfoSliding extends View{
 
     public RouteInfoSliding(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+    public RouteInfoSliding(Context context,Route r){
+        super(context);
+        route =r;
     }
 /*
     public void init(Context context,AttributeSet attrs){
@@ -73,15 +89,18 @@ public class RouteInfoSliding extends View{
         }
     }
 */
-    public void setRoute(Route r){
-        markerList = r.getMarkerList();
-        num= r.getMarkerList().size();
-        routeColor = r.getRouteColor();
+    public void setRoute(Route r,GoogleMap gMap){
+        route = r;
+        markerList = route.getMarkerList();
+        num= route.getMarkerList().size();
+        routeColor = route.getRouteColor();
+        map = gMap;
+        db = new PlanSQLiteHelper(getContext());
 
-        int cur=200;
+        int cur=start;
         for(int i=0;i<num;i++){
             circle.add(i,cur);
-            area.add(new Rect(cur,y-rad,cur+rad*2,y+rad));
+            area.add(new Rect(cur-rad,y-rad,cur+rad,y+rad));
 
             cur+=x;
         }
@@ -135,10 +154,92 @@ public class RouteInfoSliding extends View{
     @Override
     public boolean onTouchEvent(MotionEvent event)
     {
-        int x=(int)event.getX();
-        int y=(int)event.getY();
+        int posX=(int)event.getX();
+        int posY=(int)event.getY();
+        final int idx;
         Log.d("NUM","TOTAL NUM :"+num);
 
+        if(event.getAction() == MotionEvent.ACTION_DOWN){
+            if( y-rad <= posY && posY <= y+rad){
+                if( start-rad <= posX && posX <= start+(x*(num-1))+rad){ //in clickable area
+                    idx = (posX-start)/x;
+                    if( (posX-start) % x <= Math.abs(rad)){ //circle
+                        //
+                        Log.d("CLICK","CIRCLE "+idx);
+
+                        MenuBuilder popMenu = new MenuBuilder(getContext());
+                        final MenuInflater inflater = new MenuInflater(getContext());
+                        inflater.inflate(R.menu.menu_marker,popMenu);
+                        MenuPopupHelper opt = new MenuPopupHelper(getContext(),popMenu,findViewById(R.id.routeInfoDraw));
+                        opt.setForceShowIcon(true);
+                        opt.setGravity(TEXT_ALIGNMENT_CENTER);
+                        opt.show(circle.get(idx),0);
+
+                        popMenu.setCallback(new MenuBuilder.Callback() {
+                            @Override
+                            public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
+                                switch (item.getItemId()){
+                                    case R.id.option_delete:
+                                        db.deleteMarkerList(route.getId(),Long.valueOf(route.getMarkerList().get(idx).getTag().toString()));
+                                        markerList.remove(idx);
+                                        route.setMarkerList(map,getModified());
+                                        setRoute(route,map);
+                                    /*db.deleteMarkerList(route.getId(),Long.valueOf(route.getMarkerList().get(idx).getTag().toString()));
+                                    route.getMarkerList().remove(idx);
+                                    route.setMarkerList(map,getModified());
+                                    setRoute(route,map);
+                                    */
+                                        invalidate();
+                                        break;
+                                    case R.id.option_residence:
+                                        route.getMarkerList().get(idx).setIcon(MapMain.Micon.getMarkerIcon(1));
+                                        MarkerTag tag = (MarkerTag) route.getMarkerList().get(idx).getTag();
+                                        tag.setIcon(1);
+                                        route.getMarkerList().get(idx).setTag(tag);
+                                        db.updateMarker(markerList.get(idx),1);
+                                        break;
+                                }
+                                return true;
+                            }
+
+                            @Override
+                            public void onMenuModeChange(MenuBuilder menu) {
+                            }
+                        });
+
+                    }
+                    else{ //line
+                        AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+                        alert.setMessage("경로찾기?");
+                        alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                                String uri ="http://maps.google.com/maps?saddr="
+                                        +markerList.get(idx).getPosition().latitude+","
+                                        +markerList.get(idx).getPosition().longitude
+                                        +"&daddr="
+                                        +markerList.get(idx+1).getPosition().latitude+","
+                                        +markerList.get(idx+1).getPosition().longitude;
+
+                                Intent intent = new Intent(android.content.Intent.ACTION_VIEW,Uri.parse(uri));
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                intent.addCategory(Intent.CATEGORY_LAUNCHER );
+                                intent.setClassName("com.google.android.apps.maps", "com.google.android.maps.MapsActivity");
+                                (getContext()).startActivity(intent);
+
+                            }
+                        });
+                        alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {}
+                        });
+                        alert.show();
+                    }
+                }
+            }
+        }
+        /*
         for(mIndex=0;mIndex<num;mIndex++){
             if (area.get(mIndex).contains(x,y)  && event.getAction()==MotionEvent.ACTION_DOWN)
             {
@@ -178,7 +279,7 @@ public class RouteInfoSliding extends View{
                 return true;
             }
 
-        }
+        }*/
         return false;
     }
     @Override
