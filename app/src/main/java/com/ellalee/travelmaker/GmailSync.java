@@ -73,7 +73,6 @@ public class GmailSync implements Runnable {
     public void fetchNameFromProfileServer() throws IOException, JSONException {
         int cou = 0;
         db = new MySQLiteHelper(mContext);
-        //db.deleteEverything();
         final String[] total = new String[10];
         for (int j = 0; j < 10; j++) total[j] = "";
         Gmail service = new Gmail.Builder(mHttpTransport, mJsonFactory, mCredential).setApplicationName("GmailApiTP").build();

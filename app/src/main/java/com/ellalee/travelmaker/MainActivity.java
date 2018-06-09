@@ -2,6 +2,7 @@ package com.ellalee.travelmaker;
 
 import android.Manifest;
 import android.accounts.AccountManager;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
@@ -11,10 +12,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.pdf.PdfDocument;
+import android.graphics.pdf.PdfRenderer;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
+import android.os.Environment;
 import android.preference.DialogPreference;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -61,7 +69,13 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.gmail.Gmail;
+import com.google.api.services.gmail.model.Label;
 
+import org.w3c.dom.Document;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -73,11 +87,12 @@ import pub.devrel.easypermissions.EasyPermissions;
 import static android.widget.Toast.*;
 import static com.ellalee.travelmaker.GmailSync.SCOPE;
 import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig.Prompt.SIGN_IN;
+import static com.kakao.network.StringSet.FILE;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
-    private String[] navItems = {"LogIn", "예산관리", "공유하기", "GMail 동기화"};
+    private String[] navItems = {"LogIn", "예산관리", "공유하기", "GMail 동기화", "PDF문서화"};
 
     private ListView lvNavList;
     private FrameLayout flContainer;
@@ -143,7 +158,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 .setBackOff(new ExponentialBackOff());
         //getResultsFromApi();
         String email = loadSavedPreferences();
-            if (email.equals("EmailStuff")) {
+            if (email.equals("hyeonsuns123@gmail.com") && EasyPermissions.hasPermissions(
+                    this, Manifest.permission.GET_ACCOUNTS)) {
                 navItems[0] = "LogOut";
                 lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
             } else {
@@ -224,6 +240,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                             getApplicationContext(), Arrays.asList(SCOPES))
                             .setBackOff(new ExponentialBackOff());
                     getResultsFromApi();
+                    break;
+
+                case 4:
+                    createPdf();
                     break;
             }
             dlDrawer.closeDrawer(lvNavList);
@@ -567,6 +587,26 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 apiAvailability.isGooglePlayServicesAvailable(this);
         if (apiAvailability.isUserResolvableError(connectionStatusCode)) {
             showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void createPdf() {
+        PdfDocument document = new PdfDocument();
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(100, 100, 1).create();
+        PdfDocument.Page page = document.startPage(pageInfo);
+        View content = LoginPage.mOutputText;
+        content.draw(page.getCanvas());
+        document.finishPage(page);
+
+        try {
+            File f = new File(Environment.getExternalStorageDirectory().getPath() + "/pruebaAppModerator.pdf");
+            FileOutputStream fos = new FileOutputStream(f);
+            document.writeTo(fos);
+            document.close();
+            fos.close();
+        } catch (IOException e) {
+            throw new RuntimeException("Error generating file", e);
         }
     }
 }

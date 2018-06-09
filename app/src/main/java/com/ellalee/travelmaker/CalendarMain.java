@@ -439,10 +439,7 @@ public class CalendarMain extends Activity {
     /** 그리드뷰 어댑터 */
 
     private class GridAdapter extends BaseAdapter {
-
         private final ArrayList<Day> daylist;
-
-
         private final LayoutInflater inflater;
 
 

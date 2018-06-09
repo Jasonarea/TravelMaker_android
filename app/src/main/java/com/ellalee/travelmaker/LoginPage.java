@@ -62,7 +62,7 @@ import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig
 public class LoginPage extends AppCompatActivity implements EasyPermissions.PermissionCallbacks{
     Button loginBtn;
     static GoogleAccountCredential mCredential;
-    private TextView mOutputText;
+    public static TextView mOutputText;
     private Button mCallApiButton;
     private Button mCallMail;
     private HttpTransport transport;

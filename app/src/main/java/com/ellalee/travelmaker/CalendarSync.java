@@ -51,6 +51,7 @@ public class CalendarSync extends Thread implements Runnable {
     //public static String calendarName = "";
     static com.google.api.services.calendar.Calendar service;
     static String newCalId;
+    List<String> eventStrings;
 
     public CalendarSync(GoogleAccountCredential mCredential, Context mContext) {
         this.mContext = mContext;
@@ -213,8 +214,8 @@ public class CalendarSync extends Thread implements Runnable {
         private List<String> getDataFromApi() throws IOException {
             // List the next 10 events from the primary calendar.
             DateTime now = new DateTime(System.currentTimeMillis());
-            List<String> eventStrings = new ArrayList<String>();
-            Events events = mService.events().list("primary")
+            eventStrings = new ArrayList<String>();
+            Events events = mService.events().list(newCalId)
                     .setMaxResults(10)
                     .setTimeMin(now)
                     .setOrderBy("startTime")
@@ -250,7 +251,10 @@ public class CalendarSync extends Thread implements Runnable {
             if (output == null || output.size() == 0) {
                 Toast.makeText(mContext, "No results returned", Toast.LENGTH_LONG).show();
             } else {
+                output.add(0, "Data retrieved using the Google Calendar API:");
+                Log.d("Calendar Test", TextUtils.join("\n", output));
                 Toast.makeText(mContext, "캘린더 수집 완료", Toast.LENGTH_LONG).show();
+                CalendarMain.setDoList(eventStrings);
             }
         }
     }
