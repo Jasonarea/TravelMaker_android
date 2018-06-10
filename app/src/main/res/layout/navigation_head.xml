@@ -2,7 +2,7 @@
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="250dp"
-    android:background="#FFB2F5"
+    android:background="@color/skyblue"
     android:text="Let's be Travel Maker"
     android:gravity="bottom"
     android:paddingBottom="16dp"

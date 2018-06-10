@@ -15,10 +15,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:layout_marginBottom="10dp"
             android:gravity="center"
-            android:textSize="20sp"/>
+            android:textSize="30dp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -32,7 +32,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:gravity="center"
-            android:textSize="18sp"/>
+            android:textSize="25dp"/>
     </LinearLayout>
 
     <LinearLayout
@@ -46,7 +46,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:gravity="center"
-            android:textSize="12sp"
+            android:textSize="12dp"
             android:visibility="gone"/>
     </LinearLayout>
 
@@ -57,6 +57,8 @@
             android:id="@+id/listview"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
+            android:layout_marginLeft="10dp"
+            android:textSize = "17dp"
             android:divider="@color/gray"
             android:dividerHeight="1dp"
             android:choiceMode="singleChoice"/>

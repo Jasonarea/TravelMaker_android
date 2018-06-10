@@ -1,19 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.ellalee.travelmaker.NewFont
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:textSize="30dp"
+            android:text="@string/schdule_add"/>
+    </LinearLayout>
 <RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
     <com.ellalee.travelmaker.NewFont
         android:id="@+id/DateSetting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:layout_marginLeft="40dp"
-        android:text="날짜 :"/>
+        android:text="날짜 :"
+        android:textSize="20dp"/>
     <com.ellalee.travelmaker.NewFont
         android:id="@+id/scheSetting"
         android:layout_marginLeft="40dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="30dp"
         android:layout_below="@id/DateSetting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -24,16 +40,18 @@
         android:layout_toRightOf="@+id/scheSetting"
         android:layout_alignBaseline="@id/scheSetting"
         android:layout_marginLeft="5dp"
-        android:layout_width="150dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:hint="신라호텔"
+        android:fontFamily="@font/nanumsquareround_b"
+        android:singleLine="true"
+        android:hint="ex) 신라호텔"
         android:textSize="20sp"/>
 
     <com.ellalee.travelmaker.NewFont
         android:id="@+id/memoSetting"
         android:layout_below="@+id/scheSetting"
         android:layout_marginLeft = "40dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="30dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="메모 :"
@@ -43,29 +61,41 @@
         android:layout_toRightOf="@+id/memoSetting"
         android:layout_alignBaseline="@id/memoSetting"
         android:layout_marginLeft="5dp"
-        android:layout_width="150dp"
+        android:layout_width="220dp"
         android:layout_height="wrap_content"
-        android:hint="뷔페가기"
+        android:singleLine="true"
+        android:fontFamily="@font/nanumsquareround_b"
+        android:hint="ex) 뷔페가기"
         android:textSize="20sp"/>
-
-    <Button
-        android:id="@+id/cancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="15dp"
-        android:layout_marginLeft="60dp"
-        android:layout_below="@+id/addMemo"
-        android:layout_marginTop="15dp"
-        android:text="취소"
-        android:textSize="20dp"/>
-    <Button
-        android:id="@+id/add_complete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/addMemo"
-        android:layout_toRightOf="@+id/cancel"
-        android:layout_marginTop="15dp"
-        android:text = "완료"
-        android:textSize="20dp"/>
-
 </RelativeLayout>
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp">
+        <TableRow>
+
+            <Button
+                android:id="@+id/cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="#96B9E0"
+                android:fontFamily="@font/nanumsquareround_b"
+                android:text="취소"
+                android:textSize="20dp" />
+
+            <Button
+                android:id="@+id/add_complete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBaseline="@id/cancel"
+                android:layout_toRightOf="@+id/cancel"
+                android:layout_weight="1"
+                android:backgroundTint="#96B9E0"
+                android:fontFamily="@font/nanumsquareround_b"
+                android:text="완료"
+                android:textSize="20dp" />
+        </TableRow>
+    </TableLayout>
+
+</LinearLayout>

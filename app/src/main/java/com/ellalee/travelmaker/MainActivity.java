@@ -22,6 +22,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -290,11 +291,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
                     break;
                 case 2:
-                    Intent sendIntent = new Intent();
-                    sendIntent.setAction(Intent.ACTION_SEND);
-                    sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
-                    sendIntent.setType("text/plain");
-                    startActivity(sendIntent);
+//                    Intent sendIntent = new Intent();
+//                    sendIntent.setAction(Intent.ACTION_SEND);
+//                    sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
+//                    sendIntent.setType("text/plain");
+//                    startActivity(sendIntent);
+
+                    File file = new File(Environment.getExternalStorageDirectory(), "Email-Ghap/Emails.txt");
+                    Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+                    sharingIntent.setType("text/*");
+                    sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + file.getAbsolutePath()));
+                    startActivity(Intent.createChooser(sharingIntent, "share file with"));
 
                     break;
 

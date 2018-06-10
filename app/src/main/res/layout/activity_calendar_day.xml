@@ -5,19 +5,30 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <com.ellalee.travelmaker.NewFont
-            android:id="@+id/dayMain_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"/>
+        android:id="@+id/dayMain_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:textSize="25dp"/>
+    </RelativeLayout>
+
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
         <com.ellalee.travelmaker.NewFont
             android:id="@+id/category"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text= "스케줄 : "/>
+            android:layout_marginLeft="15dp"
+            android:text= "스케줄 : "
+            android:textSize="20dp"/>
         <com.ellalee.travelmaker.NewFont
             android:id="@+id/dayMain_sche"
             android:layout_width="100dp"
@@ -29,75 +40,72 @@
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
         <com.ellalee.travelmaker.NewFont
             android:id="@+id/category2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text= "메모 : "/>
+            android:layout_marginLeft="15dp"
+            android:text= "메모 : "
+            android:textSize="20dp"/>
         <com.ellalee.travelmaker.NewFont
             android:id="@+id/dayMain_memo"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/category2"
+            android:layout_alignBaseline="@+id/category2"
+            android:singleLine="true"
             android:layout_marginLeft="10dp"
             android:textSize="20dp"/>
     </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/dayMain_change"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="수정"
-            android:textSize="20dp"/>
-        <Button
-            android:id="@+id/dayMain_delete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/dayMain_change"
-            android:layout_marginLeft="15dp"
-            android:text="삭제"
-            android:textSize="20dp"/>
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
         <com.ellalee.travelmaker.NewFont
             android:id="@+id/category3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:singleLine="true"
             android:visibility="gone"
-            android:text= "바꿀 스케줄 : "
+            android:layout_marginLeft="15dp"
+            android:text= "변경할 스케줄 : "
             android:textSize="20dp"/>
         <EditText
             android:id="@+id/change_editsche"
-            android:layout_width="120dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/category3"
+            android:layout_alignBaseline="@+id/category3"
             android:layout_marginLeft="10dp"
+            android:singleLine="true"
+            android:fontFamily="@font/nanumsquareround_b"
             android:textSize="20dp"
             android:visibility="gone"/>
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp">
         <com.ellalee.travelmaker.NewFont
             android:id="@+id/category4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:text="바꿀 메모 : "
+            android:layout_marginLeft="15dp"
+            android:text="변경할 메모 : "
             android:textSize="20dp" />
         <EditText
             android:id="@+id/change_editmemo"
-            android:layout_width="120dp"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/category4"
+            android:layout_alignBaseline="@+id/category4"
+            android:maxLines="2"
             android:layout_marginTop="10dp"
+            android:fontFamily="@font/nanumsquareround_b"
             android:textSize="20dp"
             android:visibility="gone"/>
         <Button
@@ -105,9 +113,41 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/change_editmemo"
+            android:fontFamily="@font/nanumsquareround_b"
             android:text = "완료"
             android:textSize="20dp"
             android:visibility="gone"/>
     </RelativeLayout>
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+        <TableRow>
+
+            <Button
+                android:id="@+id/dayMain_change"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:backgroundTint="#96B9E0"
+                android:fontFamily="@font/nanumsquareround_b"
+                android:text="수정"
+                android:textSize="20dp" />
+
+            <Button
+                android:id="@+id/dayMain_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:backgroundTint="#96B9E0"
+                android:fontFamily="@font/nanumsquareround_b"
+                android:text="삭제"
+                android:textSize="20dp" />
+
+        </TableRow>
+    </TableLayout>
 
 </LinearLayout>

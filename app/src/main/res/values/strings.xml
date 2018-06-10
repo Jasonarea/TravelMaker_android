@@ -5,6 +5,7 @@
     <string name="kakao_app_key">370b35cd65f897ec99c1b817ef567be5</string>
     <string name="kakao_scheme">kakao370b35cd65f897ec99c1b817ef567be5</string>
     <string name="kakaolink_host">kakaolink</string>
+    <string name="schdule_add"><![CDATA["<"]]>일정 추가<![CDATA[">"]]></string>
 
     <string name="greet_me">Greet Me</string>
     <string name="account">Account</string>

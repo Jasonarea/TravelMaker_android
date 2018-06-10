@@ -220,7 +220,7 @@ public class CalendarMain extends Activity {
                 intent.putStringArrayListExtra("sche", s);
                 intent.putStringArrayListExtra("memo", m);
 
-                startActivity(intent);
+                startActivityForResult(intent, 1);
             }
         });
 
@@ -388,15 +388,15 @@ public class CalendarMain extends Activity {
             schedule = data.getStringExtra("schedule");
             memo = data.getStringExtra("memo");
 
-            insert(year + "-" + month + "-" + day, schedule, memo);
+            if(resultCode == RESULT_OK) {
+                insert(year + "-" + month + "-" + day, schedule, memo);
+            }
             mCal.set(mCal.get(Calendar.YEAR), mCal.get(Calendar.MONTH), 1);
             int dayNum = mCal.get(Calendar.DAY_OF_WEEK);
             Log.d("인서트 될때 채워질 공백의 수", String.valueOf(dayNum));
             Log.d("인서트 새로 세팅될 월", String.valueOf(mCal.get(Calendar.MONTH)));
 
             if(mCal.get(Calendar.YEAR) == Integer.parseInt(year) && mCal.get(Calendar.MONTH) + 1 == Integer.parseInt(month)) {
-                Log.d("들어간닷", String.valueOf(month));
-                Log.d("데이리스트 사이즈", String.valueOf(dayList.size()));
                 for (int i = dayList.size() - 1; i >= 7; i--) {
                     dayList.remove(i);
                 }
