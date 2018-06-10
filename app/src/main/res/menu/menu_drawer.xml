@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_drawer_home"
+        android:icon="@android:drawable/ic_menu_directions"
+        android:title="Home" />
+
+    <item
+        android:id="@+id/menu_drawer_mail"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="Get Schedule From Gmail" />
+
+    <item
+        android:id="@+id/menu_drawer_share"
+        android:icon="@android:drawable/ic_menu_add"
+        android:title="Sharing" />
+
+</menu>

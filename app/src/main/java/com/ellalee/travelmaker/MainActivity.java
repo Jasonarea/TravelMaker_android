@@ -28,6 +28,7 @@ import android.preference.DialogPreference;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -35,6 +36,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.app.Activity;
 import android.graphics.Color;
@@ -98,10 +100,10 @@ import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
-    private String[] navItems = {"LogIn", "예산관리", "공유하기", "GMail 동기화", "PDF문서화"};
+    private String[] navItems = {"LogIn", "공유하기", "GMail 동기화"};
 
 
-    private ListView lvNavList;
+    private NavigationView lvNavList;
     private FrameLayout flContainer;
     private DrawerLayout dlDrawer;
     private ImageButton btn;
@@ -149,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         db = new PlanSQLiteHelper(getApplicationContext());
         btnSearch = findViewById(R.id.search_area);
 
-        lvNavList = (ListView)findViewById(R.id.lv_activity_main_nav_list);
+        lvNavList = (NavigationView)findViewById(R.id.lv_activity_main_nav_list);
 
         flContainer = (FrameLayout)findViewById(R.id.fl_activity_main_container);
 
@@ -169,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             if (email.equals("EmailStuff") && EasyPermissions.hasPermissions(
                     this, Manifest.permission.GET_ACCOUNTS)) {
                 navItems[0] = "LogOut";
-                lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
+                //lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
             } else {
                 Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
                 nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -181,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             @Override
             public void onClick(View v) {
                 dlDrawer.openDrawer(lvNavList);
+
             }
         });
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
@@ -190,10 +193,33 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         else {
             navItems[0] = "LogIn";
         }
-        lvNavList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
-        lvNavList.setOnItemClickListener(new MainActivity.DrawerItemClickListener());
+        //lvNavList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
+        //lvNavList.setOnItemClickListener(new MainActivity.DrawerItemClickListener());
         dlDrawer = (DrawerLayout)findViewById(R.id.dl_activity_main_drawer);
 
+        lvNavList.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem){
+                int id = menuItem.getItemId();
+                if(id == R.id.menu_drawer_home){
+
+                }
+                else if(id == R.id.menu_drawer_mail){
+                    mCredential = GoogleAccountCredential.usingOAuth2(
+                            getApplicationContext(), Arrays.asList(SCOPES))
+                            .setBackOff(new ExponentialBackOff());
+                    getResultsFromApi();
+                }
+                else if(id == R.id.menu_drawer_share){
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
+                    sendIntent.setType("text/plain");
+                    startActivity(sendIntent);
+                }
+                return false;
+            }
+        });
     }
 
 
@@ -211,6 +237,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     public void onConnectionSuspended(int i) {
 
     }
+
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
 
@@ -264,7 +291,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
                 if (mCredential == null) {
                     navItems[0] = "LogOut";
-                    lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
+                    //lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
                 } else {
 
 
@@ -273,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     startActivity(nextScreen);
                     ActivityCompat.finishAffinity(MainActivity.this);
                 }
-                Toast.makeText(getApplicationContext(), "로그�웃�었�니", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "로그아웃되었습니다.", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -411,8 +438,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 else {
                     navItems[0] = "LogOut";
                 }
-                lvNavList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
-                lvNavList.setOnItemClickListener(new MainActivity.DrawerItemClickListener());
+                //lvNavList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
+                //lvNavList.setOnItemClickListener(new MainActivity.DrawerItemClickListener());
                 break;
             case REQUEST_AUTHORIZATION:
                 if (resultCode == RESULT_OK) {
