@@ -14,7 +14,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="@drawable/calendar_label_background">
+        android:background="@color/grayblue">
             <com.ellalee.travelmaker.NewFont
                 android:id="@+id/tv_date"
                 android:layout_width="wrap_content"
@@ -58,6 +58,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_margin = "16dp"
+        android:backgroundTint="@color/grayblue"
         android:src = "@drawable/sche_plus" />
 
 

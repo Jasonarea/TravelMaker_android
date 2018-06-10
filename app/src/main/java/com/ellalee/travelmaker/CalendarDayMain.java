@@ -85,13 +85,22 @@ public class CalendarDayMain extends Activity {
                             memoEdit.setVisibility(View.INVISIBLE);
                             completeBtn.setVisibility(View.INVISIBLE);
                             category_memo.setVisibility(View.INVISIBLE);
-                            category_sche.setText(View.INVISIBLE);
+                            category_sche.setVisibility(View.INVISIBLE);
                             scheView.setVisibility(View.VISIBLE);
+
                             Toast.makeText(getApplicationContext(), newSche + " 스케줄 수정완료!", Toast.LENGTH_LONG).show();
+
+                            Intent intent = new Intent(CalendarDayMain.this, CalendarListMain.class);
+                            intent.putExtra("year", year);
+                            intent.putExtra("month", month);
+                            intent.putExtra("day", day);
+                            setResult(RESULT_OK, intent);
                             finish();
                         }
-                        else
+                        else {
+                            setResult(RESULT_CANCELED);
                             Toast.makeText(getApplicationContext(), "스케줄이 입력되지 않았습니다!", Toast.LENGTH_LONG).show();
+                        }
                     }
                 });
             }
@@ -103,6 +112,11 @@ public class CalendarDayMain extends Activity {
                 delete(String.valueOf(year) + "-" + String.valueOf(month) + "-" + String.valueOf(day),
                         sched);
                 Toast.makeText(getApplicationContext(), "스케줄 삭제완료!", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(CalendarDayMain.this, CalendarListMain.class);
+                intent.putExtra("year", year);
+                intent.putExtra("month", month);
+                intent.putExtra("day", day);
+                setResult(RESULT_OK, intent);
                 finish();
             }
         });

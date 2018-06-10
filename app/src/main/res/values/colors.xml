@@ -9,6 +9,8 @@
     <color name="gray">#7F7F7F7F</color>
     <color name = "dark_gray">#4C4C4C</color>
     <color name="babypink">#fbc2eb</color>
+    <color name ="grayblue">#909FBD</color>
+    <color name ="skyblue">#96C8E0</color>
 
     <color name="colorSlidingDrawer">#FFFFFF</color>
     <color name="colorRouteInfo">#FFFFFF</color>
