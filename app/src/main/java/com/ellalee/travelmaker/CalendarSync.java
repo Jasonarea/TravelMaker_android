@@ -23,7 +23,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -33,12 +36,7 @@ import java.util.List;
 import pub.devrel.easypermissions.EasyPermissions;
 
 
-class UIUpdate implements Runnable {
-    @Override
-    public void run() {
-        Toast.makeText(MainActivity.mContext, "Calendar Sync is Succeeded", Toast.LENGTH_SHORT).show();
-    }
-}
+
 public class CalendarSync extends Thread implements Runnable {
     static GoogleAccountCredential mCredential;
     private static HttpTransport transport;
@@ -48,6 +46,8 @@ public class CalendarSync extends Thread implements Runnable {
     GmailSync gmailThread;
     private Context mContext;
     Handler handler = new Handler();
+    ProgressBar pb;
+
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
@@ -63,9 +63,11 @@ public class CalendarSync extends Thread implements Runnable {
     static String newCalId;
     List<String> eventStrings;
 
-    public CalendarSync(GoogleAccountCredential mCredential, Context mContext) {
+    public CalendarSync(GoogleAccountCredential mCredential, Context mContext, ProgressBar pb, Handler handler) {
         this.mContext = mContext;
         this.mCredential = mCredential;
+        this.pb = pb;
+        this.handler = handler;
     }
 
     public void run() {
@@ -77,7 +79,7 @@ public class CalendarSync extends Thread implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        gmailThread = new GmailSync(transport, jsonFactory, mCredential, mContext);
+        gmailThread = new GmailSync(transport, jsonFactory, mCredential, mContext, pb, handler);
         Thread gmail = new Thread(gmailThread);
         gmail.start();
     }
@@ -272,6 +274,12 @@ public class CalendarSync extends Thread implements Runnable {
                 Toast.makeText(mContext, "캘린더 수집 완료", Toast.LENGTH_LONG).show();
                 CalendarMain.setDoList(eventStrings);
             }
+        }
+    }
+    class UIUpdate implements Runnable {
+        @Override
+        public void run() {
+            MainActivity.pb.setVisibility(View.VISIBLE);
         }
     }
 }

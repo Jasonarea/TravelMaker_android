@@ -24,6 +24,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.DialogPreference;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -53,6 +55,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -122,9 +125,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private GoogleSignInAccount account;
     private GoogleApiClient mGoogleApiClient;
     private static boolean isLogin = false;
+
     CalendarSync calendarThread;
     AlertDialog customDialog;
+    static ProgressBar pb;
+    Handler handler = new Handler(Looper.getMainLooper());
+    static TextView ptt;
     static Context mContext;
+
    PlanSQLiteHelper db;
    Button btnSearch;
    EditText input;
@@ -139,7 +147,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             super.onBackPressed();
         }
     }
-
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,7 +154,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mContext = this;
-        //mContext = getApplicationContext();
+        pb = new ProgressBar(this);
+        pb = (ProgressBar)findViewById(R.id.progressBar);
         db = new PlanSQLiteHelper(getApplicationContext());
         btnSearch = findViewById(R.id.search_area);
         input = findViewById(R.id.EditWhereToGo);
@@ -170,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         lvNavList = (NavigationView)findViewById(R.id.lv_activity_main_nav_list);
 
         flContainer = (FrameLayout)findViewById(R.id.fl_activity_main_container);
+        ptt = (TextView)findViewById(R.id.progText);
 
         btn = (ImageButton)findViewById(R.id.menu_action_button);
         Log.d("Main Access", "Hello Main");
@@ -183,6 +192,12 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
         //getResultsFromApi();
+//        SharedPreferences mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+//        SharedPreferences.Editor editor = mPref.edit();
+//        editor.clear();
+//
+//        editor.commit();
+
         String email = loadSavedPreferences();
             if (email.equals("EmailStuff") && EasyPermissions.hasPermissions(
                     this, Manifest.permission.GET_ACCOUNTS)) {
@@ -203,12 +218,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         });
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
-        if(mCredential != null){
-            navItems[0] = "LogOut";
-        }
-        else {
-            navItems[0] = "LogIn";
-        }
+        pb.setVisibility(View.INVISIBLE);
         //lvNavList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
         //lvNavList.setOnItemClickListener(new MainActivity.DrawerItemClickListener());
         dlDrawer = (DrawerLayout)findViewById(R.id.dl_activity_main_drawer);
@@ -224,6 +234,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     mCredential = GoogleAccountCredential.usingOAuth2(
                             getApplicationContext(), Arrays.asList(SCOPES))
                             .setBackOff(new ExponentialBackOff());
+                    //pb.setVisibility(View.VISIBLE);
+
                     getResultsFromApi();
                 }
                 else if(id == R.id.menu_drawer_share){
@@ -436,8 +448,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 if(mCredential.getSelectedAccountName() != null){
                     navItems[0] = "LogOut";
 
-
-                    calendarThread = new CalendarSync(mCredential, getApplicationContext());
+                    calendarThread = new CalendarSync(mCredential, getApplicationContext(), pb, handler);
                     Thread calendar = new Thread(calendarThread);
                     calendar.start();
                 }
@@ -509,7 +520,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         } else if (! isDeviceOnline()) {
             Toast.makeText(getApplicationContext(), "No network connection available.", Toast.LENGTH_LONG).show();
         } else {
-            calendarThread = new CalendarSync(mCredential, getApplicationContext());
+
+            ptt.setVisibility(View.VISIBLE);
+
+            calendarThread = new CalendarSync(mCredential, getApplicationContext(), pb, handler);
             Thread calendar = new Thread(calendarThread);
             calendar.start();
         }

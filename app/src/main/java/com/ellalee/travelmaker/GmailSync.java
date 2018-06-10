@@ -1,16 +1,18 @@
 package com.ellalee.travelmaker;
 
 import android.annotation.TargetApi;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
+
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
@@ -35,6 +37,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+
+
+
 public class GmailSync implements Runnable {
 
     private static final String TAG = "PlayHelloActivity";
@@ -47,16 +52,22 @@ public class GmailSync implements Runnable {
     Context mContext;
     JsonFactory mJsonFactory;
     TextView test;
-    Handler handler;
     GoogleAccountCredential mCredential;
     List<Email> allMail;
     MySQLiteHelper db;
     ArrayList<String> sub, bod;
-    public GmailSync(HttpTransport mHttpTrans, JsonFactory mJasonfact, GoogleAccountCredential mCredential, Context mContext) {
+    Handler handler;
+
+    ProgressBar pb;
+    int value = 0; // progressbar 값
+    int add = 1;    // 증가량, 방향
+    public GmailSync(HttpTransport mHttpTrans, JsonFactory mJasonfact, GoogleAccountCredential mCredential, Context mContext, ProgressBar pb, Handler handler) {
         this.mHttpTransport = mHttpTrans;
         this.mJsonFactory = mJasonfact;
         this.mCredential = mCredential;
         this.mContext = mContext;
+        this.pb = pb;
+        this.handler = handler;
         Log.d("Gmail Sync access", "Gmail Sync Access Complete");
 
     }
@@ -71,9 +82,11 @@ public class GmailSync implements Runnable {
         }
     }
 
+
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     public void fetchNameFromProfileServer() throws IOException, JSONException {
         int cou = 0;
+
         db = new MySQLiteHelper(mContext);
         final String[] total = new String[10];
         for (int j = 0; j < 10; j++) total[j] = "";
@@ -135,7 +148,6 @@ public class GmailSync implements Runnable {
                 body.add(body2);
                 bod = body2;
             }
-
             for (MessagePartHeader h : messageHeader) {
                 if (h.getName().equals("Subject")) {
                     sub = h.getValue();
@@ -147,12 +159,27 @@ public class GmailSync implements Runnable {
                 } else if (h.getName().equals("From")) {
                     author = h.getValue();
                 }
+
             }
 
             ++count;
             if(count>50) break;
-            Log.d("count", String.valueOf(count));
-
+            handler.post(new Runnable(){
+                public void run() {
+                    MainActivity.pb.setMax(50);
+                    //pb.incrementProgressBy(count);
+                    MainActivity.pb.setVisibility(View.VISIBLE);
+                    MainActivity.ptt.setVisibility(View.VISIBLE);
+                    pb.setProgress(count);
+                    MainActivity.ptt.setText("GMail 읽어들이는 중\n" + String.valueOf(count) + "/" + String.valueOf(pb.getMax()));
+                    Log.d("progress dial", String.valueOf(count - pb.getProgress()) + " " + String.valueOf(pb.getProgress()));
+                    if(pb.getProgress()==pb.getMax()) {
+                        Toast.makeText(MainActivity.mContext, "Mail Read done", Toast.LENGTH_SHORT).show();
+                        MainActivity.pb.setVisibility(View.INVISIBLE);
+                        MainActivity.ptt.setVisibility(View.GONE);
+                    }
+                }
+            });
 
             final String finalBod = bod;
             final String finalSub = sub;
@@ -301,6 +328,17 @@ public class GmailSync implements Runnable {
             Log.d("start end date", startD + ' ' + endD);
             CalendarSync.createEvent(CalendarSync.mService, startD, startD, toNation, fromNation);
             CalendarSync.createEvent(CalendarSync.mService, endD, endD, fromNation, toNation);
+
+        }
+        handler.post(new UIUpdate2());
+    }
+
+    class progressCount extends AsyncTask<Void, Integer, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            pb.setProgress(count);
+            pb.setMax(50);
+            return null;
         }
     }
 
@@ -349,5 +387,14 @@ public class GmailSync implements Runnable {
         day[2] = Integer.parseInt(yy);
 
         return day;
+    }
+
+    class UIUpdate2 implements Runnable {
+        @Override
+        public void run() {
+            MainActivity.pb.setVisibility(View.INVISIBLE);
+            MainActivity.ptt.setVisibility(View.GONE);
+            Toast.makeText(MainActivity.mContext, "GMail 동기화 완료", Toast.LENGTH_SHORT).show();
+        }
     }
 }
