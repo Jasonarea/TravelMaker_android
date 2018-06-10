@@ -4,7 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:background="@drawable/plan_list_background">
+    android:background="@drawable/background_paper">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -14,12 +14,15 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:textSize="30dp"
+            android:fontFamily="@font/nanumbarunpen_b"
             android:text="MY PLANS"/>
 
         <Button
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_margin="25dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_margin="10dp"
             android:layout_alignParentRight="true"
             android:background="@drawable/close_bin"
             android:id="@+id/btnActivateDelete"/>
@@ -29,10 +32,19 @@
     <GridView
         android:id="@+id/planListView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
         android:gravity="center"
+        android:paddingLeft="10dp"
+        android:numColumns="3"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="20dp"
-        android:numColumns="3" />
-
+        android:verticalSpacing="10dp" />
+<!--
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="2"
+        android:orientation="vertical"
+        />
+-->
 </LinearLayout>

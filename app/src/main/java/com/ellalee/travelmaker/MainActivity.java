@@ -157,13 +157,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         pb = new ProgressBar(this);
         pb = (ProgressBar)findViewById(R.id.progressBar);
         db = new PlanSQLiteHelper(getApplicationContext());
+
         btnSearch = findViewById(R.id.search_area);
         input = findViewById(R.id.EditWhereToGo);
         input.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if( i == KeyEvent.KEYCODE_ENTER ){
-                    mapMain(btnSearch);
+                    btnSearch.callOnClick();
                 }
                 return false;
             }
@@ -338,6 +339,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     public void mapMain(View v){
 
         String city = input.getText().toString();
+        input.setText("");
         LatLng center;
         Plan plan;
 
@@ -349,7 +351,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             list = geocoder.getFromLocationName(city, 10);
         } catch (IOException e) {
             e.printStackTrace();
-            makeText(MainActivity.this, "I/O Error", LENGTH_SHORT).show();
+           // makeText(MainActivity.this, "No input value", LENGTH_SHORT).show();
         }
 
         if (list != null) {

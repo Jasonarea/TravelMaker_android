@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.icu.text.LocaleDisplayNames;
 import android.media.Image;
 import android.media.ImageReader;
 import android.support.v7.app.AlertDialog;
@@ -73,7 +74,6 @@ public class planListActivity extends AppCompatActivity {
                 }
             }
         });
-
         invalidate();
     }
     public void select(){
@@ -101,10 +101,13 @@ public class planListActivity extends AppCompatActivity {
 
     public void invalidate(){
         select();
-
         PlanGridAdapter adapter =new PlanGridAdapter(delete_mode);
         adapter.notifyDataSetChanged();
         planListView.setAdapter(adapter);
+    }
+    public void refresh(int id){
+        //plans.remove(id);
+        planListView.setAdapter(new PlanGridAdapter(delete_mode));
     }
 
     public class planListItem{
@@ -206,8 +209,6 @@ public class planListActivity extends AppCompatActivity {
             btnDelete = view.findViewById(R.id.btnPlanDelete);
             imgPlan = view.findViewById(R.id.imgPlanNote);
 
-            Log.d("DELETE MODE "," "+mode);
-
             if(mode){
                 btnDelete.setVisibility(VISIBLE);
             }else{
@@ -218,16 +219,16 @@ public class planListActivity extends AppCompatActivity {
                 @Override
                 public void onClick(final View view) {
                     AlertDialog.Builder alert = new AlertDialog.Builder(planListActivity.this);
-                    alert.setMessage("정말 삭제하시겠습니까?");
+                    alert.setMessage("정말 삭제할까요?");
                     alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             Toast.makeText(planListActivity.this, "delete plan "+plans.get(viewId).getPlan_id(), Toast.LENGTH_SHORT).show();
                             db = helper.getWritableDatabase();
                             helper.deletePlan(plans.get(viewId).getPlan_id());
-                            plans.remove(view);
+                            plans.remove(viewId);
+                            refresh(viewId);
                             //invalidate();
-
                         }
                     });
                     alert.setNegativeButton("NO", new DialogInterface.OnClickListener() {
