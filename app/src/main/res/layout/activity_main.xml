@@ -23,6 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_above="@+id/calendar_action_button" >
+
                 <EditText
                     android:id="@+id/EditWhereToGo"
                     android:layout_width="230dp"
@@ -30,7 +31,17 @@
                     android:layout_centerInParent = "true"
                     android:singleLine="true"
                     android:hint="@string/editText_hint" />
-
+                <ProgressBar android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/EditWhereToGo"
+                    android:layout_centerInParent = "true"/>
+                <TextView android:id = "@+id/progText"
+                    android:layout_below = "@+id/progressBar"
+                    android:layout_width = "wrap_content"
+                    android:layout_height = "wrap_content"
+                    android:layout_centerInParent = "true"
+                    android:fontFamily="@font/nanumbarunpen_b"/>
                 <Button
                     android:id="@+id/search_area"
                     android:layout_width="30dp"

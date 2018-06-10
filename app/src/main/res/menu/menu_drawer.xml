@@ -3,17 +3,17 @@
 
     <item
         android:id="@+id/menu_drawer_home"
-        android:icon="@android:drawable/ic_menu_directions"
+        android:icon="@drawable/house"
         android:title="Home" />
 
     <item
         android:id="@+id/menu_drawer_mail"
-        android:icon="@android:drawable/ic_menu_agenda"
-        android:title="Get Schedule From Gmail" />
+        android:icon="@drawable/gmaillogo"
+        android:title="Update Schedule" />
 
     <item
         android:id="@+id/menu_drawer_share"
-        android:icon="@android:drawable/ic_menu_add"
+        android:icon="@drawable/share"
         android:title="Sharing" />
 
 </menu>

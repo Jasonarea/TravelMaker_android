@@ -234,9 +234,6 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
                         getResultsFromApi();
                     }
                 }
-                calendarThread = new CalendarSync(mCredential, getApplicationContext());
-                Thread calendar = new Thread(calendarThread);
-                calendar.start();
                 Intent nextScreen = new Intent(LoginPage.this, MainActivity.class);
                 nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(nextScreen);
