@@ -34,5 +34,5 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
 
-    <string name="marker_default_title">Click to change!</string>
+    <string name="marker_default_title">Click to edit!</string>
 </resources>

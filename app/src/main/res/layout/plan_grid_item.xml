@@ -27,6 +27,7 @@
         android:id="@+id/txtPlanTitle"
         android:layout_below="@+id/imgPlanNote"
         android:gravity="center"
+        android:fontFamily="@font/nanumbarunpen_b"
         android:text="Plan Title"/>
     
     <TextView
@@ -35,6 +36,7 @@
         android:id="@+id/txtPlanDate"
         android:layout_below="@id/txtPlanTitle"
         android:gravity="center"
+        android:fontFamily="@font/nanumbarunpen_b"
         android:text="Date"/>
 
 </RelativeLayout>

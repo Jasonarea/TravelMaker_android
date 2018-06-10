@@ -12,9 +12,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ScrollingView;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.view.menu.MenuPopupHelper;
@@ -50,6 +52,8 @@ import com.google.common.collect.MapMaker;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.mail.Quota;
+
 public class RouteInfoSliding extends View {
     private ArrayList<Marker> markerList;
     private String routeColor;
@@ -62,7 +66,7 @@ public class RouteInfoSliding extends View {
 
     private ArrayList<Integer> circle = new ArrayList<>();
     private ArrayList<Rect> area = new ArrayList<>();
-    private final int x=450,y=200,rad=60,start=200;
+    private final int x=450,y=200,rad=50,start=200;
 
     public RouteInfoSliding(Context context) {
         super(context);
@@ -117,10 +121,9 @@ public class RouteInfoSliding extends View {
         linePnt.setStrokeWidth(20);
         textPnt.setColor(getResources().getColor(R.color.colorRouteInfoText));
         textPnt.setTextSize(50);
-
+        textPnt.setTypeface(ResourcesCompat.getFont(getContext(),R.font.nanumbarunpen_b));
 
         canvas.drawLine(circle.get(0),y,circle.get(num-1),y,linePnt);
-
 
         for(int i=0;i<num;i++){
 /*            placeBtn = new ImageButton(cnxt);
@@ -132,7 +135,6 @@ public class RouteInfoSliding extends View {
             placeBtn.setLayoutParams(lp);
             ((HorizontalScrollView)this.getParent()).addView(placeBtn,70,70);
 */
-
             circlePnt.setColor(Color.WHITE);
             circlePnt.setStyle(Paint.Style.FILL);
             canvas.drawCircle(circle.get(i),y,rad,circlePnt);
@@ -142,8 +144,15 @@ public class RouteInfoSliding extends View {
             circlePnt.setStyle(Paint.Style.STROKE);
             canvas.drawCircle(circle.get(i),y,rad,circlePnt);
 
-            canvas.drawText(markerList.get(i).getTitle(),area.get(i).left-rad,area.get(i).bottom+(rad*2),textPnt);
-
+            String printTitle = markerList.get(i).getTitle();
+            if(printTitle.length()>8){
+                if(printTitle.equals("Click to edit!")){
+                    printTitle = " ";
+                }else{
+                    printTitle = printTitle.substring(0,7);
+                }
+            }
+            canvas.drawText(printTitle,area.get(i).left-rad,area.get(i).bottom+(rad*2),textPnt);
         }
     }
 
@@ -178,6 +187,9 @@ public class RouteInfoSliding extends View {
                                     case R.id.option_delete:
                                         db.deleteMarkerList(route.getId(),Long.valueOf(route.getMarkerList().get(idx).getTag().toString()));
                                         markerList.remove(idx);
+                                        if(markerList.size()==1){
+                                            markerList.clear();
+                                        }
                                         route.setMarkerList(map,getModified());
                                         setRoute(route,map);
                                         invalidate();
@@ -210,7 +222,6 @@ public class RouteInfoSliding extends View {
                                         route.getMarkerList().get(idx).setTag(tag);
                                         db.updateMarker(markerList.get(idx),0);
                                         break;
-
                                 }
                                 return true;
                             }
@@ -223,7 +234,7 @@ public class RouteInfoSliding extends View {
                     }
                     else{ //line
                         AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-                        alert.setMessage("경로찾기?");
+                        alert.setMessage("이동경로를 알아볼까요?");
                         alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -297,7 +308,7 @@ public class RouteInfoSliding extends View {
     }
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(MeasureSpec.makeMeasureSpec(4000, MeasureSpec.AT_MOST), heightMeasureSpec);
+        super.onMeasure(MeasureSpec.makeMeasureSpec(6000, MeasureSpec.AT_MOST), heightMeasureSpec);
 //      super.onMeasure(MeasureSpec.makeMeasureSpec(widthMeasureSpec,MeasureSpec.EXACTLY),heightMeasureSpec);
     }
 }

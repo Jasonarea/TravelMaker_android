@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.media.Image;
 import android.media.ImageReader;
 import android.support.v7.app.AlertDialog;
@@ -35,6 +36,7 @@ import java.util.Date;
 import java.util.zip.Inflater;
 
 import static android.view.View.INVISIBLE;
+import static android.view.View.LAYER_TYPE_HARDWARE;
 import static android.view.View.VISIBLE;
 
 public class planListActivity extends AppCompatActivity {
@@ -214,7 +216,7 @@ public class planListActivity extends AppCompatActivity {
 
             btnDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
+                public void onClick(final View view) {
                     AlertDialog.Builder alert = new AlertDialog.Builder(planListActivity.this);
                     alert.setMessage("정말 삭제하시겠습니까?");
                     alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
@@ -223,7 +225,8 @@ public class planListActivity extends AppCompatActivity {
                             Toast.makeText(planListActivity.this, "delete plan "+plans.get(viewId).getPlan_id(), Toast.LENGTH_SHORT).show();
                             db = helper.getWritableDatabase();
                             helper.deletePlan(plans.get(viewId).getPlan_id());
-                            invalidate();
+                            plans.remove(view);
+                            //invalidate();
 
                         }
                     });
@@ -273,6 +276,7 @@ public class planListActivity extends AppCompatActivity {
                     AlertDialog.Builder alert = new AlertDialog.Builder(planListActivity.this);
 
                     final DatePicker datePicker = new DatePicker(planListActivity.this);
+                    datePicker.setBackgroundColor(Color.TRANSPARENT);
                     alert.setView(datePicker);
                     
                     alert.setPositiveButton("저장", new DialogInterface.OnClickListener() {

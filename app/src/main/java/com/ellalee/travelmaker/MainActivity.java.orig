@@ -102,11 +102,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
 <<<<<<< HEAD
-    private String[] navItems = {"LogIn", "산관", "공유하기", "GMail 기"};
+    private String[] navItems = {"LogIn", "공유기", "GMail 기"};
 =======
-    private String[] navItems = {"LogIn", "공유하기", "GMail 동기화"};
+    private String[] navItems = {"LogIn", "공유�기", "GMail �기"};
+>>>>>>> 9a83e483e7e5e36a1726bc533591cdbbeb16d30c
 
->>>>>>> 4e3996f2c0192406004f87e82638229aa5c3797b
 
     private NavigationView lvNavList;
     private FrameLayout flContainer;
@@ -270,16 +270,16 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     builder.setIcon(android.R.drawable.ic_dialog_alert);
                     builder.setTitle("Travel Maker");
 <<<<<<< HEAD
-                    builder.setMessage("정말 로그아웃 하시겠습까?");
-                    builder.setPositiveButton("네", dialogListener);
+                    builder.setMessage("logout?");
+                    builder.setPositiveButton("yes", dialogListener);
 
-                    builder.setNegativeButton("아니오", null);
+                    builder.setNegativeButton("no", null);
 =======
-                    builder.setMessage("정말 로그아웃하시겠습니까?");
-                    builder.setPositiveButton("네", dialogListener);
+                    builder.setMessage("�말 로그�웃�시겠습�까?");
+                    //builder.setPositiveButton(", dialogListener");
 
-                    builder.setNegativeButton("아니요", null);
->>>>>>> 4e3996f2c0192406004f87e82638229aa5c3797b
+                    //builder.setNegativeButton("�니, null");
+>>>>>>> 9a83e483e7e5e36a1726bc533591cdbbeb16d30c
                     customDialog = builder.create();
                     customDialog.show();
                     break;
@@ -328,10 +328,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     ActivityCompat.finishAffinity(MainActivity.this);
                 }
 <<<<<<< HEAD
-                Toast.makeText(getApplicationContext(), "로그�웃�었�니", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "successfully logout", Toast.LENGTH_SHORT).show();
 =======
-                Toast.makeText(getApplicationContext(), "로그아웃되었습니다.", Toast.LENGTH_SHORT).show();
->>>>>>> 4e3996f2c0192406004f87e82638229aa5c3797b
+                Toast.makeText(getApplicationContext(), "로그�웃�었�니", Toast.LENGTH_SHORT).show();
+>>>>>>> 9a83e483e7e5e36a1726bc533591cdbbeb16d30c
             }
         }
     };

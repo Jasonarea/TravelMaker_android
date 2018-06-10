@@ -84,6 +84,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     private Button btnSearch;
     private Button btnRoute;
     private Button btnPlace;
+    private Button btnSlideClose;
 
     private ContextMenu contextMenu;
 
@@ -94,7 +95,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 
     Animation slidingOpen;
     Animation slidingClose;
-    LinearLayout slidingLayout;
+    RelativeLayout slidingLayout;
     RouteInfoSliding infoSliding;
     HorizontalScrollView routeHS;
     RouteInfoSliding routeInfoDraw;
@@ -156,6 +157,20 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         });
         btnRoute = findViewById(R.id.btnRoute);
         btnPlace = findViewById(R.id.btnPlace);
+        btnSlideClose = findViewById(R.id.btnSlideClose);
+        btnSlideClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Iterator<Route> iterator = routes.iterator();
+                Route cur;
+                while(iterator.hasNext()){
+                    cur=iterator.next();
+                    openPage=false;
+                    slidingLayout.startAnimation(slidingClose);
+                    cur.setPolylineWidth(10,googleMap); //normal
+                }
+            }
+        });
 
         routeColor = getResources().getStringArray(R.array.routeColor);
         registerForContextMenu(btnRoute);
@@ -285,13 +300,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         googleMap.setOnMarkerClickListener(this);
         googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
             float alpha;
-            LatLng pre;
-
             @Override
             public void onMarkerDragStart(Marker marker) {
                 alpha = marker.getAlpha();
-                pre = marker.getPosition();
-                Toast.makeText(MapMain.this, "LAT:"+pre.latitude+" LOG:"+pre.longitude, Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -303,8 +314,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             public void onMarkerDragEnd(Marker marker) {
                 //find every route which include the marker
                 marker.setAlpha(alpha);
-                Toast.makeText(MapMain.this, "LAT:"+marker.getPosition().latitude+" LOG:"+marker.getPosition().longitude, Toast.LENGTH_SHORT).show();
-
                 db.updateMarker(marker);
 
                 Iterator<Route> route_iterator = routes.iterator(); //route iterator
@@ -363,7 +372,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                 LayoutInflater inflater = getLayoutInflater();
                 final View inputView = inflater.inflate(R.layout.map_pop_input,null);
 
-                if(marker.getTitle().equals(getString(R.string.marker_default_title)) || marker.getTitle().equals("")){
+                if(marker.getTitle().equals(getString(R.string.marker_default_title)) || marker.getTitle().trim().length()<1){
                     alert.setTitle("마커 편집");
                 }
                 else{
@@ -399,7 +408,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                         Log.d("ICON ID",checkedIcon+" ");
 
                         marker.setIcon(Micon.getMarkerIcon(checkedIcon));
-                        if(!mTitle.isEmpty()){
+                        if(mTitle.trim().length()>0){
                             marker.setTitle(mTitle);
                         }
                         db.updateMarker(marker,checkedIcon);
@@ -457,47 +466,59 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         });
     }
 
-        public void searchMarker(View v) {    // add a marker
-            String str = editAddress.getText().toString();
-            List<Address> list = null;
-            double latitude, longitude;
 
-            try {
-                list = geocoder.getFromLocationName(str, 10);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(MapMain.this, "I/O Error", Toast.LENGTH_SHORT).show();
-            }
+    public void searchMarker(View v) {    // add a marker
+        String str = editAddress.getText().toString();
+        List<Address> list = null;
+        double latitude, longitude;
 
-            if (list != null) {
-                if (list.size() == 0) {
-                    Toast.makeText(MapMain.this, "No matching address info", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    latitude = list.get(0).getLatitude();
-                    longitude = list.get(0).getLongitude();
-
-                    LatLng SearchPoint = new LatLng(latitude, longitude);
-
-                    MarkerOptions mOptions = new MarkerOptions();
-                    mOptions.title(str);
-                    mOptions.draggable(true);
-                    mOptions.position(SearchPoint);
-                    mOptions.icon(Micon.getMarkerIcon(0));
-
-                    //add marker
-                    Marker m =googleMap.addMarker(mOptions);
-                    MarkerTag tag = new MarkerTag(0,0);
-                    m.setTag(tag);
-                    db.createMarker(m,plan.getId());
-                    plan.addMarker(m);
-
-                    //zoom camera view
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SearchPoint, 15));
-                }
-            }
+        try {
+            list = geocoder.getFromLocationName(str, 10);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(MapMain.this, "I/O Error", Toast.LENGTH_SHORT).show();
         }
 
+        if (list != null) {
+            if (list.size() == 0) {
+                Toast.makeText(MapMain.this, "No matching address info", Toast.LENGTH_SHORT).show();
+            }
+            else {
+                latitude = list.get(0).getLatitude();
+                longitude = list.get(0).getLongitude();
+
+                LatLng SearchPoint = new LatLng(latitude, longitude);
+
+                MarkerOptions mOptions = new MarkerOptions();
+                mOptions.title(str);
+                mOptions.draggable(true);
+                mOptions.position(SearchPoint);
+                mOptions.icon(Micon.getMarkerIcon(0));
+
+                if(!isThere(SearchPoint)) {
+                    //add marker
+                    Marker m = googleMap.addMarker(mOptions);
+                    MarkerTag tag = new MarkerTag(0, 0);
+                    m.setTag(tag);
+                    db.createMarker(m, plan.getId());
+                    plan.addMarker(m);
+                }
+                //zoom camera view
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SearchPoint, 15));
+            }
+        }
+    }
+
+    public boolean isThere(LatLng pos){
+        Iterator<Marker> iterator =plan.getAllMarkers().iterator();
+        Marker cur;
+        while(iterator.hasNext()){
+            cur = iterator.next();
+            if(cur.getPosition().equals(pos))
+                return true;
+        }
+        return false;
+    }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
