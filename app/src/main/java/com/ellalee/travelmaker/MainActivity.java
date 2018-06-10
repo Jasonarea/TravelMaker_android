@@ -101,7 +101,7 @@ import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
-    private String[] navItems = {"LogIn", "공유�기", "GMail �기};
+    private String[] navItems = {"LogIn", "공유�기", "GMail �기"};
 
 
     private NavigationView lvNavList;
@@ -265,10 +265,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setIcon(android.R.drawable.ic_dialog_alert);
                     builder.setTitle("Travel Maker");
-                    builder.setMessage("�말 로그�웃�시겠습�까?");
-                    builder.setPositiveButton(", dialogListener);
+                    builder.setMessage("�말 로그�웃�시겠습�까?");
+                    //builder.setPositiveButton(", dialogListener");
 
-                    builder.setNegativeButton("�니, null);
+                    //builder.setNegativeButton("�니, null");
                     customDialog = builder.create();
                     customDialog.show();
                     break;
@@ -316,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     startActivity(nextScreen);
                     ActivityCompat.finishAffinity(MainActivity.this);
                 }
-                Toast.makeText(getApplicationContext(), "로그�웃�었�니", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "로그�웃�었�니", Toast.LENGTH_SHORT).show();
             }
         }
     };
