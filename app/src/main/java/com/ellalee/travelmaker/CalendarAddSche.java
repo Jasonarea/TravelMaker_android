@@ -77,6 +77,13 @@ public class CalendarAddSche extends AppCompatActivity{
 
         datePickerDialog.show();
 
+        viewDate.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                invalidateOptionsMenu();
+            }
+        });
+
+
         complete.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if(sche.getText().toString().equals("")) {

@@ -189,20 +189,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 .setBackOff(new ExponentialBackOff());
 
 
-        String email = loadSavedPreferences();
-        Log.d("Email Check", email);
-        Log.d("Hello Hello", "Hello Hello");
-            if (email.equals("hyeonsuns123@gmail.com") && EasyPermissions.hasPermissions(
-                    this, Manifest.permission.GET_ACCOUNTS)) {
-                navItems[0] = "LogOut";
-                //lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
-            } else {
-//                Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
-//                nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                startActivity(nextScreen);
-//                ActivityCompat.finishAffinity(MainActivity.this);
-            }
-
         btn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
