@@ -28,7 +28,7 @@
         completions."
     </string>
 
-    <string name="editText_hint"><font color="@color/white" size="15">여행 갈 도시나 지역을 입력하세요.</font></string>
+    <string name="editText_hint"><font color="@color/white" size="15">어디로 떠나세요?</font></string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>

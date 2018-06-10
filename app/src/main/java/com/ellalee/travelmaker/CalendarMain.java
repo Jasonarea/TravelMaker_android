@@ -363,10 +363,9 @@ public class CalendarMain extends Activity {
 
         while(c.moveToNext()) {
             String date = c.getString(c.getColumnIndex("date"));
-
             String sched = c.getString(c.getColumnIndex("schedule"));
-
             String memo = c.getString(c.getColumnIndex("memo"));
+
             read.add("date:"+date+ ",sche:" + sched + ",memo:" + memo);
         }
         return read;

@@ -7,13 +7,13 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white" >
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="60dp"
         android:background="@drawable/calendar_label_background">
             <com.ellalee.travelmaker.NewFont
                 android:id="@+id/tv_date"
@@ -46,7 +46,7 @@
         android:layout_marginTop="10dp"
         android:id="@+id/gridview"
         android:layout_weight="1"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:numColumns="7"
         android:listSelector = "@color/gray">

@@ -20,7 +20,7 @@ public class CalendarDBHelper extends SQLiteOpenHelper {
     }
 
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE CALENDAR (date VARCHAR(20), schedule VARCAHR(30), memo VARCHAR(50) );");
+        db.execSQL("CREATE TABLE CALENDAR (date VARCHAR(20), schedule VARCHAR(50), memo VARCHAR(50) );");
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

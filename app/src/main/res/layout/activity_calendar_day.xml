@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
+    <com.ellalee.travelmaker.NewFont
             android:id="@+id/dayMain_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -13,12 +13,12 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-        <TextView
+        <com.ellalee.travelmaker.NewFont
             android:id="@+id/category"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text= "스케줄 : "/>
-        <TextView
+        <com.ellalee.travelmaker.NewFont
             android:id="@+id/dayMain_sche"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
@@ -30,12 +30,12 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-        <TextView
+        <com.ellalee.travelmaker.NewFont
             android:id="@+id/category2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text= "메모 : "/>
-        <TextView
+        <com.ellalee.travelmaker.NewFont
             android:id="@+id/dayMain_memo"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
@@ -66,10 +66,11 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-        <TextView
+        <com.ellalee.travelmaker.NewFont
             android:id="@+id/category3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:text= "바꿀 스케줄 : "
             android:textSize="20dp"/>
         <EditText
@@ -84,10 +85,11 @@
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
-        <TextView
+        <com.ellalee.travelmaker.NewFont
             android:id="@+id/category4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:text="바꿀 메모 : "
             android:textSize="20dp" />
         <EditText
