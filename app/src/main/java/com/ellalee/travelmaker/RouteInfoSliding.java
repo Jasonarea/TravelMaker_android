@@ -215,6 +215,13 @@ public class RouteInfoSliding extends View {
                                         route.getMarkerList().get(idx).setTag(tag);
                                         db.updateMarker(markerList.get(idx),3);
                                         break;
+                                    case R.id.option_transport:
+                                        route.getMarkerList().get(idx).setIcon(MapMain.Micon.getMarkerIcon(4));
+                                        tag = (MarkerTag) route.getMarkerList().get(idx).getTag();
+                                        tag.setIcon(4);
+                                        route.getMarkerList().get(idx).setTag(tag);
+                                        db.updateMarker(markerList.get(idx),4);
+                                        break;
                                     case R.id.option_default:
                                         route.getMarkerList().get(idx).setIcon(MapMain.Micon.getMarkerIcon(0));
                                         tag = (MarkerTag) route.getMarkerList().get(idx).getTag();
