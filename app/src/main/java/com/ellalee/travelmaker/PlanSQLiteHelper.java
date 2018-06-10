@@ -163,7 +163,7 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
                         output ="date:"+getDateString(c.getInt(c.getColumnIndex(KEY_YEAR)),
                                 c.getInt(c.getColumnIndex(KEY_MONTH)),
                                 c.getInt(c.getColumnIndex(KEY_DAY)),i)+
-                                ",sche:"+c.getString(c.getColumnIndex(KEY_TITLE));
+                                ",sche:"+c.getString(c.getColumnIndex(KEY_TITLE)) + ",memo: ";
                         resultList.add(output);
                     }
                 }

@@ -36,7 +36,7 @@ public class CalendarMain extends Activity {
 
     static SQLiteDatabase db;
     static CalendarDBHelper helper;
-    static PlanSQLiteHelper planHelper;
+
     /**
      * 연/월 텍스트뷰
      */
@@ -199,6 +199,7 @@ public class CalendarMain extends Activity {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mCal.add(Calendar.MONTH, -back_month_count + next_month_count);
                 mCal.set(mCal.get(Calendar.YEAR), mCal.get(Calendar.MONTH), 1);
                 Intent intent = new Intent(CalendarMain.this, CalendarListMain.class);
                 intent.putExtra("day", position - 5 - mCal.get(Calendar.DAY_OF_WEEK));
@@ -434,6 +435,7 @@ public class CalendarMain extends Activity {
             count = 0;
             d.setDay("" + String.valueOf(i + 1));
             dbList = select();
+            dbList.addAll(new PlanSQLiteHelper(getApplicationContext()).getAllPlanSchedule());
 
             for(int j = 0; j < dbList.size(); j++) {
                 //date, sche, memo 분리
