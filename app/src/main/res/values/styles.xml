@@ -8,7 +8,11 @@
         <item name = "android:textViewStyle">@style/CustomTextView</item>
         <item name="android:actionBarStyle">@style/CustomActionBar</item>
     </style>
-
+    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowBackground">@drawable/splash</item>
+    </style>
     <style name="CustomTextView" parent="@android:style/Widget.DeviceDefault.TextView">
         <item name="android:fontFamily">@font/nanumsquareround_b</item>
     </style>

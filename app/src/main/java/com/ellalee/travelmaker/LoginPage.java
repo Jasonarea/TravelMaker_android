@@ -2,15 +2,18 @@ package com.ellalee.travelmaker;
 
 import android.Manifest;
 import android.accounts.AccountManager;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
@@ -62,7 +65,7 @@ import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig
 public class LoginPage extends AppCompatActivity implements EasyPermissions.PermissionCallbacks{
     Button loginBtn;
     static GoogleAccountCredential mCredential;
-    private TextView mOutputText;
+    public static TextView mOutputText;
     private Button mCallApiButton;
     private Button mCallMail;
     private HttpTransport transport;
@@ -85,6 +88,7 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInAccount account;
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final LinearLayout activityLayout = new LinearLayout(this);
@@ -92,6 +96,9 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
         activityLayout.setLayoutParams(lp);
+        Drawable background = getResources().getDrawable(R.drawable.calendar_label_background);
+        activityLayout.setBackground(background);
+
         activityLayout.setOrientation(LinearLayout.VERTICAL);
         activityLayout.setPadding(16, 16, 16, 16);
 

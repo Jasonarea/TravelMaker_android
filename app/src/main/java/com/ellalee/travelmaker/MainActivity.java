@@ -2,6 +2,7 @@ package com.ellalee.travelmaker;
 
 import android.Manifest;
 import android.accounts.AccountManager;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
@@ -9,16 +10,25 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.pdf.PdfDocument;
+import android.graphics.pdf.PdfRenderer;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
+import android.os.Environment;
 import android.preference.DialogPreference;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -27,6 +37,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.app.Activity;
 import android.graphics.Color;
@@ -65,7 +76,14 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.calendar.model.CalendarListEntry;
 import com.google.api.services.gmail.Gmail;
+import com.google.api.services.gmail.model.Label;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Text;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -74,16 +92,19 @@ import java.util.List;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.widget.Toast.*;
 import static com.ellalee.travelmaker.GmailSync.SCOPE;
 import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig.Prompt.SIGN_IN;
 
+
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
-    private String[] navItems = {"LogIn", "산관", "공유하기", "GMail 기"};
+    private String[] navItems = {"LogIn", "공유�기", "GMail �기};
 
-    private ListView lvNavList;
+
+    private NavigationView lvNavList;
     private FrameLayout flContainer;
     private DrawerLayout dlDrawer;
     private ImageButton btn;
@@ -103,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private static boolean isLogin = false;
     CalendarSync calendarThread;
     AlertDialog customDialog;
-
+    static Context mContext;
    PlanSQLiteHelper db;
    Button btnSearch;
    EditText input;
@@ -122,10 +143,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
-
+       // setTheme(R.style.SplashTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mContext = this;
         //mContext = getApplicationContext();
         db = new PlanSQLiteHelper(getApplicationContext());
         btnSearch = findViewById(R.id.search_area);
@@ -140,7 +161,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         });
 
-        lvNavList = (ListView)findViewById(R.id.lv_activity_main_nav_list);
+        SharedPreferences mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = mPref.edit();
+        editor.clear();
+
+        editor.commit();
+
+        lvNavList = (NavigationView)findViewById(R.id.lv_activity_main_nav_list);
 
         flContainer = (FrameLayout)findViewById(R.id.fl_activity_main_container);
 
@@ -157,9 +184,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 .setBackOff(new ExponentialBackOff());
         //getResultsFromApi();
         String email = loadSavedPreferences();
-            if (email.equals("EmailStuff")) {
+            if (email.equals("EmailStuff") && EasyPermissions.hasPermissions(
+                    this, Manifest.permission.GET_ACCOUNTS)) {
                 navItems[0] = "LogOut";
-                lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
+                //lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
             } else {
                 Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
                 nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -171,6 +199,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             @Override
             public void onClick(View v) {
                 dlDrawer.openDrawer(lvNavList);
+
             }
         });
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
@@ -180,10 +209,33 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         else {
             navItems[0] = "LogIn";
         }
-        lvNavList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
-        lvNavList.setOnItemClickListener(new MainActivity.DrawerItemClickListener());
+        //lvNavList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
+        //lvNavList.setOnItemClickListener(new MainActivity.DrawerItemClickListener());
         dlDrawer = (DrawerLayout)findViewById(R.id.dl_activity_main_drawer);
 
+        lvNavList.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener(){
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem){
+                int id = menuItem.getItemId();
+                if(id == R.id.menu_drawer_home){
+
+                }
+                else if(id == R.id.menu_drawer_mail){
+                    mCredential = GoogleAccountCredential.usingOAuth2(
+                            getApplicationContext(), Arrays.asList(SCOPES))
+                            .setBackOff(new ExponentialBackOff());
+                    getResultsFromApi();
+                }
+                else if(id == R.id.menu_drawer_share){
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
+                    sendIntent.setType("text/plain");
+                    startActivity(sendIntent);
+                }
+                return false;
+            }
+        });
     }
 
 
@@ -202,6 +254,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     }
 
+
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
 
         @Override
@@ -212,10 +265,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setIcon(android.R.drawable.ic_dialog_alert);
                     builder.setTitle("Travel Maker");
-                    builder.setMessage("정말 로그아웃 하시겠습까?");
-                    builder.setPositiveButton("네", dialogListener);
+                    builder.setMessage("�말 로그�웃�시겠습�까?");
+                    builder.setPositiveButton(", dialogListener);
 
-                    builder.setNegativeButton("아니오", null);
+                    builder.setNegativeButton("�니, null);
                     customDialog = builder.create();
                     customDialog.show();
                     break;
@@ -239,6 +292,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                             .setBackOff(new ExponentialBackOff());
                     getResultsFromApi();
                     break;
+
+                case 4:
+                    createPdf();
+                    break;
             }
             dlDrawer.closeDrawer(lvNavList);
         }
@@ -250,7 +307,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
                 if (mCredential == null) {
                     navItems[0] = "LogOut";
-                    lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
+                    //lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
                 } else {
 
 
@@ -259,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     startActivity(nextScreen);
                     ActivityCompat.finishAffinity(MainActivity.this);
                 }
-                Toast.makeText(getApplicationContext(), "로그�웃�었�니", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "로그�웃�었�니", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -387,8 +444,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 else {
                     navItems[0] = "LogOut";
                 }
-                lvNavList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
-                lvNavList.setOnItemClickListener(new MainActivity.DrawerItemClickListener());
+                //lvNavList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navItems));
+                //lvNavList.setOnItemClickListener(new MainActivity.DrawerItemClickListener());
                 break;
             case REQUEST_AUTHORIZATION:
                 if (resultCode == RESULT_OK) {
@@ -518,6 +575,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         EasyPermissions.onRequestPermissionsResult(
                 requestCode, permissions, grantResults, this);
+
     }
 
     /**
@@ -582,4 +640,30 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
         }
     }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private void createPdf() {
+//        PdfDocument document = new PdfDocument();
+//        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(100, 100, 1).create();
+//        PdfDocument.Page page = document.startPage(pageInfo);
+//        TextView tv = new TextView(getApplicationContext());
+//        tv.setText("Hello World");
+//
+//        View content = tv;
+//        content.draw(page.getCanvas());
+//        document.finishPage(page);
+//        if(Build.VERSION.SDK_INT>22){
+//            requestPermissions(new String[] {"WRITE_EXTERNAL_STORAGE", "READ_EXTERNAL_STORAGE"}, 1);
+//        }
+//        try {
+//            File f = new File(Environment.getExternalStorageDirectory().getPath() + "/pruebaAppModerator.pdf");
+//            FileOutputStream fos = new FileOutputStream(f);
+//            document.writeTo(fos);
+//            document.close();
+//            fos.close();
+//        } catch (IOException e) {
+//            throw new RuntimeException("Error generating file", e);
+//        }
+    }
+
 }

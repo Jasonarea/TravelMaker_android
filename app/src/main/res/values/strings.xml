@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">TravelMaker</string>
+    <string name="app_name">Travel Maker</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="kakao_app_key">370b35cd65f897ec99c1b817ef567be5</string>
@@ -28,7 +28,7 @@
         completions."
     </string>
 
-    <string name="editText_hint"><font color="@color/white" size="15">Where do you want to go?</font></string>
+    <string name="editText_hint"><font color="@color/white" size="15">여행 갈 도시나 지역을 입력하세요.</font></string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>

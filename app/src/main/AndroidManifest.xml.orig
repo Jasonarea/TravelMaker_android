@@ -57,11 +57,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<<<<<<< HEAD
         <activity android:name=".JsonParsing" />
-=======
-
->>>>>>> a655105b80377628e7da567d9a2695c574952396
         <activity android:name=".CalendarListMain">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -93,22 +89,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".planListActivity"></activity>
-=======
-            <activity android:name=".Sharing">
-                <intent-filter>
-                    <action android:name="android.intent.action.VIEW" />
-                    <category android:name="android.intent.category.DEFAULT" />
-                    <category android:name="android.intent.category.BROWSABLE" />
-
-                    <data android:scheme="@string/kakao_scheme"
-                        android:host="@string/kakaolink_host" />
-                </intent-filter>
-            </activity>
-            <meta-data
-                android:name="com.kakao.sdk.AppKey"
-                android:value="@string/kakao_app_key" />
-
->>>>>>> a655105b80377628e7da567d9a2695c574952396
     </application>
 
 </manifest>
