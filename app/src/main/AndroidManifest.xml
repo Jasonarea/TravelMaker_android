@@ -36,6 +36,7 @@
         <activity android:name=".CalendarMain"></activity>
         <activity android:name=".LoginPage"></activity>
         <activity android:name=".CalendarListMain"></activity>
+        <activity android:name=".CalendarDayMain"></activity>
 
         <activity android:name = ".Splash"
             android:theme = "@style/SplashTheme">

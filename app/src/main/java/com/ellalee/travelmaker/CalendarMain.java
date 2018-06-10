@@ -44,7 +44,7 @@ public class CalendarMain extends Activity {
     /**
      * 그리드뷰 어댑터
      */
-    private GridAdapter gridAdapter;
+    private static GridAdapter gridAdapter;
 
 
     /**
@@ -61,13 +61,13 @@ public class CalendarMain extends Activity {
     /**
      * 그리드뷰
      */
-    private GridView gridView;
+    private static GridView gridView;
 
 
     /**
      * 캘린더 변수
      */
-    private Calendar mCal;
+    private static Calendar mCal;
 
 
     /*
@@ -183,34 +183,39 @@ public class CalendarMain extends Activity {
 
         gridView.setAdapter(gridAdapter);
 
-
+        for (int i = 0; i < doList.size(); i++) {
+            String date = doList.get(i).substring(doList.get(i).replace(" ", "").length() - 29, doList.get(i).length() - 19);
+            String sched = doList.get(i).substring(8, doList.get(i).length() - 29);
+            Log.d("DB에 들어가는 doList", date + " " + sched);
+            insert(date, sched, "");
+        }
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mCal.set(mCal.get(Calendar.YEAR), mCal.get(Calendar.MONTH), 1);
                 Intent intent = new Intent(CalendarMain.this, CalendarListMain.class);
-                intent.putExtra("day", position - mCal.get(Calendar.DAY_OF_WEEK));
+                intent.putExtra("day", position - 5 - mCal.get(Calendar.DAY_OF_WEEK));
                 intent.putExtra("year", mCal.get(Calendar.YEAR));
                 intent.putExtra("month", mCal.get(Calendar.MONTH) + 1);
 
-                String date = String.valueOf(mCal.get(Calendar.YEAR)) + "-" + String.valueOf(mCal.get(Calendar.MONTH) + 1) + "-" + String.valueOf(position - mCal.get(Calendar.DAY_OF_WEEK) - 7);
+                String date = String.valueOf(mCal.get(Calendar.YEAR)) + "-" + String.valueOf(mCal.get(Calendar.MONTH) + 1) + "-" + String.valueOf(position - mCal.get(Calendar.DAY_OF_WEEK) - 5);
                 ArrayList<String> s = new ArrayList<>();
                 ArrayList<String> m = new ArrayList<>();
 
-                Cursor c = db.rawQuery("SELECT schedule, memo FROM calendar WHERE date=" + date, null);
+                Cursor c = db.rawQuery("SELECT schedule, memo FROM calendar WHERE date='" + date + "'", null);
                 while(c.moveToNext()) {
-                    Log.d("DB에서 가져온 schedule", c.getString(c.getColumnIndex("schedule")));
+                    s.add(c.getString(c.getColumnIndex("schedule")));
                     m.add(c.getString(c.getColumnIndex("memo")));
                 }
 
-                intent.putExtra("sche", s);
-                intent.putExtra("memo", m);
+                intent.putStringArrayListExtra("sche", s);
+                intent.putStringArrayListExtra("memo", m);
 
-                Log.d("그리드뷰 클릭 시 전달되는 날짜 ", String.valueOf(mCal.get(Calendar.YEAR)) + String.valueOf(mCal.get(Calendar.MONTH)+1) + String.valueOf(mCal.get(Calendar.DAY_OF_WEEK)));
+                Log.d("그리드뷰 클릭 시 전달되는 날짜 ", String.valueOf(mCal.get(Calendar.YEAR)) + String.valueOf(mCal.get(Calendar.MONTH)+1) + " /" +String.valueOf(position - mCal.get(Calendar.DAY_OF_WEEK) - 5));
                 startActivity(intent);
             }
         });
-
 
         //back button 눌렀을 때
         leftBtn.setOnClickListener(new View.OnClickListener() {
@@ -307,6 +312,7 @@ public class CalendarMain extends Activity {
 
         Cursor c = db.rawQuery("SELECT date, schedule FROM calendar WHERE date='"  + date + "' AND schedule='" + sched + "'", null);
         c.moveToFirst();
+
         if(c.getCount() == 0) {
             db.insert("calendar", null, values);
         }
@@ -411,7 +417,7 @@ public class CalendarMain extends Activity {
                 if(Integer.parseInt(dt[0]) == mCal.get(Calendar.YEAR)) {
                     if(Integer.parseInt(dt[1]) == month) {
                         if(Integer.parseInt(dt[2]) == Integer.parseInt(d.getDay())) {
-                            Log.d("DB에서 얻어온 정보로 통과되는 일", dt[2]);
+                            Log.d("DB에서 얻어온 정보로 통과되는 일", dt[1]);
                             count += 1;
                             d.setSche(temp[1].substring(temp[1].indexOf(":")+1));
                             d.setMemo(temp[2].substring(temp[2].indexOf(":")+1));

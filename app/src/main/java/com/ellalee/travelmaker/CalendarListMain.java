@@ -1,6 +1,8 @@
 package com.ellalee.travelmaker;
 
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -36,7 +39,8 @@ public class CalendarListMain extends AppCompatActivity {
 
         addSche.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                startActivityForResult(new Intent(getApplicationContext(), CalendarAddSche.class), 1);
+//                Intent send = new Intent();
+//                startActivityForResult(new Intent(getApplicationContext(), CalendarAddSche.class), 1);
             }
         });
     }
@@ -50,7 +54,6 @@ public class CalendarListMain extends AppCompatActivity {
         sched = received.getStringArrayListExtra("sche");
         memo =received.getStringArrayListExtra("memo");
 
-        Log.d("Calendar 리스트 띄울 달: ", String.valueOf(sched.get(0)));
         listView = (ListView)findViewById(R.id.listview);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, sched);
         listView.setAdapter(adapter);
@@ -84,7 +87,20 @@ public class CalendarListMain extends AppCompatActivity {
             String schedule = data.getStringExtra("schedule");
             String memo = data.getStringExtra("memo");
 
-            //db.execSQL();
+            String date = year + "-" + month + "-" + day;
+            ContentValues values = new ContentValues();
+            values.put("date", date);
+            values.put("schedule", schedule);
+            values.put("memo", memo);
+
+            Cursor c = db.rawQuery("SELECT date, schedule FROM calendar WHERE date='"  + date + "' AND schedule='" + sched + "'", null);
+            c.moveToFirst();
+            if(c.getCount() == 0) {
+                db.insert("calendar", null, values);
+            }
+            else {
+                Toast.makeText(getApplicationContext(), "이미 저장되어 있는 스케줄입니다!", Toast.LENGTH_LONG).show();
+            }
         }
 //        gridAdapter = new GridAdapter(getApplicationContext(), dayList);
 //        gridView.setAdapter(gridAdapter);
