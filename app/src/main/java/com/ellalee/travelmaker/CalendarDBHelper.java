@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 /**
  * Created by jiwon on 2018-06-06.
@@ -21,7 +20,7 @@ public class CalendarDBHelper extends SQLiteOpenHelper {
     }
 
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE CALENDAR (date VARCHAR(20), schedule VARCAHR(30), memo VARCHAR(50) );");
+        db.execSQL("CREATE TABLE CALENDAR (date VARCHAR(20), schedule VARCHAR(50), memo VARCHAR(50) );");
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -47,7 +46,6 @@ public class CalendarDBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-
     public Cursor getResult() {
         SQLiteDatabase db = getReadableDatabase();
         // String result  = "";
@@ -62,5 +60,4 @@ public class CalendarDBHelper extends SQLiteOpenHelper {
 //        }
         return cursor;
     }
-
 }

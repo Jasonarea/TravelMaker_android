@@ -3,14 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
+    <com.ellalee.travelmaker.NewFont
         android:id="@+id/DateSetting"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:layout_marginLeft="40dp"
         android:text="날짜 :"/>
-    <TextView
+    <com.ellalee.travelmaker.NewFont
         android:id="@+id/scheSetting"
         android:layout_marginLeft="40dp"
         android:layout_marginTop="15dp"
@@ -24,12 +24,12 @@
         android:layout_toRightOf="@+id/scheSetting"
         android:layout_alignBaseline="@id/scheSetting"
         android:layout_marginLeft="5dp"
-        android:layout_width="100dp"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:hint="신라호텔"
         android:textSize="20sp"/>
 
-    <TextView
+    <com.ellalee.travelmaker.NewFont
         android:id="@+id/memoSetting"
         android:layout_below="@+id/scheSetting"
         android:layout_marginLeft = "40dp"
@@ -43,7 +43,7 @@
         android:layout_toRightOf="@+id/memoSetting"
         android:layout_alignBaseline="@id/memoSetting"
         android:layout_marginLeft="5dp"
-        android:layout_width="100dp"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:hint="뷔페가기"
         android:textSize="20sp"/>

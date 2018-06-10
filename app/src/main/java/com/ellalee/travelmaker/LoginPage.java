@@ -234,6 +234,7 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
                         getResultsFromApi();
                     }
                 }
+                Log.d("Hello1", "Hello1111");
                 Intent nextScreen = new Intent(LoginPage.this, MainActivity.class);
                 nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(nextScreen);

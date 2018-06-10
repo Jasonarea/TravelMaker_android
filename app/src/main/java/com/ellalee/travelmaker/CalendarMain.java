@@ -15,6 +15,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -320,7 +321,7 @@ public class CalendarMain extends Activity {
         values.put("schedule", sched);
         values.put("memo", memo);
 
-        Cursor c = db.rawQuery("SELECT date, schedule FROM calendar WHERE date='"  + date + "' AND schedule='" + sched + "'", null);
+        Cursor c = db.rawQuery("SELECT date, schedule FROM calendar WHERE (date='"  + date + "') AND (schedule='" + sched + "')", null);
         c.moveToFirst();
 
         if(c.getCount() == 0) {
@@ -362,10 +363,9 @@ public class CalendarMain extends Activity {
 
         while(c.moveToNext()) {
             String date = c.getString(c.getColumnIndex("date"));
-
             String sched = c.getString(c.getColumnIndex("schedule"));
-
             String memo = c.getString(c.getColumnIndex("memo"));
+
             read.add("date:"+date+ ",sche:" + sched + ",memo:" + memo);
         }
         return read;
@@ -434,7 +434,8 @@ public class CalendarMain extends Activity {
             count = 0;
             d.setDay("" + String.valueOf(i + 1));
             dbList = select();
-            dbList.addAll(new PlanSQLiteHelper(getApplicationContext()).getAllPlanSchedule());
+            if(new PlanSQLiteHelper(getApplicationContext()).getAllPlanSchedule().size() > 0)
+                dbList.addAll(new PlanSQLiteHelper(getApplicationContext()).getAllPlanSchedule());
 
             for(int a = 0; a < dbList.size(); a++) {
                 Log.d("디비에 들어간 list", dbList.get(a));

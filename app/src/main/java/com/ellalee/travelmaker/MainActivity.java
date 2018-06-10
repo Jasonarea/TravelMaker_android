@@ -104,7 +104,7 @@ import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
-    private String[] navItems = {"LogIn", "공유�기", "GMail �기"};
+    private String[] navItems = {"LogIn", "공유기", "GMail �기"};
 
 
     private NavigationView lvNavList;
@@ -169,11 +169,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         });
 
-        SharedPreferences mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor editor = mPref.edit();
-        editor.clear();
+        //SharedPreferences mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        //SharedPreferences.Editor editor = mPref.edit();
+        //editor.clear();
 
-        editor.commit();
+        //editor.commit();
 
         lvNavList = (NavigationView)findViewById(R.id.lv_activity_main_nav_list);
 
@@ -181,34 +181,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         ptt = (TextView)findViewById(R.id.progText);
 
         btn = (ImageButton)findViewById(R.id.menu_action_button);
-        Log.d("Main Access", "Hello Main");
+        Log.d("Main Access", "What are you doing");
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestEmail()
-                .build();
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        account = GoogleSignIn.getLastSignedInAccount(this);
+        //account = GoogleSignIn.getLastSignedInAccount(this);
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
-        //getResultsFromApi();
-//        SharedPreferences mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-//        SharedPreferences.Editor editor = mPref.edit();
-//        editor.clear();
-//
-//        editor.commit();
 
-        String email = loadSavedPreferences();
-            if (email.equals("EmailStuff") && EasyPermissions.hasPermissions(
-                    this, Manifest.permission.GET_ACCOUNTS)) {
-                navItems[0] = "LogOut";
-                //lvNavList.setAdapter(new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, navItems));
-            } else {
-                Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
-                nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(nextScreen);
-                ActivityCompat.finishAffinity(MainActivity.this);
-            }
 
         btn.setOnClickListener(new OnClickListener() {
             @Override
@@ -323,10 +302,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 } else {
 
 
-                    Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
-                    nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(nextScreen);
-                    ActivityCompat.finishAffinity(MainActivity.this);
+//                    Intent nextScreen = new Intent(MainActivity.this, LoginPage.class);
+//                    nextScreen.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                    startActivity(nextScreen);
+//                    ActivityCompat.finishAffinity(MainActivity.this);
                 }
                 Toast.makeText(getApplicationContext(), "successfully logout", Toast.LENGTH_SHORT).show();
             }
@@ -641,6 +620,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     }
 
     private String loadSavedPreferences() {
+        Log.d("Load saved", "Preferences");
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String name = sharedPreferences.getString("email", "EmailStuff");
         return name;

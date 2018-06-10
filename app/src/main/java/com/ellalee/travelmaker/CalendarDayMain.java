@@ -13,6 +13,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import static java.sql.Types.NULL;
+
 /**
  * Created by jiwon on 2018-06-09.
  */
@@ -21,7 +23,7 @@ public class CalendarDayMain extends Activity {
     String sched, memo;
     int day, month, year;
     private TextView date;
-    private TextView scheView, memoView;
+    private TextView scheView, memoView,category_sche, category_memo;
     private EditText scheEdit, memoEdit;
     private Button changeBtn, deleteBtn, completeBtn;
     private String mode = "View";
@@ -51,6 +53,8 @@ public class CalendarDayMain extends Activity {
         scheEdit = (EditText)findViewById(R.id.change_editsche);
         memoEdit = (EditText)findViewById(R.id.change_editmemo);
         completeBtn = (Button)findViewById(R.id.complete_change);
+        category_sche = (TextView)findViewById(R.id.category3);
+        category_memo = (TextView)findViewById(R.id.category4);
 
         date.setText(String.valueOf(year) + "." + String.valueOf(month) + "." + String.valueOf(day));
         scheView.setText(sched);
@@ -63,6 +67,8 @@ public class CalendarDayMain extends Activity {
                 scheEdit.setVisibility(View.VISIBLE);
                 memoEdit.setVisibility(View.VISIBLE);
                 completeBtn.setVisibility(View.VISIBLE);
+                category_memo.setVisibility(View.VISIBLE);
+                category_sche.setVisibility(View.VISIBLE);
                 scheView.setVisibility(View.INVISIBLE);
 
                 completeBtn.setOnClickListener(new View.OnClickListener() {
@@ -70,7 +76,7 @@ public class CalendarDayMain extends Activity {
                     public void onClick(View v) {
                         String newSche = scheEdit.getText().toString();
                         memo = memoEdit.getText().toString();
-                        if(!sched.replace(" ", "").equals("")) {
+                        if(!newSche.replace(" ", "").equals("")) {
                             update(String.valueOf(year) + "-" + String.valueOf(month) + "-" + String.valueOf(day),
                                     sched, newSche,  memo);
 
@@ -78,6 +84,8 @@ public class CalendarDayMain extends Activity {
                             scheEdit.setVisibility(View.INVISIBLE);
                             memoEdit.setVisibility(View.INVISIBLE);
                             completeBtn.setVisibility(View.INVISIBLE);
+                            category_memo.setVisibility(View.INVISIBLE);
+                            category_sche.setText(View.INVISIBLE);
                             scheView.setVisibility(View.VISIBLE);
                             Toast.makeText(getApplicationContext(), newSche + " 스케줄 수정완료!", Toast.LENGTH_LONG).show();
                             finish();

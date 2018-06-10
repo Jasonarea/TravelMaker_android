@@ -7,11 +7,49 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.ellalee.travelmaker.CalendarListMain">
-    <TextView
-        android:id="@+id/setTitle"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+        android:layout_height="wrap_content">
+        <com.ellalee.travelmaker.NewFont
+            android:id="@+id/setTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:textSize="20sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.ellalee.travelmaker.NewFont
+            android:id="@+id/notice_sche"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:textSize="18sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.ellalee.travelmaker.NewFont
+            android:id="@+id/empty_sche"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:textSize="12sp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -19,8 +57,8 @@
             android:id="@+id/listview"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:divider="@color/dark_gray"
-            android:dividerHeight="0.5dp"
+            android:divider="@color/gray"
+            android:dividerHeight="1dp"
             android:choiceMode="singleChoice"/>
     </LinearLayout>
 </LinearLayout>
