@@ -17,9 +17,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -131,6 +135,43 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
 
         onCreate(db);
     }
+
+    public String getDateString(int y,int m,int d,int n){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar cal = new GregorianCalendar(y,m,d);
+        cal.add(Calendar.DAY_OF_MONTH,n);
+
+        return sdf.format(cal.getTime());
+    }
+    public ArrayList<String> getAllPlanSchedule() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ArrayList<String> resultList = new ArrayList<>();
+        Cursor c = db.query(TABLE_PLAN, null, null, null, null, null, null);
+
+        if (c!=null && c.getCount()!=0) {
+            c.moveToFirst();
+            do {
+                int year = c.getInt(c.getColumnIndex(KEY_YEAR));
+                int days;
+                long plan_id;
+                String output;
+
+                if(year!=0 && year!=-1){ //date has been set
+                    plan_id = c.getLong(c.getColumnIndex(KEY_ID));
+                    days = getRouteListCount(plan_id);
+                    for(int i=0;i<days;i++){
+                        output ="date:"+getDateString(c.getInt(c.getColumnIndex(KEY_YEAR)),
+                                c.getInt(c.getColumnIndex(KEY_MONTH)),
+                                c.getInt(c.getColumnIndex(KEY_DAY)),i)+
+                                ",sche:"+c.getString(c.getColumnIndex(KEY_TITLE));
+                        resultList.add(output);
+                    }
+                }
+            } while (c.moveToNext());
+        }
+        return resultList;
+    }
+
     public long createPlan(Plan plan){ // make another create without date //default plan name is city name.
         SQLiteDatabase db = this.getWritableDatabase();
 

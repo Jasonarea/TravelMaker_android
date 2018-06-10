@@ -148,6 +148,7 @@ public class GmailSync implements Runnable {
                     author = h.getValue();
                 }
             }
+
             ++count;
             if(count>50) break;
             Log.d("count", String.valueOf(count));

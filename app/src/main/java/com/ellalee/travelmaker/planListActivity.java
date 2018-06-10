@@ -262,8 +262,8 @@ public class planListActivity extends AppCompatActivity {
                     alert.show();
                 }
             });
-            if(plans.get(i).getDate().equals(new Date(0,0,0))){
-                date.setText("눌러서 날짜를 선택해주세요.");
+            if(plans.get(i).startDate.toString().equals(new Date(0,0,0).toString())){
+                date.setText("날짜 설정하기!");
             }else{
                 date.setText(plans.get(i).getDate());
             }
@@ -304,12 +304,5 @@ public class planListActivity extends AppCompatActivity {
             });
             return view;
         }
-        /*
-        public void showBtnDelete(boolean visible){
-            this.mode = visible;
-            this.notifyDataSetChanged();
-        }
-*/
     }
-
 }
