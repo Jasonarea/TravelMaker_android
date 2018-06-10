@@ -11,7 +11,7 @@ android {
     }
     defaultConfig {
         applicationId "com.ellalee.travelmaker"
-        minSdkVersion 14
+        minSdkVersion 21
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -45,7 +45,7 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:appcompat-v7:27.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     //google map api
     implementation 'com.google.android.gms:play-services-maps:15.0.0'
@@ -67,46 +67,29 @@ dependencies {
     implementation('com.google.apis:google-api-services-gmail:v1-rev86-1.23.0') {
         exclude group: 'org.apache.httpcomponents'
     }
-    implementation 'com.squareup.picasso:picasso:2.5.2'
-    // 카카링크륬용�기 �해 �요.
-    implementation group: project.KAKAO_SDK_GROUP, name: 'kakaolink', version: project.KAKAO_SDK_VERSION
 
-    // 카카�톡 sdk륬용�기 �해 �요.
-    implementation group: project.KAKAO_SDK_GROUP, name: 'kakaotalk', version: project.KAKAO_SDK_VERSION
-
-
-    implementation 'com.google.api-client:google-api-client:1.22.0'
-    implementation 'com.google.oauth-client:google-oauth-client-jetty:1.22.0'
+<<<<<<< HEAD
+    implementation 'com.android.support:design:27.1.0'
+    implementation 'com.android.support:support-vector-drawable:27.1.0'
+=======
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support:support-vector-drawable:27.1.1'
-
-//    implementation 'com.android.support:design:26.1.0'
-//    implementation 'com.android.support:support-vector-drawable:26.1.0'
-
+>>>>>>> 4e3996f2c0192406004f87e82638229aa5c3797b
     testImplementation 'junit:junit:4.12'
 
     androidTestImplementation 'com.android.support.test:runner:+'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:+'
 
-<<<<<<< HEAD
-    //implementation files('E:/Travel-Maker/libs/additionnal.jar')
-    //implementation files('E:/Travel-Maker/libs/activation.jar')
-    //implementation files('E:/Travel-Maker/libs/mail.jar')
-=======
-    implementation files('C:/Users/jiwon/Travel-Maker/libs/activation.jar')
-    implementation files('C:/Users/jiwon/Travel-Maker/libs/additionnal.jar')
-    implementation files('C:/Users/jiwon/Travel-Maker/libs/mail.jar')
+//    implementation files('C:/Users/jiwon/Travel-Maker/libs/activation.jar')
+//    implementation files('C:/Users/jiwon/Travel-Maker/libs/additionnal.jar')
+//    implementation files('C:/Users/jiwon/Travel-Maker/libs/mail.jar')
 
 //    implementation files('E:/Travel-Maker/libs/additionnal.jar')
 //    implementation files('E:/Travel-Maker/libs/activation.jar')
 //    implementation files('E:/Travel-Maker/libs/mail.jar')
->>>>>>> 9b6e1617319095a3e2a94da2d40fdcb43b30f51c
 
-    implementation files('D:/18_1/Travel-Maker/libs/mail.jar')
-    implementation files('D:/18_1/Travel-Maker/libs/additionnal.jar')
-    implementation files('D:/18_1/Travel-Maker/libs/activation.jar')
+      implementation files('D:/18_1/Travel-Maker/libs/mail.jar')
+      implementation files('D:/18_1/Travel-Maker/libs/additionnal.jar')
+      implementation files('D:/18_1/Travel-Maker/libs/activation.jar')
 
 }
-
-
-

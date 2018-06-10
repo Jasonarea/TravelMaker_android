@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.media.Image;
 import android.media.ImageReader;
 import android.support.v7.app.AlertDialog;
@@ -35,16 +36,16 @@ import java.util.Date;
 import java.util.zip.Inflater;
 
 import static android.view.View.INVISIBLE;
+import static android.view.View.LAYER_TYPE_HARDWARE;
 import static android.view.View.VISIBLE;
 
 public class planListActivity extends AppCompatActivity {
 
     SQLiteDatabase db;
     PlanSQLiteHelper helper;
-    String[] planList;
     ArrayList<planListItem> plans;
     GridView planListView;
-    ImageButton activateDelete;
+    Button activateDelete;
 
     boolean delete_mode = false;
 
@@ -62,13 +63,13 @@ public class planListActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(delete_mode){
-                    planListView.setAdapter(new PlanGridAdapter(delete_mode));
                     delete_mode=false;
-                    activateDelete.setImageResource(R.drawable.close_bin);
-                }else{
                     planListView.setAdapter(new PlanGridAdapter(delete_mode));
+                    activateDelete.setBackground(getDrawable(R.drawable.close_bin));
+                }else{
                     delete_mode=true;
-                    activateDelete.setImageResource(R.drawable.open_bin);
+                    planListView.setAdapter(new PlanGridAdapter(delete_mode));
+                    activateDelete.setBackground(getDrawable(R.drawable.open_bin));
                 }
             }
         });
@@ -170,7 +171,7 @@ public class planListActivity extends AppCompatActivity {
 
         TextView title ;
         TextView date ;
-        ImageButton btnDelete ;
+        Button btnDelete ;
         ImageView imgPlan ;
 
         public PlanGridAdapter(boolean delete_mode){
@@ -208,14 +209,14 @@ public class planListActivity extends AppCompatActivity {
             Log.d("DELETE MODE "," "+mode);
 
             if(mode){
-                btnDelete.setVisibility(INVISIBLE);
-            }else{
                 btnDelete.setVisibility(VISIBLE);
+            }else{
+                btnDelete.setVisibility(View.GONE);
             }
 
             btnDelete.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
+                public void onClick(final View view) {
                     AlertDialog.Builder alert = new AlertDialog.Builder(planListActivity.this);
                     alert.setMessage("정말 삭제하시겠습니까?");
                     alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
@@ -224,7 +225,8 @@ public class planListActivity extends AppCompatActivity {
                             Toast.makeText(planListActivity.this, "delete plan "+plans.get(viewId).getPlan_id(), Toast.LENGTH_SHORT).show();
                             db = helper.getWritableDatabase();
                             helper.deletePlan(plans.get(viewId).getPlan_id());
-                            invalidate();
+                            plans.remove(view);
+                            //invalidate();
 
                         }
                     });
@@ -263,14 +265,18 @@ public class planListActivity extends AppCompatActivity {
                     alert.show();
                 }
             });
-
-            date.setText(plans.get(i).getDate());
+            if(plans.get(i).startDate.toString().equals(new Date(0,0,0).toString())){
+                date.setText("날짜 설정하기!");
+            }else{
+                date.setText(plans.get(i).getDate());
+            }
             date.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     AlertDialog.Builder alert = new AlertDialog.Builder(planListActivity.this);
 
                     final DatePicker datePicker = new DatePicker(planListActivity.this);
+                    datePicker.setBackgroundColor(Color.TRANSPARENT);
                     alert.setView(datePicker);
                     
                     alert.setPositiveButton("저장", new DialogInterface.OnClickListener() {
@@ -302,12 +308,5 @@ public class planListActivity extends AppCompatActivity {
             });
             return view;
         }
-        /*
-        public void showBtnDelete(boolean visible){
-            this.mode = visible;
-            this.notifyDataSetChanged();
-        }
-*/
     }
-
 }

@@ -17,9 +17,13 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -131,6 +135,43 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
 
         onCreate(db);
     }
+
+    public String getDateString(int y,int m,int d,int n){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar cal = new GregorianCalendar(y,m,d);
+        cal.add(Calendar.DAY_OF_MONTH,n);
+
+        return sdf.format(cal.getTime());
+    }
+    public ArrayList<String> getAllPlanSchedule() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ArrayList<String> resultList = new ArrayList<>();
+        Cursor c = db.query(TABLE_PLAN, null, null, null, null, null, null);
+
+        if (c!=null && c.getCount()!=0) {
+            c.moveToFirst();
+            do {
+                int year = c.getInt(c.getColumnIndex(KEY_YEAR));
+                int days;
+                long plan_id;
+                String output;
+
+                if(year!=0 && year!=-1){ //date has been set
+                    plan_id = c.getLong(c.getColumnIndex(KEY_ID));
+                    days = getRouteListCount(plan_id);
+                    for(int i=0;i<days;i++){
+                        output ="date:"+getDateString(c.getInt(c.getColumnIndex(KEY_YEAR)),
+                                c.getInt(c.getColumnIndex(KEY_MONTH)),
+                                c.getInt(c.getColumnIndex(KEY_DAY)),i)+
+                                ",sche:"+c.getString(c.getColumnIndex(KEY_TITLE)) + ",memo: ";
+                        resultList.add(output);
+                    }
+                }
+            } while (c.moveToNext());
+        }
+        return resultList;
+    }
+
     public long createPlan(Plan plan){ // make another create without date //default plan name is city name.
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -268,7 +309,7 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
 
         long marker_id = db.insert(TABLE_MARKER,null,values);
         marker.setTag(new MarkerTag(marker.getTag().hashCode(),marker_id));
-        marker.setSnippet(marker.getTag().toString());
+        //   marker.setSnippet(marker.getTag().toString());
 
         return marker_id;
     }
@@ -301,7 +342,7 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         return null;
     }
 
-    public Plan getPlan(long plan_id,GoogleMap map,BitmapDescriptor[] icon){ //full version
+    public Plan getPlan(long plan_id,GoogleMap map){ //full version
         SQLiteDatabase db = getReadableDatabase();
 
         String selectQuery = "SELECT * FROM "+TABLE_PLAN+ " WHERE "+ KEY_ID + " = '" +plan_id+"' ";
@@ -318,9 +359,9 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         double log = c.getDouble(c.getColumnIndex(KEY_LONGITUDE));
         plan.setCentre(new LatLng(lat,log));
 
-        plan.setAllMarkers(getALLMarkers(plan.getId(),map,icon));
+        plan.setAllMarkers(getALLMarkers(plan.getId(),map));
 
-        plan.setRoutesList(getRouteList(plan.getAllMarkers(),plan_id,map,icon));
+        plan.setRoutesList(getRouteList(plan.getAllMarkers(),plan_id,map));
         plan.setY(c.getInt(c.getColumnIndex(KEY_YEAR)));
         plan.setM(c.getInt(c.getColumnIndex(KEY_MONTH)));
         plan.setD(c.getInt(c.getColumnIndex(KEY_DAY)));
@@ -330,7 +371,7 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         }
         return null;
     }
-    public ArrayList<Route> getRouteList(ArrayList<Marker> allMarkers,long plan_id,GoogleMap map,BitmapDescriptor[] icon){
+    public ArrayList<Route> getRouteList(ArrayList<Marker> allMarkers,long plan_id,GoogleMap map){
         SQLiteDatabase db = getReadableDatabase();
         ArrayList<Route> list = new ArrayList<>();
 
@@ -479,7 +520,7 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         }
         return null;
     }
-    public ArrayList<Marker> getALLMarkers(long plan_id, GoogleMap map, BitmapDescriptor[] icon){ //include even if not assign with any route.
+    public ArrayList<Marker> getALLMarkers(long plan_id, GoogleMap map){ //include even if not assign with any route.
         SQLiteDatabase db = getReadableDatabase();
         ArrayList<Marker> mList = new ArrayList<>();
 
@@ -493,11 +534,11 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
                 opt.draggable(true);
                 opt.position(new LatLng(c.getDouble(c.getColumnIndex(KEY_LATITUDE)),c.getDouble(c.getColumnIndex(KEY_LONGITUDE))));
                 opt.title(c.getString(c.getColumnIndex(KEY_TITLE)));
-                opt.icon(icon[c.getInt(c.getColumnIndex(KEY_ICON))]);
+                opt.icon(MapMain.Micon.getMarkerIcon(c.getInt(c.getColumnIndex(KEY_ICON))));
 
                 Marker m =map.addMarker(opt);
                 m.setTag(new MarkerTag(c.getInt(c.getColumnIndex(KEY_ICON)),c.getLong(c.getColumnIndex(KEY_ID))));
-                m.setSnippet(m.getTag().toString());
+                //    m.setSnippet(m.getTag().toString());
 
                 mList.add(m);
             } while (c.moveToNext());
@@ -631,16 +672,13 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         }
         return 0;
     }
-    /*
-    public void deleteRouteList(Route route){
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_ROUTELIST,KEY_ROUTE_ID+" = ?",new String[]{String.valueOf(route.getId())});
-    }*/
+
     public int deleteRoute(Route route){
         SQLiteDatabase db = this.getWritableDatabase();
         deleteMarkerListR(route.getId());
         return db.delete(TABLE_ROUTE,KEY_ROUTE_ID+" = ?",new String[]{String.valueOf(route.getId())});
     }
+
     public void deleteRoute(long plan_id){ //because the plan was deleted
         SQLiteDatabase db = this.getWritableDatabase();
         String selectQuery = "SELECT * FROM " + TABLE_ROUTE + " WHERE " +KEY_PLAN_ID + " = '" +plan_id+"' ";
@@ -654,6 +692,7 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
             }while (c.moveToNext());
         }
     }
+
     public int deletePlan(long plan_id){
         SQLiteDatabase db = this.getWritableDatabase();
         deleteRoute(plan_id);

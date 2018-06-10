@@ -68,10 +68,13 @@ public class Plan {
     public ArrayList<Marker> getAllMarkers() {return markersList;}
 
     public String getDateString(){
+        if(doesDateSet()){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/ MM/ dd");
         Calendar cal = new GregorianCalendar(y,m,d);
 
         return sdf.format(cal.getTime());
+        }
+        return "시작날짜를 설정해주세요.";
     }
     public String getDateString(int n){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/ MM/ dd");
@@ -120,5 +123,11 @@ public class Plan {
             routesList.add(0, day1);
             return true;
         }return false;
+    }
+    public void addMarker(Marker marker){
+        this.markersList.add(marker);
+    }
+    public void deleteMarker(Marker marker){
+        this.markersList.remove(marker);
     }
 }

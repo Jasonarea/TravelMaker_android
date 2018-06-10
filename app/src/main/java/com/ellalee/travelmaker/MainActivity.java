@@ -35,6 +35,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.IntentCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -103,7 +104,7 @@ import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, GoogleApiClient.ConnectionCallbacks {
 
-    private String[] navItems = {"LogIn", "공유하기", "GMail 동기화"};
+    private String[] navItems = {"LogIn", "공유�기", "GMail �기"};
 
 
     private NavigationView lvNavList;
@@ -112,7 +113,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private ImageButton btn;
     static GoogleAccountCredential mCredential;
 
-    PlanSQLiteHelper helper;
     static final int REQUEST_ACCOUNT_PICKER = 1000;
     static final int REQUEST_AUTHORIZATION = 1001;
     static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
    PlanSQLiteHelper db;
    Button btnSearch;
+   EditText input;
 
     @Override
 
@@ -151,13 +152,28 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     protected void onCreate(Bundle savedInstanceState) {
        // setTheme(R.style.SplashTheme);
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
         mContext = this;
         pb = new ProgressBar(this);
         pb = (ProgressBar)findViewById(R.id.progressBar);
         db = new PlanSQLiteHelper(getApplicationContext());
         btnSearch = findViewById(R.id.search_area);
+        input = findViewById(R.id.EditWhereToGo);
+        input.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if( i == KeyEvent.KEYCODE_ENTER ){
+                    mapMain(btnSearch);
+                }
+                return false;
+            }
+        });
+
+        SharedPreferences mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = mPref.edit();
+        editor.clear();
+
+        editor.commit();
 
         lvNavList = (NavigationView)findViewById(R.id.lv_activity_main_nav_list);
 
@@ -261,10 +277,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setIcon(android.R.drawable.ic_dialog_alert);
                     builder.setTitle("Travel Maker");
-                    builder.setMessage("정말 로그아웃하시겠습니까?");
-                    builder.setPositiveButton("네", dialogListener);
+                    builder.setMessage("logout?");
+                    builder.setPositiveButton("yes", dialogListener);
 
-                    builder.setNegativeButton("아니요", null);
+                    builder.setNegativeButton("no", null);
                     customDialog = builder.create();
                     customDialog.show();
                     break;
@@ -312,7 +328,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     startActivity(nextScreen);
                     ActivityCompat.finishAffinity(MainActivity.this);
                 }
-                Toast.makeText(getApplicationContext(), "로그아웃되었습니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "successfully logout", Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -342,16 +358,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     public void mapMain(View v){
 
-        EditText input = findViewById(R.id.EditWhereToGo);
-        input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if( i == EditorInfo.IME_ACTION_DONE){ 
-                    mapMain(btnSearch);
-                }
-                return false;
-            }
-        });
         String city = input.getText().toString();
         LatLng center;
         Plan plan;

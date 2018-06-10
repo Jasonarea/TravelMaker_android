@@ -161,6 +161,7 @@ public class GmailSync implements Runnable {
                 }
 
             }
+
             ++count;
             if(count>50) break;
             handler.post(new Runnable(){
