@@ -265,10 +265,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setIcon(android.R.drawable.ic_dialog_alert);
                     builder.setTitle("Travel Maker");
-                    builder.setMessage("�말 로그�웃�시겠습�까?");
-                    //builder.setPositiveButton(", dialogListener");
+                    builder.setMessage("logout?");
+                    builder.setPositiveButton("yes", dialogListener);
 
-                    //builder.setNegativeButton("�니, null");
+                    builder.setNegativeButton("no", null);
                     customDialog = builder.create();
                     customDialog.show();
                     break;
@@ -316,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     startActivity(nextScreen);
                     ActivityCompat.finishAffinity(MainActivity.this);
                 }
-                Toast.makeText(getApplicationContext(), "로그�웃�었�니", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "successfully logout", Toast.LENGTH_SHORT).show();
             }
         }
     };
