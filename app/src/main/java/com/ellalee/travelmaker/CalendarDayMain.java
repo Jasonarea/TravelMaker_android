@@ -94,6 +94,8 @@ public class CalendarDayMain extends Activity {
             public void onClick(View view) {
                 delete(String.valueOf(year) + "-" + String.valueOf(month) + "-" + String.valueOf(day),
                         sched);
+                Toast.makeText(getApplicationContext(), "스케줄 삭제완료!", Toast.LENGTH_LONG).show();
+                finish();
             }
         });
 
@@ -118,6 +120,5 @@ public class CalendarDayMain extends Activity {
     public void delete(String date, String sched) {
         db = helper.getWritableDatabase();
         db.execSQL("DELETE FROM calendar WHERE (date='" + date + "') AND (schedule='" + sched + "');");
-        Toast.makeText(getApplicationContext(), "스케줄 삭제완료!", Toast.LENGTH_LONG).show();
     }
 }

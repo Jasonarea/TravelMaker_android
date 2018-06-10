@@ -219,7 +219,6 @@ public class CalendarMain extends Activity {
                 intent.putStringArrayListExtra("sche", s);
                 intent.putStringArrayListExtra("memo", m);
 
-                Log.d("그리드뷰 클릭 시 전달되는 날짜 ", String.valueOf(mCal.get(Calendar.YEAR)) + String.valueOf(mCal.get(Calendar.MONTH)+1) + " /" +String.valueOf(position - mCal.get(Calendar.DAY_OF_WEEK) - 5));
                 startActivity(intent);
             }
         });
@@ -436,6 +435,10 @@ public class CalendarMain extends Activity {
             d.setDay("" + String.valueOf(i + 1));
             dbList = select();
             dbList.addAll(new PlanSQLiteHelper(getApplicationContext()).getAllPlanSchedule());
+
+            for(int a = 0; a < dbList.size(); a++) {
+                Log.d("디비에 들어간 list", dbList.get(a));
+            }
 
             for(int j = 0; j < dbList.size(); j++) {
                 //date, sche, memo 분리
