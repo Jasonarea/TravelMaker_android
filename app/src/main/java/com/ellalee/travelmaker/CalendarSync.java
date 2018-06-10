@@ -74,7 +74,7 @@ public class CalendarSync extends Thread implements Runnable {
         getResultsFromApi(mCredential);
         try {
             calendarList();
-            handler.post(new UIUpdate());
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -153,6 +153,37 @@ public class CalendarSync extends Thread implements Runnable {
         event = mService.events().insert(calendarId, event).execute();
         Log.d("create", "Event created : " + event.getHtmlLink());
     }
+
+    public static void createEvent2(com.google.api.services.calendar.Calendar mService,
+                                   String startD, String endD, String hotelName) throws IOException {
+        Event event = new Event().setSummary("Stay in " + hotelName)
+                .setLocation(hotelName)
+                .setDescription("Stay in " + hotelName);
+        DateTime startDateTime = new DateTime(startD + "T09:00:00");
+
+        EventDateTime start = new EventDateTime()
+                .setDateTime(startDateTime)
+                .setTimeZone("Asia/Seoul");
+        event.setStart(start);
+
+        DateTime endDateTime = new DateTime(endD + "T11:00:00");
+        EventDateTime end = new EventDateTime()
+                .setDateTime(endDateTime)
+                .setTimeZone("Asia/Seoul");
+        event.setEnd(end);
+
+        EventReminder[] reminderOverrides = new EventReminder[]{
+                new EventReminder().setMethod("email").setMinutes(24 * 60),
+                new EventReminder().setMethod("popup").setMinutes(10),
+        };
+
+        String calendarId = newCalId;
+        event = mService.events().insert(calendarId, event).execute();
+        Log.d("create", "Event created : " + event.getHtmlLink());
+    }
+
+
+
     public static void calendarList() throws IOException {
         service = new com.google.api.services.calendar.Calendar.Builder(
                 transport, jsonFactory, mCredential)
@@ -280,7 +311,8 @@ public class CalendarSync extends Thread implements Runnable {
     class UIUpdate implements Runnable {
         @Override
         public void run() {
-            MainActivity.pb.setVisibility(View.VISIBLE);
+            MainActivity.pb.setVisibility(View.INVISIBLE);
+            MainActivity.ptt.setVisibility(View.GONE);
         }
     }
 }

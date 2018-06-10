@@ -124,6 +124,11 @@ public class GmailSync implements Runnable {
         for (Thread thread : t) {
 
             String id = thread.getId();
+            if(service == null) {
+                MainActivity.pb.setVisibility(View.INVISIBLE);
+                MainActivity.ptt.setVisibility(View.GONE);
+                break;
+            }
             response = service.users().threads().get("me", id).execute();
             List<MessagePartHeader> messageHeader = response.getMessages().get(0).getPayload().getHeaders();
 
@@ -189,7 +194,6 @@ public class GmailSync implements Runnable {
                         Toast.makeText(MainActivity.mContext, "Network is disconnected", Toast.LENGTH_SHORT).show();
                         MainActivity.pb.setVisibility(View.INVISIBLE);
                         MainActivity.ptt.setVisibility(View.GONE);
-                        
                     }
                     else {
                         Log.d("Good Good", "뭐하는거야 왜 안돌아");
@@ -207,28 +211,45 @@ public class GmailSync implements Runnable {
             String[] nationCheck = new String[2];
             int nationIndex = 0;
             //호텔 바우처 등록
-            /*if (finalSub.contains("HOTEL VOUCHER") || finalSub.contains("호스트") || finalBod.contains("투숙객") ||finalBod.contains("체크인")) {
+            if (finalSub.contains("HOTEL VOUCHER") || finalSub.contains("호스트") || finalBod.contains("투숙객") ||finalBod.contains("체크인")) {
                 //booking.com
+                if(db.select(finalBod)) continue;
+                else db.addBook(new Email(sub,bod,author,emailDate[0],emailDate[1],emailDate[2],1));
+                Log.d("BookingCom", finalBod);
                 cou++;
                 String[] bods = finalBod.split("\n");
-                String checkInOut[] = new String[2];
-                for(int k = 0;k<bods.length;k++){
-                    if(bods[k].contains("*체크인*") || bods[k].contains("*체크아웃*")){
-                        for(int lo = 0;lo<8;lo++){
-                            if(Character.isDigit(bods[k].charAt(lo)))
-                                if(bods[k].contains("체크인")) {checkInOut[0] += bods[k].charAt(lo);Log.d("checkinout", checkInOut[0]);}
-
+                String checkInOut[] = {"", ""};
+                for (int k = 0; k < bods.length; k++) {
+                    if (bods[k].contains("*체크인*")) {
+                        Log.d("체크인", bods[k] + "\n");
+                        for (int a = 0; a < bods[k].length(); a++) {
+                            if (Character.isDigit(bods[k].charAt(a))) {
+                                checkInOut[0] += Character.toString(bods[k].charAt(a));
+                                Log.d("로그인체크", Character.toString(bods[k].charAt(a)));
+                            }
                         }
-                        if(bods[k].contains("체크인")) {
-                            total[cou] += "체크인" + checkInOut[0].substring(0,4) + "/" +"0" +
-                                    checkInOut[0].substring(4,5) + "/" + checkInOut[0].substring(5, 7);
+                    } else if (bods[k].contains("*체크아웃*")) {
+                        Log.d("체크아웃", bods[k]);
+                        for (int a = 0; a < bods[k].length(); a++) {
+                            if (Character.isDigit(bods[k].charAt(a)))
+                                checkInOut[1] += Character.toString(bods[k].charAt(a));
                         }
-                        else
-                            total[cou] += "체크아웃"+ checkInOut[1].substring(0,4) + "/" +"0" +
-                                    checkInOut[1].substring(4,5) + "/" + checkInOut[1].substring(5, 7) + "\n";
                     }
                 }
-            }*/
+                if(checkInOut[0].equals("") || checkInOut[1].equals(""))
+                    continue;
+                Log.d("CheckINANDOUT", checkInOut[0] + "IN " + checkInOut[1] + "OUT");
+                total[cou] += "체크이인" + checkInOut[0].substring(0, 4) + "/0" +
+                        checkInOut[0].substring(4, 5) + "/" + checkInOut[0].substring(5, 7) + "(화)";
+                total[cou] += "체크아웃" + checkInOut[1].substring(0, 4) + "/0" +
+                        checkInOut[1].substring(4, 5) + "/" + checkInOut[1].substring(5, 7) + "(화)" + " ";
+
+                String[] getSub = finalSub.split(" ");
+                Log.d("Hotel Info", finalSub);
+                for(int b = 3;b<getSub.length-3;b++)
+                    total[cou]+=getSub[b];
+                Log.d("Hotel Info", total[cou]);
+            }
             // 항공사에서 티켓을 예매했을경우
             if (finalSub.contains("제주항공")) {
                 if(db.select(finalBod)) continue;
@@ -323,14 +344,11 @@ public class GmailSync implements Runnable {
 
         Log.d("TextArray", textArray[1] + "This is one\n" + textArray[2] + "This is two\n");
 
-        for(int j = 1;!textArray[j].equals("");j++) {
-            String toNation, fromNation;
-            String[] parseData = textArray[j].split("\n");
-            fromNation = parseData[1];
-            if (parseData.length == 3) toNation = parseData[2];
-            else toNation = parseData[3];
-
-            String startD = "", endD = "";
+        if(textArray[2].contains("체크이인")){
+            String hotelName , startD = "", endD = "";
+            String[] parseData = textArray[2].split(" ");
+            hotelName = parseData[1];
+            Log.d("호텔네임", hotelName);
             for (int k = 4; k < parseData[0].length() / 2; k++) {
                 if (Character.isDigit(parseData[0].charAt(k)))
                     startD += parseData[0].charAt(k);
@@ -342,9 +360,32 @@ public class GmailSync implements Runnable {
             startD = startD.substring(0, 4) + "-" + startD.substring(4, 6) + "-" + startD.substring(6);
             endD = endD.substring(0, 4) + "-" + endD.substring(4, 6) + "-" + endD.substring(6);
             Log.d("start end date", startD + ' ' + endD);
-            CalendarSync.createEvent(CalendarSync.mService, startD, startD, toNation, fromNation);
-            CalendarSync.createEvent(CalendarSync.mService, endD, endD, fromNation, toNation);
+            CalendarSync.createEvent2(CalendarSync.mService, startD, startD, hotelName);
+            CalendarSync.createEvent2(CalendarSync.mService, endD, endD, hotelName);
+        }
+        else{
+            for(int j = 1;!textArray[j].equals("");j++) {
+                String toNation, fromNation;
+                String[] parseData = textArray[j].split("\n");
+                fromNation = parseData[1];
+                if (parseData.length == 3) toNation = parseData[2];
+                else toNation = parseData[3];
 
+                String startD = "", endD = "";
+                for (int k = 4; k < parseData[0].length() / 2; k++) {
+                    if (Character.isDigit(parseData[0].charAt(k)))
+                        startD += parseData[0].charAt(k);
+                }
+
+                for (int k = parseData[0].length() / 2; k < parseData[0].length(); k++)
+                    if (Character.isDigit(parseData[0].charAt(k)))
+                        endD += parseData[0].charAt(k);
+                startD = startD.substring(0, 4) + "-" + startD.substring(4, 6) + "-" + startD.substring(6);
+                endD = endD.substring(0, 4) + "-" + endD.substring(4, 6) + "-" + endD.substring(6);
+                Log.d("start end date", startD + ' ' + endD);
+                CalendarSync.createEvent(CalendarSync.mService, startD, startD, toNation, fromNation);
+                CalendarSync.createEvent(CalendarSync.mService, endD, endD, fromNation, toNation);
+            }
         }
         handler.post(new UIUpdate2());
     }
@@ -387,9 +428,16 @@ public class GmailSync implements Runnable {
         }
     }
     public boolean isDeviceOnline() {
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        return (networkInfo != null && networkInfo.isConnected());
+        NetworkInfo networkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        boolean isWifiConn = networkInfo.isConnected();
+        networkInfo = connMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        boolean isMobileConn = networkInfo.isConnected();
+        Log.d("Wifi", "Wifi connected: " + isWifiConn);
+        Log.d("Mobile", "Mobile connected: " + isMobileConn);
+        if(!isWifiConn && ! isMobileConn) return false;
+        else return true;
     }
+
 
     public int[] getCurrentDate() {
         int day[] = {0, 0, 0};
