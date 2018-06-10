@@ -93,14 +93,13 @@ public class CalendarListMain extends AppCompatActivity {
             String year = data.getStringExtra("year");
             String month = data.getStringExtra("month");
             String day = data.getStringExtra("day");
-//            String schedule = data.getStringExtra("schedule");
-//            String memo = data.getStringExtra("memo");
 
             Intent sendToMain = new Intent(CalendarListMain.this, CalendarMain.class);
             sendToMain.putExtra("year", year);
             sendToMain.putExtra("month", month);
             sendToMain.putExtra("day", day);
-            setResult(1, sendToMain);
+            startActivity(sendToMain);
+            //setResult(1, sendToMain);
         }
         finish();
     }
