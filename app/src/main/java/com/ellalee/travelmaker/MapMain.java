@@ -150,7 +150,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if(i == KeyEvent.KEYCODE_ENTER){
-                    searchMarker(btnSearch);
+                    btnSearch.callOnClick();
                 }
                 return false;
             }
@@ -209,7 +209,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         Log.d("MAPMAIN ROUTES NUM: ",plan.getRoutesList().size()+"********");
 
         routes = plan.getRoutesList();
-        newIndex = (routes.size()==1)? 0 :routes.size();
+        newIndex = routes.size()-1;
 //        db.getALLMarkers(plan.getId(),map,markerIcon);
 /*
         //initialize when plan is created
@@ -225,12 +225,12 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 
         LatLng center = plan.getCentre();
         if(!plan.getAllMarkers().isEmpty()){
-            center = plan.getAllMarkers().get(0).getPosition();
+            center = plan.getAllMarkers().get(0).getPosition(); //first marker as center
         }
-
         map.moveCamera(CameraUpdateFactory.newLatLng(center));
         map.animateCamera(CameraUpdateFactory.zoomTo(15));
-/*
+
+        /*
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {    // add a marker
@@ -259,7 +259,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                         mOptions.title(str);
                         mOptions.draggable(true);
                         mOptions.position(SearchPoint);
-                        mOptions.icon(markerIcon[0]);
+                        mOptions.icon(Micon.getMarkerIcon(0));
 
                         //add marker
                         Marker m =googleMap.addMarker(mOptions);
@@ -274,7 +274,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                 }
             }
         });
-*/
+        */
+
         //adding a marker by longclick
         googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
@@ -466,8 +467,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         });
     }
 
-
-    public void searchMarker(View v) {    // add a marker
+    public void searchMarker(View v) {  // add a marker
         String str = editAddress.getText().toString();
         List<Address> list = null;
         double latitude, longitude;
@@ -553,7 +553,6 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 
         }
         else{
-//            marker.showInfoWindow();
             Toast.makeText(this, "ID: "+marker.getId(), Toast.LENGTH_SHORT).show();
         }
         return false;
@@ -679,7 +678,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             cur.setIcon(Micon.getMarkerIcon(icon));
         }
     }
-
+/*
     public void save(View v){
         plan.setRoutesList(routes);
         Toast.makeText(this, "complete save a plan!", Toast.LENGTH_SHORT).show();
@@ -726,8 +725,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         ContentValues values = new ContentValues();
         values.put("KEY_ID",plan_id);
         db.insert("TABLE_PLAN",null,values);
-        */
-    }
+
+    }*/
     public static class Rcolor {
         static final String[] routeColor = new String[]{
                 "#3C989E",

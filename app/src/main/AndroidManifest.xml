@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -27,30 +27,30 @@
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_app_key" />
 
-        <activity android:name=".MainActivity">
-
-        </activity>
+        <activity android:name=".MainActivity"></activity>
         <activity android:name=".MapMain" />
         <activity android:name=".planListActivity" />
-        <activity android:name=".CalendarMain"></activity>
-        <activity android:name=".LoginPage"></activity>
-        <activity android:name=".CalendarListMain"></activity>
-        <activity android:name=".CalendarDayMain"></activity>
-
-        <activity android:name = ".Splash"
-            android:theme = "@style/SplashTheme">
+        <activity android:name=".CalendarMain" />
+        <activity android:name=".LoginPage" />
+        <activity android:name=".CalendarListMain" />
+        <activity android:name=".CalendarDayMain" />
+        <activity
+            android:name=".Splash"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="@string/kakao_app_key" />
 
-        <activity android:name=".CalendarAddSche"></activity>
-        <activity android:name=".Budgeting"></activity>
+        <activity android:name=".CalendarAddSche" />
+        <activity android:name=".Budgeting" />
+        <activity android:name=".TutorialActivity"></activity>
     </application>
 
 </manifest>

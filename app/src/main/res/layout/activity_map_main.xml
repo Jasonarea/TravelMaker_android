@@ -47,7 +47,7 @@
             android:fontFamily="@font/nanumsquareround_b"
             android:text="DAY"
             android:textSize="15dp"/>
-
+<!--
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -56,7 +56,7 @@
             android:layout_alignParentBottom="true"
             android:onClick="save"
             android:layout_centerInParent="true"/>
-
+-->
         <Button
             android:layout_width="60dp"
             android:layout_height="60dp"
@@ -102,7 +102,7 @@
 
         <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="300dp"
             android:id="@+id/routeInfoHorizontalScroll"
             android:background="@color/colorRouteInfo"
             android:layout_below="@+id/slidingTitle"

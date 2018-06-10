@@ -8,18 +8,21 @@
     android:layout_marginTop="20dp">
 
     <Button
+        android:id="@+id/btnPlanDelete"
         android:layout_width="20dp"
         android:layout_height="20dp"
-        android:layout_toRightOf="@+id/imgPlanNote"
+        android:layout_alignEnd="@+id/imgPlanNote"
+        android:layout_alignParentTop="true"
         android:background="@drawable/delete"
-        android:id="@+id/btnPlanDelete"
         android:visibility="gone"/>
 
     <ImageView
+        android:id="@+id/imgPlanNote"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:id="@+id/imgPlanNote"
-        android:src="@drawable/plan_img_default"/>
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/plan_img_default" />
     
     <TextView
         android:layout_width="100dp"
