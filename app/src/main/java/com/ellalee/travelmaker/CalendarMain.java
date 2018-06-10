@@ -199,6 +199,7 @@ public class CalendarMain extends Activity {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mCal.add(Calendar.MONTH, -back_month_count + next_month_count);
                 mCal.set(mCal.get(Calendar.YEAR), mCal.get(Calendar.MONTH), 1);
                 Intent intent = new Intent(CalendarMain.this, CalendarListMain.class);
                 intent.putExtra("day", position - 5 - mCal.get(Calendar.DAY_OF_WEEK));
@@ -387,14 +388,31 @@ public class CalendarMain extends Activity {
             day = data.getStringExtra("day");
             schedule = data.getStringExtra("schedule");
             memo = data.getStringExtra("memo");
-            insert(year + "-" + month + "-" + day, schedule, memo);
 
-//            deleteCalendarDate(Integer.parseInt(month), Integer.parseInt(year));
-            gridAdapter = new GridAdapter(getApplicationContext(), dayList);
-            gridView.setAdapter(gridAdapter);
+            insert(year + "-" + month + "-" + day, schedule, memo);
+            mCal.set(mCal.get(Calendar.YEAR), mCal.get(Calendar.MONTH), 1);
+            int dayNum = mCal.get(Calendar.DAY_OF_WEEK);
+            Log.d("인서트 될때 채워질 공백의 수", String.valueOf(dayNum));
+            Log.d("인서트 새로 세팅될 월", String.valueOf(mCal.get(Calendar.MONTH)));
+
+            if(mCal.get(Calendar.YEAR) == Integer.parseInt(year) && mCal.get(Calendar.MONTH) + 1 == Integer.parseInt(month)) {
+                Log.d("들어간닷", String.valueOf(month));
+                Log.d("데이리스트 사이즈", String.valueOf(dayList.size()));
+                for (int i = dayList.size() - 1; i >= 7; i--) {
+                    dayList.remove(i);
+                }
+
+                //1일 - 요일 매칭 시키기 위해 공백 add
+                for (int i = 1; i < dayNum; i++) {
+                    Day empty = new Day();
+                    empty.setDay("");
+                    dayList.add(empty);
+                }
+                setCalendarDate(mCal.get(Calendar.YEAR), mCal.get(Calendar.MONTH) + 1);
+                gridAdapter = new GridAdapter(getApplicationContext(), dayList);
+                gridView.setAdapter(gridAdapter);
+            }
         }
-//        gridAdapter = new GridAdapter(getApplicationContext(), dayList);
-//        gridView.setAdapter(gridAdapter);
     }
 
 
@@ -417,6 +435,7 @@ public class CalendarMain extends Activity {
             count = 0;
             d.setDay("" + String.valueOf(i + 1));
             dbList = select();
+            dbList.addAll(new PlanSQLiteHelper(getApplicationContext()).getAllPlanSchedule());
 
             for(int j = 0; j < dbList.size(); j++) {
                 //date, sche, memo 분리
@@ -443,22 +462,22 @@ public class CalendarMain extends Activity {
     /*
      * 기존에 캘린더에 있던 daylist 객체를 지우는 함수
      */
-    private void deleteCalendarDate(int month, int year) {
-        int useDay = 6;
-
-        // 지워야할 달 날짜 세팅
-        Log.d("delete함수 월 세팅", String.valueOf(month));
-        mCal.set(year, month, 1);
-        int dayNum = mCal.get(Calendar.DAY_OF_WEEK) - 1;
-
-        Log.d( "새로 세팅된 달의 크기",String.valueOf(mCal.getActualMaximum(Calendar.DAY_OF_MONTH) +  dayNum + useDay));
-        Log.d( "useDay",String.valueOf(useDay));
-        Log.d( "dayNum",String.valueOf(dayNum));
-
-        for(int i = mCal.getActualMaximum(Calendar.DAY_OF_MONTH) +  dayNum + useDay; i >= 7; i--) {
-            dayList.remove(i);
-        }
-    }
+//    private void deleteCalendarDate(int month, int year) {
+//        int useDay = 6;
+//
+//        // 지워야할 달 날짜 세팅
+//        Log.d("delete함수 월 세팅", String.valueOf(month));
+//        mCal.set(year, month, 1);
+//        int dayNum = mCal.get(Calendar.DAY_OF_WEEK) - 1;
+//
+//        Log.d( "새로 세팅된 달의 크기",String.valueOf(mCal.getActualMaximum(Calendar.DAY_OF_MONTH) +  dayNum + useDay));
+//        Log.d( "useDay",String.valueOf(useDay));
+//        Log.d( "dayNum",String.valueOf(dayNum));
+//
+//        for(int i = mCal.getActualMaximum(Calendar.DAY_OF_MONTH) +  dayNum + useDay; i >= 7; i--) {
+//            dayList.remove(i);
+//        }
+//    }
 
     public static void setDoList(List<String> d) {
         doList = d;

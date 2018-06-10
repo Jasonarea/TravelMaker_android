@@ -3,8 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Travel-Maker.iml" filepath="$PROJECT_DIR$/Travel-Maker.iml" />
-      <module fileurl="file://C:\Users\jiwon\Travel-Maker\app\Travel-Maker-app.iml" filepath="C:\Users\jiwon\Travel-Maker\app\Travel-Maker-app.iml" />
-      <module fileurl="file://C:\Users\jiwon\Travel-Maker\Travel-Maker~1.iml" filepath="C:\Users\jiwon\Travel-Maker\Travel-Maker~1.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
