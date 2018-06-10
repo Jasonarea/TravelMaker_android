@@ -151,6 +151,12 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         db = new PlanSQLiteHelper(getApplicationContext());
         btnSearch = findViewById(R.id.search_area);
 
+        SharedPreferences mPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = mPref.edit();
+        editor.clear();
+
+        editor.commit();
+
         lvNavList = (NavigationView)findViewById(R.id.lv_activity_main_nav_list);
 
         flContainer = (FrameLayout)findViewById(R.id.fl_activity_main_container);

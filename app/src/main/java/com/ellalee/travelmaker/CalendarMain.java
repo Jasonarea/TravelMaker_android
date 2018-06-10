@@ -28,6 +28,8 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+
 public class CalendarMain extends Activity {
 
 //    ListAdapter adapter;
@@ -93,6 +95,8 @@ public class CalendarMain extends Activity {
     private int back_month_count = 0;
     private int next_month_count = 0;
 
+    private static Context context;
+
     // 오늘에 날짜를 세팅
 
     long now = System.currentTimeMillis();
@@ -107,6 +111,7 @@ public class CalendarMain extends Activity {
 
     final SimpleDateFormat curDayFormat = new SimpleDateFormat("dd", Locale.KOREA);
 
+
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +120,7 @@ public class CalendarMain extends Activity {
 
         setContentView(R.layout.activity_calendar_main);
 
+        CalendarMain.context = getApplicationContext();
         helper = new CalendarDBHelper(CalendarMain.this, "calendar.db", null, 1);
         tvDate = (TextView) findViewById(R.id.tv_date);
 
@@ -298,6 +304,10 @@ public class CalendarMain extends Activity {
         });
     }
 
+    public static Context getAppContext() {
+        return CalendarMain.context;
+    }
+
     /*
      * DB에 값 insert하는 method
      */
@@ -317,7 +327,7 @@ public class CalendarMain extends Activity {
             db.insert("calendar", null, values);
         }
         else {
-            //Toast.makeText(getApplicationContext(), "이미 저장되어 있는 스케줄입니다!", Toast.LENGTH_LONG).show();
+            Toast.makeText(CalendarMain.getAppContext(), "이미 저장되어 있는 스케줄입니다!", Toast.LENGTH_LONG).show();
         }
     }
 

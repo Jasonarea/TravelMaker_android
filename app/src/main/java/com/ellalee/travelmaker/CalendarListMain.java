@@ -34,15 +34,8 @@ public class CalendarListMain extends AppCompatActivity {
         setContentView(R.layout.activity_calendar_list_main);
 
         helper = new CalendarDBHelper(CalendarListMain.this, "calendar.db", null, 1);
-        addSche = (FloatingActionButton)findViewById(R.id.listAdd_FAB);
         init();
 
-        addSche.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-//                Intent send = new Intent();
-//                startActivityForResult(new Intent(getApplicationContext(), CalendarAddSche.class), 1);
-            }
-        });
     }
 
     protected void init() {
