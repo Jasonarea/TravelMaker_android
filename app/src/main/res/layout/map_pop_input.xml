@@ -7,7 +7,8 @@
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
         android:id="@+id/markerTitleInput"/>
 
     <RadioGroup
@@ -20,33 +21,33 @@
         android:layout_below="@+id/markerTitleInput">
 
         <RadioButton
-            android:layout_width="100dp"
+            android:layout_width="65dp"
             android:layout_height="50dp"
             android:id="@+id/opt_default"
             android:checked="true"
-            android:drawableLeft="@drawable/marker_default"
-            android:text="기본"/>
+            android:drawableLeft="@drawable/marker_default" />
         <RadioButton
-            android:layout_width="100dp"
+            android:layout_width="65dp"
             android:layout_height="50dp"
             android:id="@+id/opt_residence"
-            android:layout_margin="10dp"
-            android:drawableLeft="@drawable/marker_residence"
-            android:text="숙소" />
+            android:drawableLeft="@drawable/marker_residence" />
         <RadioButton
-            android:layout_width="100dp"
+            android:layout_width="65dp"
             android:layout_height="50dp"
             android:id="@+id/opt_dining"
-            android:layout_margin="10dp"
             android:drawableLeft="@drawable/marker_dining"
-           android:text="식당"/>
+           />
         <RadioButton
-            android:layout_width="100dp"
+            android:layout_width="65dp"
             android:layout_height="50dp"
             android:id="@+id/opt_shopping"
-            android:layout_margin="10dp"
             android:drawableLeft="@drawable/marker_shopping"
-            android:text="쇼핑"/>
+            />
+        <RadioButton
+            android:layout_width="65dp"
+            android:layout_height="50dp"
+            android:id="@+id/opt_transportation"
+            android:drawableLeft="@drawable/marker_transport"/>
     </RadioGroup>
 
 </RelativeLayout>

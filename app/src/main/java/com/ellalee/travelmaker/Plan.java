@@ -121,4 +121,10 @@ public class Plan {
             return true;
         }return false;
     }
+    public void addMarker(Marker marker){
+        this.markersList.add(marker);
+    }
+    public void deleteMarker(Marker marker){
+        this.markersList.remove(marker);
+    }
 }

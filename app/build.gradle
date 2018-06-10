@@ -45,7 +45,7 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:appcompat-v7:27.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     //google map api
     implementation 'com.google.android.gms:play-services-maps:15.0.0'
@@ -68,23 +68,23 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
     }
 
-    implementation 'com.android.support:design:26.1.0'
-    implementation 'com.android.support:support-vector-drawable:26.1.0'
+    implementation 'com.android.support:design:27.1.0'
+    implementation 'com.android.support:support-vector-drawable:27.1.0'
     testImplementation 'junit:junit:4.12'
 
     androidTestImplementation 'com.android.support.test:runner:+'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:+'
 
-    implementation files('C:/Users/jiwon/Travel-Maker/libs/activation.jar')
-    implementation files('C:/Users/jiwon/Travel-Maker/libs/additionnal.jar')
-    implementation files('C:/Users/jiwon/Travel-Maker/libs/mail.jar')
+//    implementation files('C:/Users/jiwon/Travel-Maker/libs/activation.jar')
+//    implementation files('C:/Users/jiwon/Travel-Maker/libs/additionnal.jar')
+//    implementation files('C:/Users/jiwon/Travel-Maker/libs/mail.jar')
 
 //    implementation files('E:/Travel-Maker/libs/additionnal.jar')
 //    implementation files('E:/Travel-Maker/libs/activation.jar')
 //    implementation files('E:/Travel-Maker/libs/mail.jar')
 
-//      implementation files('D:/18_1/Travel-Maker/libs/mail.jar')
-//      implementation files('D:/18_1/Travel-Maker/libs/additionnal.jar')
-//      implementation files('D:/18_1/Travel-Maker/libs/activation.jar')
+      implementation files('D:/18_1/Travel-Maker/libs/mail.jar')
+      implementation files('D:/18_1/Travel-Maker/libs/additionnal.jar')
+      implementation files('D:/18_1/Travel-Maker/libs/activation.jar')
 
 }

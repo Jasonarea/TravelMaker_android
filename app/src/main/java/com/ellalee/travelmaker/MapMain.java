@@ -23,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -71,7 +72,6 @@ import java.util.List;
 
 public class MapMain extends FragmentActivity implements OnMapReadyCallback,GoogleMap.OnMarkerClickListener{
 
-//    private SQLiteDatabase db ;
     private PlanSQLiteHelper db;
     private Plan plan;
                       //marker 0:default 1:residence 2: ....
@@ -90,7 +90,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     private ArrayList<Route> routes = new ArrayList<>(); //multi
 //   private ArrayList<Route> routes; //multi
     public String[] routeColor;
-    private BitmapDescriptor[] markerIcon;
+//    private BitmapDescriptor[] markerIcon;
 
     Animation slidingOpen;
     Animation slidingClose;
@@ -143,19 +143,28 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         Toast.makeText(getApplicationContext(),"plan_id:"+plan_id, Toast.LENGTH_SHORT).show();
 
         geocoder = new Geocoder(this);
-        editAddress = findViewById(R.id.editAddress);
         btnSearch = findViewById(R.id.btnSearch);
+        editAddress = findViewById(R.id.editAddress);
+        editAddress.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if(i == KeyEvent.KEYCODE_ENTER){
+                    searchMarker(btnSearch);
+                }
+                return false;
+            }
+        });
         btnRoute = findViewById(R.id.btnRoute);
         btnPlace = findViewById(R.id.btnPlace);
 
         routeColor = getResources().getStringArray(R.array.routeColor);
         registerForContextMenu(btnRoute);
-        markerIcon = new BitmapDescriptor[4];
+  /*      markerIcon = new BitmapDescriptor[4];
         markerIcon[0] = BitmapDescriptorFactory.fromResource(R.drawable.marker_default);
         markerIcon[1] = BitmapDescriptorFactory.fromResource(R.drawable.marker_dining);
         markerIcon[2] = BitmapDescriptorFactory.fromResource(R.drawable.marker_residence);
         markerIcon[3] = BitmapDescriptorFactory.fromResource(R.drawable.marker_shopping);
-
+*/
         slidingLayout = findViewById(R.id.slidingLayout);
         infoSliding = new RouteInfoSliding(this);
         routeHS = findViewById(R.id.routeInfoHorizontalScroll);
@@ -179,7 +188,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         geocoder = new Geocoder(this);
 
         //db = new PlanSQLiteHelper(getApplicationContext());
-        plan = db.getPlan(plan.getId(),googleMap,markerIcon);
+        plan = db.getPlan(plan.getId(),googleMap);
         db.getRouteListCount(plan.getId());
 
         Log.d("MAPMAIN ROUTES NUM: ",plan.getRoutesList().size()+"********");
@@ -189,7 +198,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 //        db.getALLMarkers(plan.getId(),map,markerIcon);
 /*
         //initialize when plan is created
-        //initial route setting (default route)
+        //ini tial route setting (default route)
         if(routes.isEmpty()) {
 //          Route day1 = new Route(0, routeColor[0], googleMap);
             Route day1 = new Route(0, routeColor[0]);
@@ -198,11 +207,15 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 */
         //main activity에서 valid한 로케이션 확인 후 넘겨주기
 //        LatLng center = new LatLng(37.56, 126.97);
+
         LatLng center = plan.getCentre();
+        if(!plan.getAllMarkers().isEmpty()){
+            center = plan.getAllMarkers().get(0).getPosition();
+        }
 
         map.moveCamera(CameraUpdateFactory.newLatLng(center));
         map.animateCamera(CameraUpdateFactory.zoomTo(15));
-
+/*
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {    // add a marker
@@ -246,7 +259,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                 }
             }
         });
-
+*/
         //adding a marker by longclick
         googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             @Override
@@ -254,8 +267,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                 MarkerOptions option =new MarkerOptions();
                 option.draggable(true);
                 option.position(latLng);
-                option.title(" ");
-                option.icon(markerIcon[0]);
+                option.title(getString(R.string.marker_default_title));
+                option.icon(Micon.getMarkerIcon(0));
 
                 //add marker
                 Marker m = googleMap.addMarker(option);
@@ -263,6 +276,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                 m.setTag(tag);
 //                m.setSnippet(m.getId());
                 db.createMarker(m,plan.getId());
+                plan.addMarker(m);
 
                 //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
             }
@@ -349,7 +363,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                 LayoutInflater inflater = getLayoutInflater();
                 final View inputView = inflater.inflate(R.layout.map_pop_input,null);
 
-                if(marker.getTitle().equals(" ")){
+                if(marker.getTitle().equals(getString(R.string.marker_default_title)) || marker.getTitle().equals("")){
                     alert.setTitle("마커 편집");
                 }
                 else{
@@ -361,7 +375,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                     public void onClick(DialogInterface dialogInterface, int i) {
                         EditText titleInput = (inputView).findViewById(R.id.markerTitleInput);
                         RadioGroup iconInput = (inputView).findViewById(R.id.iconCategory);
-                        String mtitle = titleInput.getText().toString();
+                        String mTitle = titleInput.getText().toString();
                         int checkedIcon;
                         switch (iconInput.getCheckedRadioButtonId()){
                             case R.id.opt_default:
@@ -376,13 +390,18 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
                             case R.id.opt_shopping:
                                 checkedIcon=3;
                                 break;
+                            case R.id.opt_transportation:
+                                checkedIcon=4;
+                                break;
                             default:
                                     checkedIcon=0;
                         }
                         Log.d("ICON ID",checkedIcon+" ");
 
                         marker.setIcon(Micon.getMarkerIcon(checkedIcon));
-                        marker.setTitle(mtitle);
+                        if(!mTitle.isEmpty()){
+                            marker.setTitle(mTitle);
+                        }
                         db.updateMarker(marker,checkedIcon);
                     }
                 });
@@ -438,6 +457,48 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         });
     }
 
+        public void searchMarker(View v) {    // add a marker
+            String str = editAddress.getText().toString();
+            List<Address> list = null;
+            double latitude, longitude;
+
+            try {
+                list = geocoder.getFromLocationName(str, 10);
+            } catch (IOException e) {
+                e.printStackTrace();
+                Toast.makeText(MapMain.this, "I/O Error", Toast.LENGTH_SHORT).show();
+            }
+
+            if (list != null) {
+                if (list.size() == 0) {
+                    Toast.makeText(MapMain.this, "No matching address info", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    latitude = list.get(0).getLatitude();
+                    longitude = list.get(0).getLongitude();
+
+                    LatLng SearchPoint = new LatLng(latitude, longitude);
+
+                    MarkerOptions mOptions = new MarkerOptions();
+                    mOptions.title(str);
+                    mOptions.draggable(true);
+                    mOptions.position(SearchPoint);
+                    mOptions.icon(Micon.getMarkerIcon(0));
+
+                    //add marker
+                    Marker m =googleMap.addMarker(mOptions);
+                    MarkerTag tag = new MarkerTag(0,0);
+                    m.setTag(tag);
+                    db.createMarker(m,plan.getId());
+                    plan.addMarker(m);
+
+                    //zoom camera view
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SearchPoint, 15));
+                }
+            }
+        }
+
+
     @Override
     public boolean onMarkerClick(Marker marker) {
 
@@ -446,6 +507,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             Route cur;
 
             db.deleteMarker(marker);
+            plan.deleteMarker(marker);
             marker.remove();
 
             while (route_iterator.hasNext()){
@@ -470,6 +532,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 
         }
         else{
+//            marker.showInfoWindow();
             Toast.makeText(this, "ID: "+marker.getId(), Toast.LENGTH_SHORT).show();
         }
         return false;
@@ -525,6 +588,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             Toast.makeText(this, "Color:" + routeColor[routeIndex], Toast.LENGTH_SHORT).show();
 
             btnRoute.setTextColor(Color.parseColor(routeColor[routeIndex]));
+            int day = routeIndex+1;
+            btnRoute.setText("DAY"+day);
             edit_mode = 2;  //route edit mode on through the context menu
             btnPlace.setTextColor(Color.BLACK);  //deactivate placebtn
         }
@@ -532,16 +597,18 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     }
 
     public void editMarker(View v){
-        if(edit_mode!= 1){
-            btnPlace.setTextColor(Color.RED);
-            btnRoute.setTextColor(Color.BLACK);
-            Toast.makeText(this,"remove a marker",Toast.LENGTH_SHORT).show();
+        if(edit_mode!= 1){ //marker delete mode
+            btnPlace.setBackground(getDrawable(R.drawable.open_bin_big));
+//            Toast.makeText(this,"remove a marker",Toast.LENGTH_SHORT).show();
+            changeAllMakerIcon(plan,BitmapDescriptorFactory.fromResource(R.drawable.delete));
             edit_mode = 1;
         }
-        else if(edit_mode==1){
-            btnPlace.setTextColor(Color.BLACK);
+        else if(edit_mode==1){ //view mode
+            btnPlace.setBackground(getDrawable(R.drawable.close_bin_big));
             btnRoute.setTextColor(Color.BLACK);
-            Toast.makeText(this,"Done",Toast.LENGTH_SHORT).show();
+            btnRoute.setText("DAY");
+  //          Toast.makeText(this,"Done",Toast.LENGTH_SHORT).show();
+            changeAllMakerIcon(plan);
             edit_mode = 0;
         }
     }
@@ -552,7 +619,10 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             Toast.makeText(this,"Make a route",Toast.LENGTH_SHORT).show();
             edit_mode = 2;
             btnRoute.setTextColor(Color.parseColor(routeColor[routeIndex]));
-            btnPlace.setTextColor(Color.BLACK);
+            int day = routeIndex+1;
+            btnRoute.setText("DAY"+day);
+            btnPlace.setBackground(getDrawable(R.drawable.close_bin_big));
+            changeAllMakerIcon(plan);
         }
         else if(edit_mode==2){
 
@@ -561,9 +631,31 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             }
 
             btnRoute.setTextColor(Color.BLACK);
-            btnPlace.setTextColor(Color.BLACK);
-            Toast.makeText(this,"Show the route",Toast.LENGTH_SHORT).show();
+            btnRoute.setText("DAY");
+            btnPlace.setBackground(getDrawable(R.drawable.close_bin_big));
+            changeAllMakerIcon(plan);
+//            Toast.makeText(this,"Show the route",Toast.LENGTH_SHORT).show();
             edit_mode = 0;
+        }
+    }
+    public void changeAllMakerIcon(Plan p,BitmapDescriptor icon){
+        ArrayList<Marker> mList = p.getAllMarkers();
+        Iterator<Marker> iterator = mList.iterator();
+        Marker cur;
+        while(iterator.hasNext()){
+            cur = iterator.next();
+            cur.setIcon(icon);
+        }
+    }
+    public void changeAllMakerIcon(Plan p){
+        ArrayList<Marker> mList = p.getAllMarkers();
+        Iterator<Marker> iterator = mList.iterator();
+        Marker cur;
+        int icon;
+        while(iterator.hasNext()){
+            cur = iterator.next();
+            icon = cur.getTag().hashCode();
+            cur.setIcon(Micon.getMarkerIcon(icon));
         }
     }
 
@@ -645,9 +737,11 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     public static class Micon {
         static final BitmapDescriptor[] mIcon = new BitmapDescriptor[]{
                 BitmapDescriptorFactory.fromResource(R.drawable.marker_default),
-                        BitmapDescriptorFactory.fromResource(R.drawable.marker_residence),
-                        BitmapDescriptorFactory.fromResource(R.drawable.marker_dining),
-                        BitmapDescriptorFactory.fromResource(R.drawable.marker_shopping) };
+                BitmapDescriptorFactory.fromResource(R.drawable.marker_residence),
+                BitmapDescriptorFactory.fromResource(R.drawable.marker_dining),
+                BitmapDescriptorFactory.fromResource(R.drawable.marker_shopping),
+                BitmapDescriptorFactory.fromResource(R.drawable.marker_transport)
+        };
 
         public static BitmapDescriptor getMarkerIcon(int idx){
             return mIcon[idx];

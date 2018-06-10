@@ -1,3 +1,4 @@
+/*
 package com.ellalee.travelmaker;
 
 import android.os.Bundle;
@@ -67,3 +68,4 @@ public class Sharing extends AppCompatActivity {
     }
 }
 
+*/

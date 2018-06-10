@@ -25,22 +25,28 @@
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/editAddress"
+                android:singleLine="true"
                 android:hint="Address"/>
 
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:id="@+id/btnSearch"
-                android:text="Search"/>
+                android:background="@drawable/search_icon"
+                android:onClick="searchMarker"/>
         </LinearLayout>
 
         <Button
             android:id="@+id/btnRoute"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_alignParentBottom="true"
             android:onClick="editRoute"
-            android:text="Route" />
+            android:background="@drawable/button_day"
+            android:fontFamily="@font/nanumsquareround_b"
+            android:text="DAY"
+            android:textSize="15dp"/>
 
         <Button
             android:layout_width="wrap_content"
@@ -52,11 +58,16 @@
             android:layout_centerInParent="true"/>
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Place"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="10dp"
+            android:text="MAKER"
+            android:textColor="#ffffff"
+            android:textStyle="bold"
+            android:textSize="10dp"
             android:id="@+id/btnPlace"
             android:onClick="editMarker"
+            android:background="@drawable/close_bin_big"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"/>
     </RelativeLayout>
@@ -74,6 +85,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Route info"
+            android:padding="15dp"
+            android:fontFamily="@font/nanumsquareround_b"
             android:textSize="20dp"
             android:id="@+id/slidingTitle"/>
 

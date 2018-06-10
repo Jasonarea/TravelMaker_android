@@ -71,10 +71,6 @@ public class RouteInfoSliding extends View {
     public RouteInfoSliding(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
-    public RouteInfoSliding(Context context,Route r){
-        super(context);
-        route =r;
-    }
 /*
     public void init(Context context,AttributeSet attrs){
         LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -164,7 +160,6 @@ public class RouteInfoSliding extends View {
                 if( start-rad <= posX && posX <= start+(x*(num-1))+rad){ //in clickable area
                     idx = (posX-start)/x;
                     if( (posX-start) % x <= Math.abs(rad)){ //circle
-                        //
                         Log.d("CLICK","CIRCLE "+idx);
 
                         MenuBuilder popMenu = new MenuBuilder(getContext());
@@ -178,26 +173,44 @@ public class RouteInfoSliding extends View {
                         popMenu.setCallback(new MenuBuilder.Callback() {
                             @Override
                             public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
+                                MarkerTag tag;
                                 switch (item.getItemId()){
                                     case R.id.option_delete:
                                         db.deleteMarkerList(route.getId(),Long.valueOf(route.getMarkerList().get(idx).getTag().toString()));
                                         markerList.remove(idx);
                                         route.setMarkerList(map,getModified());
                                         setRoute(route,map);
-                                    /*db.deleteMarkerList(route.getId(),Long.valueOf(route.getMarkerList().get(idx).getTag().toString()));
-                                    route.getMarkerList().remove(idx);
-                                    route.setMarkerList(map,getModified());
-                                    setRoute(route,map);
-                                    */
                                         invalidate();
                                         break;
                                     case R.id.option_residence:
                                         route.getMarkerList().get(idx).setIcon(MapMain.Micon.getMarkerIcon(1));
-                                        MarkerTag tag = (MarkerTag) route.getMarkerList().get(idx).getTag();
+                                        tag = (MarkerTag) route.getMarkerList().get(idx).getTag();
                                         tag.setIcon(1);
                                         route.getMarkerList().get(idx).setTag(tag);
                                         db.updateMarker(markerList.get(idx),1);
                                         break;
+                                    case R.id.option_restaurant:
+                                        route.getMarkerList().get(idx).setIcon(MapMain.Micon.getMarkerIcon(2));
+                                        tag = (MarkerTag) route.getMarkerList().get(idx).getTag();
+                                        tag.setIcon(2);
+                                        route.getMarkerList().get(idx).setTag(tag);
+                                        db.updateMarker(markerList.get(idx),2);
+                                        break;
+                                    case R.id.option_shopping:
+                                        route.getMarkerList().get(idx).setIcon(MapMain.Micon.getMarkerIcon(3));
+                                        tag = (MarkerTag) route.getMarkerList().get(idx).getTag();
+                                        tag.setIcon(3);
+                                        route.getMarkerList().get(idx).setTag(tag);
+                                        db.updateMarker(markerList.get(idx),3);
+                                        break;
+                                    case R.id.option_default:
+                                        route.getMarkerList().get(idx).setIcon(MapMain.Micon.getMarkerIcon(0));
+                                        tag = (MarkerTag) route.getMarkerList().get(idx).getTag();
+                                        tag.setIcon(0);
+                                        route.getMarkerList().get(idx).setTag(tag);
+                                        db.updateMarker(markerList.get(idx),0);
+                                        break;
+
                                 }
                                 return true;
                             }

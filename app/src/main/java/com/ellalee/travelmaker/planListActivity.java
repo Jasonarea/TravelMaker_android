@@ -41,10 +41,9 @@ public class planListActivity extends AppCompatActivity {
 
     SQLiteDatabase db;
     PlanSQLiteHelper helper;
-    String[] planList;
     ArrayList<planListItem> plans;
     GridView planListView;
-    ImageButton activateDelete;
+    Button activateDelete;
 
     boolean delete_mode = false;
 
@@ -62,13 +61,13 @@ public class planListActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(delete_mode){
-                    planListView.setAdapter(new PlanGridAdapter(delete_mode));
                     delete_mode=false;
-                    activateDelete.setImageResource(R.drawable.close_bin);
-                }else{
                     planListView.setAdapter(new PlanGridAdapter(delete_mode));
+                    activateDelete.setBackground(getDrawable(R.drawable.close_bin));
+                }else{
                     delete_mode=true;
-                    activateDelete.setImageResource(R.drawable.open_bin);
+                    planListView.setAdapter(new PlanGridAdapter(delete_mode));
+                    activateDelete.setBackground(getDrawable(R.drawable.open_bin));
                 }
             }
         });
@@ -170,7 +169,7 @@ public class planListActivity extends AppCompatActivity {
 
         TextView title ;
         TextView date ;
-        ImageButton btnDelete ;
+        Button btnDelete ;
         ImageView imgPlan ;
 
         public PlanGridAdapter(boolean delete_mode){
@@ -208,9 +207,9 @@ public class planListActivity extends AppCompatActivity {
             Log.d("DELETE MODE "," "+mode);
 
             if(mode){
-                btnDelete.setVisibility(INVISIBLE);
-            }else{
                 btnDelete.setVisibility(VISIBLE);
+            }else{
+                btnDelete.setVisibility(View.GONE);
             }
 
             btnDelete.setOnClickListener(new View.OnClickListener() {
@@ -263,8 +262,11 @@ public class planListActivity extends AppCompatActivity {
                     alert.show();
                 }
             });
-
-            date.setText(plans.get(i).getDate());
+            if(plans.get(i).getDate().equals(new Date(0,0,0))){
+                date.setText("눌러서 날짜를 선택해주세요.");
+            }else{
+                date.setText(plans.get(i).getDate());
+            }
             date.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
