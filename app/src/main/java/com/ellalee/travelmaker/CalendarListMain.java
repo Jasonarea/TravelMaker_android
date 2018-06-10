@@ -13,7 +13,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -23,7 +26,8 @@ public class CalendarListMain extends AppCompatActivity {
     ArrayList<String> sched = new ArrayList<>();
     ArrayList<String> memo = new ArrayList<>();
     private int day, month, year;
-    private FloatingActionButton addSche;
+    private TextView title;
+    private TextView schedTitle, empty;
     SQLiteDatabase db;
     CalendarDBHelper helper;
 
@@ -48,8 +52,21 @@ public class CalendarListMain extends AppCompatActivity {
         memo =received.getStringArrayListExtra("memo");
 
         listView = (ListView)findViewById(R.id.listview);
+        title = (TextView)findViewById(R.id.setTitle);
+        schedTitle = (TextView)findViewById(R.id.notice_sche);
+        empty = (TextView)findViewById(R.id.empty_sche);
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, sched);
         listView.setAdapter(adapter);
+        title.setText(year + "." + month + "." + day);
+        schedTitle.setText("등록된 스케줄");
+
+        if(sched.size() > 0)
+            empty.setVisibility(View.INVISIBLE);
+        else {
+            empty.setText("등록된 스케줄이 없습니다.");
+            empty.setVisibility(View.VISIBLE);
+        }
+
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

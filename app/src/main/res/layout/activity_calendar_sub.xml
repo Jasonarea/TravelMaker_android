@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:gravity="center">
 
-    <TextView
+    <com.ellalee.travelmaker.NewFont
         android:gravity="center_horizontal"
         android:id="@+id/tv_item_gridview"
         android:layout_width="wrap_content"
@@ -13,19 +13,19 @@
         android:textColor="@color/dark_gray"
         android:textSize="16dp"
         />
-    <TextView
+    <com.ellalee.travelmaker.NewFont
         android:id="@+id/first_schedule"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/dark_gray"
         android:textSize="10dp"/>
-    <TextView
+    <com.ellalee.travelmaker.NewFont
         android:id="@+id/second_schedule"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/dark_gray"
         android:textSize="10dp"/>
-    <TextView
+    <com.ellalee.travelmaker.NewFont
         android:id="@+id/total_shedule"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
