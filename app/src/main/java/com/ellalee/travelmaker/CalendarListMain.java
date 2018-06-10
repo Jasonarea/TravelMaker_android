@@ -69,34 +69,34 @@ public class CalendarListMain extends AppCompatActivity {
     /*
      *일정을 추가할 때 받은 값들 / DB에 insert
      */
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(resultCode != RESULT_CANCELED) {
-
-            String year = data.getStringExtra("year");
-            String month = data.getStringExtra("month");
-            String day = data.getStringExtra("day");
-            String schedule = data.getStringExtra("schedule");
-            String memo = data.getStringExtra("memo");
-
-            String date = year + "-" + month + "-" + day;
-            ContentValues values = new ContentValues();
-            values.put("date", date);
-            values.put("schedule", schedule);
-            values.put("memo", memo);
-
-            Cursor c = db.rawQuery("SELECT date, schedule FROM calendar WHERE date='"  + date + "' AND schedule='" + sched + "'", null);
-            c.moveToFirst();
-            if(c.getCount() == 0) {
-                db.insert("calendar", null, values);
-            }
-            else {
-                Toast.makeText(getApplicationContext(), "이미 저장되어 있는 스케줄입니다!", Toast.LENGTH_LONG).show();
-            }
-        }
-//        gridAdapter = new GridAdapter(getApplicationContext(), dayList);
-//        gridView.setAdapter(gridAdapter);
-    }
+//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+//
+//        if(resultCode != RESULT_CANCELED) {
+//
+//            String year = data.getStringExtra("year");
+//            String month = data.getStringExtra("month");
+//            String day = data.getStringExtra("day");
+//            String schedule = data.getStringExtra("schedule");
+//            String memo = data.getStringExtra("memo");
+//
+//            String date = year + "-" + month + "-" + day;
+//            ContentValues values = new ContentValues();
+//            values.put("date", date);
+//            values.put("schedule", schedule);
+//            values.put("memo", memo);
+//
+//            Cursor c = db.rawQuery("SELECT date, schedule FROM calendar WHERE date='"  + date + "' AND schedule='" + sched + "'", null);
+//            c.moveToFirst();
+//            if(c.getCount() == 0) {
+//                db.insert("calendar", null, values);
+//            }
+//            else {
+//                Toast.makeText(getApplicationContext(), "이미 저장되어 있는 스케줄입니다!", Toast.LENGTH_LONG).show();
+//            }
+//        }
+////        gridAdapter = new GridAdapter(getApplicationContext(), dayList);
+////        gridView.setAdapter(gridAdapter);
+//    }
 
 }

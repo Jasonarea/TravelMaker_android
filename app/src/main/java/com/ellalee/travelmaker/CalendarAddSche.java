@@ -73,6 +73,7 @@ public class CalendarAddSche extends AppCompatActivity{
         datePickerDialog.getDatePicker().setCalendarViewShown(false);
 
         datePickerDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        datePickerDialog.getDatePicker().setHorizontalFadingEdgeEnabled(true);
 
         datePickerDialog.show();
 
