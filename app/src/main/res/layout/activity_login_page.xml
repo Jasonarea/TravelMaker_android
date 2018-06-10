@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android = "http://schemas.android.com/apk/res/android"
+    android:layout_width = "match_parent"
+    android:layout_height = "match_parent"
+    android:orientation = "vertical"
+    android:background= "@color/ivory">
+
+    <Button
+
+        android:id="@+id/google"
+        android:background="@color/babypink"
+        android:textColor = "@color/dark_gray"
+        android:textSize = "20sp"
+        android:layout_width="wrap_content"
+        android:layout_height="59dp"
+        android:paddingLeft = "20dp"
+        android:paddingRight = "20dp"
+        android:radius = "14dp"
+        android:textStyle="bold"
+        android:drawableLeft="@drawable/search"
+        android:gravity="left|center_vertical"
+        android:text="  Sign in with Google"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:fontFamily="@font/nanumbarunpen_b"/>
+
+</RelativeLayout>

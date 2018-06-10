@@ -328,7 +328,7 @@ public class CalendarMain extends Activity {
             db.insert("calendar", null, values);
         }
         else {
-            Toast.makeText(CalendarMain.getAppContext(), "이미 저장되어 있는 스케줄입니다!", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.mContext, "이미 저장되어 있는 스케줄입니다!", Toast.LENGTH_LONG).show();
         }
     }
 

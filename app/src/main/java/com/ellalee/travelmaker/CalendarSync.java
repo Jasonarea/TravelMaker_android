@@ -71,7 +71,6 @@ public class CalendarSync extends Thread implements Runnable {
     }
 
     public void run() {
-
         getResultsFromApi(mCredential);
         try {
             calendarList();
@@ -234,6 +233,7 @@ public class CalendarSync extends Thread implements Runnable {
             // List the next 10 events from the primary calendar.
             DateTime now = new DateTime(System.currentTimeMillis());
             eventStrings = new ArrayList<String>();
+            Log.d("id", newCalId);
             Events events = mService.events().list(newCalId)
                     .setMaxResults(10)
                     .setTimeMin(now)
@@ -251,6 +251,7 @@ public class CalendarSync extends Thread implements Runnable {
                 }
                 eventStrings.add(
                         String.format("%s (%s)", event.getSummary(), start));
+                Log.d("eventString", event.getSummary() + " " + start);
             }
             if(createOneSchedule) {
                 //createOneSchedule = false;

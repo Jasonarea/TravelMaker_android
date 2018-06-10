@@ -29,6 +29,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -65,7 +66,6 @@ import static com.google.android.gms.auth.api.credentials.CredentialPickerConfig
 public class LoginPage extends AppCompatActivity implements EasyPermissions.PermissionCallbacks{
     Button loginBtn;
     static GoogleAccountCredential mCredential;
-    public static TextView mOutputText;
     private Button mCallApiButton;
     private Button mCallMail;
     private HttpTransport transport;
@@ -91,20 +91,9 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final LinearLayout activityLayout = new LinearLayout(this);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT);
-        activityLayout.setLayoutParams(lp);
+        setContentView(R.layout.activity_login_page);
         Drawable background = getResources().getDrawable(R.drawable.calendar_label_background);
-        activityLayout.setBackground(background);
 
-        activityLayout.setOrientation(LinearLayout.VERTICAL);
-        activityLayout.setPadding(16, 16, 16, 16);
-
-        ViewGroup.LayoutParams tlp = new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT);
 
         String email = loadSavedPreferences();      //mCredential ID 가 set이 안되있을 경우 가져오기.
        /* if(email.equals("EmailStuff")){
@@ -118,13 +107,12 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
                 .setBackOff(new ExponentialBackOff());
 
 
-        mCallApiButton = new Button(this);
-        mOutputText = new TextView(this);
-        mCallApiButton.setText("구글 아이디로 로그인");
+        mCallApiButton  = (Button)findViewById(R.id.google);
+
         mCredential = GoogleAccountCredential.usingOAuth2(
                 getApplicationContext(), Arrays.asList(SCOPES))
                 .setBackOff(new ExponentialBackOff());
-        mOutputText.setText("");
+
         mCallApiButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -135,9 +123,7 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
                 //mProgress.show();
             }
         });
-        activityLayout.addView(mCallApiButton);
-        activityLayout.addView(mOutputText);
-        setContentView(activityLayout);
+
 
         // Initialize credentials and service object.
 
@@ -155,7 +141,7 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
         if (! isGooglePlayServicesAvailable()) {
             acquireGooglePlayServices();
         } else if (! isDeviceOnline()) {
-            mOutputText.setText("No network connection available.");
+            Toast.makeText(getApplicationContext(), "No network connection available", Toast.LENGTH_SHORT).show();
         } else {
             //new MakeRequestTask(mCredential).execute();
             //mOutputText.setText("Login Finish");
@@ -212,9 +198,8 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
         switch(requestCode) {
             case REQUEST_GOOGLE_PLAY_SERVICES:
                 if (resultCode != RESULT_OK) {
-                    mOutputText.setText(
-                            "This app requires Google Play Services. Please install " +
-                                    "Google Play Services on your device and relaunch this app.");
+                    Toast.makeText(getApplicationContext(), "This app requires Google Play Services. Please install " +
+                            "Google Play Services on your device and relaunch this app.", Toast.LENGTH_SHORT).show();
                 } else {
                     getResultsFromApi();
                 }
@@ -245,9 +230,6 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
                     getResultsFromApi();
                 }
                 break;
-            case SIGN_IN :
-                Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-                handleSignInResult(task);
         }
     }
 
@@ -279,17 +261,6 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
     public void onPermissionsGranted(int requestCode, List<String> list) {
         // Do nothing.
     }
-    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-        try {
-            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-            // Signed in successfully, show authenticated UI.
-            mOutputText.setText("Sign In Complete");
-        } catch (ApiException e) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            Log.w("TAG", "signInResult:failed code=" + e.getStatusCode());
-        }
-    }
     /**
      * Callback for when a permission is denied using the EasyPermissions
      * library.
@@ -306,7 +277,7 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
      * Checks whether the device currently has a network connection.
      * @return true if the device has a network connection, false otherwise.
      */
-    private boolean isDeviceOnline() {
+    public boolean isDeviceOnline() {
         ConnectivityManager connMgr =
                 (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();

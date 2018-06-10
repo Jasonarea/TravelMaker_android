@@ -2,6 +2,9 @@ package com.ellalee.travelmaker;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
@@ -29,6 +32,8 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,7 +62,7 @@ public class GmailSync implements Runnable {
     MySQLiteHelper db;
     ArrayList<String> sub, bod;
     Handler handler;
-
+    ConnectivityManager connMgr ;
     ProgressBar pb;
     int value = 0; // progressbar 값
     int add = 1;    // 증가량, 방향
@@ -68,6 +73,7 @@ public class GmailSync implements Runnable {
         this.mContext = mContext;
         this.pb = pb;
         this.handler = handler;
+        this.connMgr = (ConnectivityManager)mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         Log.d("Gmail Sync access", "Gmail Sync Access Complete");
 
     }
@@ -116,6 +122,7 @@ public class GmailSync implements Runnable {
         String text = "";
         count = 0;
         for (Thread thread : t) {
+
             String id = thread.getId();
             response = service.users().threads().get("me", id).execute();
             List<MessagePartHeader> messageHeader = response.getMessages().get(0).getPayload().getHeaders();
@@ -177,6 +184,15 @@ public class GmailSync implements Runnable {
                         Toast.makeText(MainActivity.mContext, "Mail Read done", Toast.LENGTH_SHORT).show();
                         MainActivity.pb.setVisibility(View.INVISIBLE);
                         MainActivity.ptt.setVisibility(View.GONE);
+                    }
+                    else if(!isDeviceOnline()) {
+                        Toast.makeText(MainActivity.mContext, "Network is disconnected", Toast.LENGTH_SHORT).show();
+                        MainActivity.pb.setVisibility(View.INVISIBLE);
+                        MainActivity.ptt.setVisibility(View.GONE);
+                        
+                    }
+                    else {
+                        Log.d("Good Good", "뭐하는거야 왜 안돌아");
                     }
                 }
             });
@@ -369,6 +385,10 @@ public class GmailSync implements Runnable {
             e.printStackTrace();
             return day;
         }
+    }
+    public boolean isDeviceOnline() {
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
     }
 
     public int[] getCurrentDate() {

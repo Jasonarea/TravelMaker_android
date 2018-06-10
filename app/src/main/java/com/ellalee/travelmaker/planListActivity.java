@@ -47,6 +47,7 @@ public class planListActivity extends AppCompatActivity {
     GridView planListView;
     Button activateDelete;
 
+
     boolean delete_mode = false;
 
     @Override
