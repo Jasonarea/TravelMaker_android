@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private GoogleSignInAccount account;
     private GoogleApiClient mGoogleApiClient;
     private static boolean isLogin = false;
+    public static boolean isHello = false;
 
     CalendarSync calendarThread;
     AlertDialog customDialog;
@@ -240,13 +241,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
                     getResultsFromApi();
                 }
+                /*
                 else if(id == R.id.menu_drawer_share){
                     Intent sendIntent = new Intent();
                     sendIntent.setAction(Intent.ACTION_SEND);
                     sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
                     sendIntent.setType("text/plain");
                     startActivity(sendIntent);
-                }
+                }*/
                 return false;
             }
         });

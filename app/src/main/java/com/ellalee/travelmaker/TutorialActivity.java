@@ -1,7 +1,7 @@
+/*
 package com.ellalee.travelmaker;
 
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -33,7 +33,7 @@ public class TutorialActivity extends AppCompatActivity {
             if (position < 0 || MAX_PAGE <= position)
                 return null;
             cur_fragment = new TutoPage(position);
-            /*
+
             switch (position) {
                 case 0:
                     cur_fragment = new page_1();
@@ -44,7 +44,7 @@ public class TutorialActivity extends AppCompatActivity {
                 case 2:
                     cur_fragment = new page_3();
                     break;
-            }*/
+            }
             return cur_fragment;
         }
 
@@ -54,3 +54,4 @@ public class TutorialActivity extends AppCompatActivity {
         }
     }
 }
+*/

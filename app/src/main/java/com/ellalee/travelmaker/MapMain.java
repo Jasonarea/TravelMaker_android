@@ -141,7 +141,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             c.init(googleMap);
         }  //get routes info from db and initiate all
 */
-        Toast.makeText(getApplicationContext(),"plan_id:"+plan_id, Toast.LENGTH_SHORT).show();
+     //   Toast.makeText(getApplicationContext(),"plan_id:"+plan_id, Toast.LENGTH_SHORT).show();
 
         geocoder = new Geocoder(this);
         btnSearch = findViewById(R.id.btnSearch);
@@ -553,7 +553,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 
         }
         else{
-            Toast.makeText(this, "ID: "+marker.getId(), Toast.LENGTH_SHORT).show();
+           // Toast.makeText(this, "ID: "+marker.getId(), Toast.LENGTH_SHORT).show();
         }
         return false;
     }
@@ -605,7 +605,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         }
         else {
             routeIndex = item.getItemId();
-            Toast.makeText(this, "Color:" + routeColor[routeIndex], Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "Color:" + routeColor[routeIndex], Toast.LENGTH_SHORT).show();
 
             btnRoute.setTextColor(Color.parseColor(routeColor[routeIndex]));
             int day = routeIndex+1;
@@ -619,7 +619,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     public void editMarker(View v){
         if(edit_mode!= 1){ //marker delete mode
             btnPlace.setBackground(getDrawable(R.drawable.open_bin_big));
-//            Toast.makeText(this,"remove a marker",Toast.LENGTH_SHORT).show();
+//            Toast.makeText(this,"marker delete mode on",Toast.LENGTH_SHORT).show();
             changeAllMakerIcon(plan,BitmapDescriptorFactory.fromResource(R.drawable.delete));
             edit_mode = 1;
         }
@@ -627,7 +627,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             btnPlace.setBackground(getDrawable(R.drawable.close_bin_big));
             btnRoute.setTextColor(Color.BLACK);
             btnRoute.setText("DAY");
-  //          Toast.makeText(this,"Done",Toast.LENGTH_SHORT).show();
+  //          Toast.makeText(this,"marker delete mode off",Toast.LENGTH_SHORT).show();
             changeAllMakerIcon(plan);
             edit_mode = 0;
         }

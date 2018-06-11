@@ -10,10 +10,10 @@
         android:id="@+id/menu_drawer_mail"
         android:icon="@drawable/gmaillogo"
         android:title="Update Schedule" />
-
+<!--
     <item
         android:id="@+id/menu_drawer_share"
         android:icon="@drawable/share"
         android:title="Sharing" />
-
+-->
 </menu>

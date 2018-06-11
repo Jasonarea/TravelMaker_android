@@ -1,3 +1,4 @@
+/*
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,9 +10,9 @@ import android.widget.TextView;
 
 import com.ellalee.travelmaker.R;
 
-/**
- * Created by tyu54 on 2018-06-11.
- */
+
+  Created by tyu54 on 2018-06-11.
+
 
 public class TutoPage extends Fragment {
     int index;
@@ -40,3 +41,4 @@ public class TutoPage extends Fragment {
         return linearLayout;
     }
 }
+*/

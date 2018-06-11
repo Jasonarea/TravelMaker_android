@@ -63,6 +63,7 @@ public class GmailSync implements Runnable {
     ArrayList<String> sub, bod;
     Handler handler;
     ConnectivityManager connMgr ;
+    CalendarSync calendarThread;
     ProgressBar pb;
     int value = 0; // progressbar 값
     int add = 1;    // 증가량, 방향
@@ -462,7 +463,14 @@ public class GmailSync implements Runnable {
         public void run() {
             MainActivity.pb.setVisibility(View.INVISIBLE);
             MainActivity.ptt.setVisibility(View.GONE);
+            if(MainActivity.isHello==false) {
+                MainActivity.isHello = true;
+                calendarThread = new CalendarSync(mCredential, mContext, pb, handler);
+                java.lang.Thread calendar = new java.lang.Thread(calendarThread);
+                calendar.start();
+            }
             Toast.makeText(MainActivity.mContext, "GMail 동기화 완료", Toast.LENGTH_SHORT).show();
+
         }
     }
 }
