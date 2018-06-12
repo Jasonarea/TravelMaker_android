@@ -18,6 +18,8 @@ android {
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     configurations.all {
         resolutionStrategy {
@@ -26,6 +28,11 @@ android {
     }
     configurations.all {
         resolutionStrategy.force 'com.android.support:support-annotations:23.1.0'
+    }
+    configurations.all {
+        resolutionStrategy {
+            force 'com.android.support:support-annotations:23.3.0'
+        }
     }
     buildTypes {
         release {
@@ -68,14 +75,19 @@ dependencies {
         exclude group: 'org.apache.httpcomponents'
     }
 
-    implementation 'com.android.support:design:27.1.0'
-    implementation 'com.android.support:support-vector-drawable:27.1.0'
+
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support:support-vector-drawable:27.1.1'
     testImplementation 'junit:junit:4.12'
 
-    androidTestImplementation 'com.android.support.test:runner:+'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:+'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
 
-<<<<<<< HEAD
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    androidTestImplementation 'com.android.support:support-annotations:27.1.1'
+
+
 //    implementation files('C:/Users/jiwon/Travel-Maker/libs/activation.jar')
 //    implementation files('C:/Users/jiwon/Travel-Maker/libs/additionnal.jar')
 //    implementation files('C:/Users/jiwon/Travel-Maker/libs/mail.jar')
@@ -84,9 +96,9 @@ dependencies {
     implementation files('C:/Users/jiwon/Travel-Maker/libs/additionnal.jar')
     implementation files('C:/Users/jiwon/Travel-Maker/libs/mail.jar')
 */
-    implementation files('E:/Travel-Maker/libs/additionnal.jar')
-    implementation files('E:/Travel-Maker/libs/activation.jar')
-    implementation files('E:/Travel-Maker/libs/mail.jar')
+    implementation files('F:/Travel-Maker/libs/additionnal.jar')
+    implementation files('F:/Travel-Maker/libs/activation.jar')
+    implementation files('F:/Travel-Maker/libs/mail.jar')
 //
 //    implementation files('C:/Users/jiwon/Travel-Maker/libs/activation.jar')
 //    implementation files('C:/Users/jiwon/Travel-Maker/libs/additionnal.jar')
@@ -96,7 +108,6 @@ dependencies {
 //    implementation files('E:/Travel-Maker/libs/activation.jar')
 //    implementation files('E:/Travel-Maker/libs/mail.jar')
 
->>>>>>> e439182bc8b392a2ce30fe9be3e4f7c32fa15bf0
 //      implementation files('D:/18_1/Travel-Maker/libs/mail.jar')
 //      implementation files('D:/18_1/Travel-Maker/libs/additionnal.jar')
 //      implementation files('D:/18_1/Travel-Maker/libs/activation.jar')

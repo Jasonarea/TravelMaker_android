@@ -296,11 +296,13 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
                 apiAvailability.isGooglePlayServicesAvailable(this);
         return connectionStatusCode == ConnectionResult.SUCCESS;
     }
-
-    private String loadSavedPreferences() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+    public static String getEmail() {
+        return "EmailStuff";
+    }
+    public static String loadSavedPreferences() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.mContext);
         String name = sharedPreferences.getString("email", "EmailStuff");
-        return name;
+        return "EmailStuff";
     }
 
     /**
