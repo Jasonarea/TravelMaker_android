@@ -21,14 +21,25 @@
     <!--add 20 routes color info later!!-->
     <string-array  name="routeColor">
         <item>#3C989E</item>
-        <item>#fcc244</item>
-        <item>#2e98d1</item>
         <item>#ED5276</item>
+        <item>#fcc244</item>
+        <item>#978ddf</item>
+        <item>#2e98d1</item>
         <item>#F4CDA5</item>
-        <item>#259c49</item>
-        <item>#dde91616</item>
-        <item>#dd0c24f9</item>
-        <item>#259c49</item>
+        <item>#fdf5654b</item>
+        <item>#f9c571d6</item>
+        <item>#0d97ea</item>
+        <item>#7caf7f</item>
+        <item>#57039c</item>
+        <item>#e2a628</item>
+        <item>#1d2e39</item>
+        <item>#c2435c</item>
+        <item>#f5557316</item>
+        <item>#dd0ee4f9</item>
+        <item>#9b564a</item>
+        <item>#f7dad96c</item>
+        <item>#fa576cc1</item>
+        <item>#ff05d5</item>
     </string-array>
 
     <color name="violetblue"></color>

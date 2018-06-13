@@ -627,6 +627,13 @@ public class CalendarMain extends Activity {
 
             }
 
+            ViewGroup.LayoutParams param = convertView.getLayoutParams();
+            if(param == null) {
+                param = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            }
+            param.height = 300; //48dp
+            convertView.setLayoutParams(param);
+
             return convertView;
 
         }

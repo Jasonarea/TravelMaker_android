@@ -97,7 +97,7 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
             + KEY_PLAN_ID + " INTEGER, "
             + KEY_YEAR + " INTEGER, "
             + KEY_MONTH + " INTEGER, "
-            + KEY_DAY + "INTEGER, "
+            + KEY_DAY + " INTEGER, "
             + KEY_INDEX + " INTEGER )"; //fk
 
     // MarkerList table create statement
@@ -283,7 +283,7 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
     }
     public long createRoute(long plan_id,Route route){
         SQLiteDatabase db = this.getWritableDatabase();
-        String selectQuery = "SELECT * FROM "+ TABLE_PLAN + " WHERE "+KEY_PLAN_ID+ " = '"+plan_id+"'";
+        String selectQuery = "SELECT * FROM "+ TABLE_PLAN + " WHERE "+KEY_ID+ " = '"+plan_id+"'";
         Date date = new Date(0,0,0);
         Cursor c = db.rawQuery(selectQuery,null);
 

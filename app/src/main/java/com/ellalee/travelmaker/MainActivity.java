@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if( i == KeyEvent.KEYCODE_ENTER ){
-                    btnSearch.callOnClick();
+                    mapMain(btnSearch);
                 }
                 return false;
             }
@@ -389,7 +389,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 plan.setTitle(city); //default title is a city name
 
                 long plan_id = db.createPlan(plan);
-/*              db = helper.getWritableDatabase();
+                Log.d("플랜생성",plan_id+"*********");
+/*                db = helper.getWritableDatabase();
                 ContentValues values = new ContentValues();
                 values.put("KEY_ID",plan_id);
                 db.insert("TABLE_PLAN",null,values);

@@ -90,7 +90,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
 
     private ArrayList<Route> routes = new ArrayList<>(); //multi
 //   private ArrayList<Route> routes; //multi
-    public String[] routeColor;
+//    public String[] routeColor;
 //    private BitmapDescriptor[] markerIcon;
 
     Animation slidingOpen;
@@ -172,12 +172,12 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             }
         });
 
-        routeColor = getResources().getStringArray(R.array.routeColor);
+//        routeColor = getResources().getStringArray(R.array.routeColor);
         registerForContextMenu(btnRoute);
   /*      markerIcon = new BitmapDescriptor[4];
         markerIcon[0] = BitmapDescriptorFactory.fromResource(R.drawable.marker_default);
-        markerIcon[1] = BitmapDescriptorFactory.fromResource(R.drawable.marker_dining);
-        markerIcon[2] = BitmapDescriptorFactory.fromResource(R.drawable.marker_residence);
+        markerIcon[1] = BitmapDescriptorFactory.fromResource(R.drawable.marker_restaurant);
+        markerIcon[2] = BitmapDescriptorFactory.fromResource(R.drawable.marker_hotel);
         markerIcon[3] = BitmapDescriptorFactory.fromResource(R.drawable.marker_shopping);
 */
         slidingLayout = findViewById(R.id.slidingLayout);
@@ -228,7 +228,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             center = plan.getAllMarkers().get(0).getPosition(); //first marker as center
         }
         map.moveCamera(CameraUpdateFactory.newLatLng(center));
-        map.animateCamera(CameraUpdateFactory.zoomTo(15));
+        map.animateCamera(CameraUpdateFactory.zoomTo(14));
 
         /*
         btnSearch.setOnClickListener(new View.OnClickListener() {
@@ -476,12 +476,12 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             list = geocoder.getFromLocationName(str, 10);
         } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(MapMain.this, "I/O Error", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MapMain.this, "장소 이름을 입력해주세요!", Toast.LENGTH_SHORT).show();
         }
 
         if (list != null) {
             if (list.size() == 0) {
-                Toast.makeText(MapMain.this, "No matching address info", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MapMain.this, "해당 정보가 없네요ㅠ 다른 이름으로 검색해주세요.", Toast.LENGTH_SHORT).show();
             }
             else {
                 latitude = list.get(0).getLatitude();
@@ -543,7 +543,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
         }
         else if(edit_mode==2) {  //add a marker
             if(routes.get(routeIndex).isLastMarker(marker)){ //avoid duplication
-                Toast.makeText(this, "This place was just added.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "여긴 이미 추가되었으니 다음 장소를 정해주세요!", Toast.LENGTH_SHORT).show();
             }else{
                 routes.get(routeIndex).add(marker);
                 routes.get(routeIndex).setPoints(googleMap);
@@ -552,9 +552,10 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             }
 
         }
+        /*
         else{
-           // Toast.makeText(this, "ID: "+marker.getId(), Toast.LENGTH_SHORT).show();
-        }
+            Toast.makeText(this, "ID: "+marker.getId(), Toast.LENGTH_SHORT).show();
+        }*/
         return false;
     }
 
@@ -594,24 +595,24 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
             //maximum route number is 20
             if(newIndex<20) {
                 newIndex = routes.size();
-                Route route = new Route(newIndex, routeColor[newIndex]);
+                Route route = new Route(newIndex, Rcolor.getRouteColor(newIndex));
                 routes.add(newIndex, route);
                 db.createRoute(plan.getId(),route);
 
                 openContextMenu(btnRoute); //show reorganized context menu
             }else{
-                Toast.makeText(this, "It's a max route number", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "최대 루트 갯수는 20개에요.", Toast.LENGTH_SHORT).show();
             }
         }
         else {
             routeIndex = item.getItemId();
             //Toast.makeText(this, "Color:" + routeColor[routeIndex], Toast.LENGTH_SHORT).show();
 
-            btnRoute.setTextColor(Color.parseColor(routeColor[routeIndex]));
+            btnRoute.setTextColor(Color.parseColor(Rcolor.getRouteColor(newIndex)));
             int day = routeIndex+1;
             btnRoute.setText("DAY"+day);
             edit_mode = 2;  //route edit mode on through the context menu
-            btnPlace.setTextColor(Color.BLACK);  //deactivate placebtn
+            btnPlace.setBackground(getDrawable(R.drawable.close_bin_big));
         }
         return super.onContextItemSelected(item);
     }
@@ -619,7 +620,7 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     public void editMarker(View v){
         if(edit_mode!= 1){ //marker delete mode
             btnPlace.setBackground(getDrawable(R.drawable.open_bin_big));
-//            Toast.makeText(this,"marker delete mode on",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"마커를 눌러 제거하세요.",Toast.LENGTH_SHORT).show();
             changeAllMakerIcon(plan,BitmapDescriptorFactory.fromResource(R.drawable.delete));
             edit_mode = 1;
         }
@@ -636,9 +637,9 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     public void editRoute(View v){
 
         if(edit_mode!=2){
-            Toast.makeText(this,"Make a route",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"마커를 순서대로 클릭해서 루트를 그려보세요!",Toast.LENGTH_SHORT).show();
             edit_mode = 2;
-            btnRoute.setTextColor(Color.parseColor(routeColor[routeIndex]));
+            btnRoute.setTextColor(Color.parseColor(Rcolor.getRouteColor(newIndex)));
             int day = routeIndex+1;
             btnRoute.setText("DAY"+day);
             btnPlace.setBackground(getDrawable(R.drawable.close_bin_big));
@@ -729,25 +730,27 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     }*/
     public static class Rcolor {
         static final String[] routeColor = new String[]{
-                "#3C989E",
-                "#fcc244",
-                "#2e98d1",
-                "#ED5276",
-                "#F4CDA5",
-                "#259c49",
-                "#dde91616",
-                "#dd0c24f9",
-                "#259c49",
-                "#3C989F",
-                "#fcc249",
-                "#2e98dF",
-                "#ED5270",
-                "#F4CD05",
-                "#259009",
-                "#dde92616",
-                "#dd0EE4f9",
-                "#259FE9",
-        };
+                "#3C989E" ,
+                "#ED5276" ,
+                "#fcc244" ,
+                "#978ddf" ,
+                "#2e98d1" ,
+                "#F4CDA5" ,
+                "#fdf5654b" ,
+                "#f9c571d6" ,
+                "#0d97ea" ,
+                "#7caf7f" ,
+                "#57039c" ,
+                "#e2a628" ,
+                "#1d2e39" ,
+                "#c2435c" ,
+                "#f5557316" ,
+                "#dd0ee4f9" ,
+                "#9b564a" ,
+                "#f7dad96c" ,
+                "#fa576cc1" ,
+                "#ff05d5" ,
+};
 
         public static String getRouteColor(int idx){
             return routeColor[idx];
@@ -757,8 +760,8 @@ public class MapMain extends FragmentActivity implements OnMapReadyCallback,Goog
     public static class Micon {
         static final BitmapDescriptor[] mIcon = new BitmapDescriptor[]{
                 BitmapDescriptorFactory.fromResource(R.drawable.marker_default),
-                BitmapDescriptorFactory.fromResource(R.drawable.marker_residence),
-                BitmapDescriptorFactory.fromResource(R.drawable.marker_dining),
+                BitmapDescriptorFactory.fromResource(R.drawable.marker_hotel),
+                BitmapDescriptorFactory.fromResource(R.drawable.marker_restaurant),
                 BitmapDescriptorFactory.fromResource(R.drawable.marker_shopping),
                 BitmapDescriptorFactory.fromResource(R.drawable.marker_transport)
         };

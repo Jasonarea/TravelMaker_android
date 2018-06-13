@@ -23,6 +23,7 @@
             android:id="@+id/EditWhereToGo"
             android:layout_width="230dp"
             android:layout_height="50dp"
+            android:fontFamily="@font/nanumbarunpen_b"
             android:layout_alignBottom="@+id/search_area"
             android:layout_centerHorizontal="true"
             android:hint="@string/editText_hint"
@@ -54,7 +55,6 @@
             android:background="@drawable/search_icon"
             android:onClick="mapMain" />
 
-
     <TableLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -70,9 +70,9 @@
                 android:layout_width="10dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="5dp"
-                android:layout_marginLeft="40dp"
-                android:layout_marginRight="40dp"
-                android:background="@drawable/plan_icon"
+                android:scaleType="fitCenter"
+                android:background="@android:color/transparent"
+                android:src="@drawable/plan_icon"
                 android:onClick="showPlanList"/>
 
             <ImageButton
@@ -80,9 +80,9 @@
                 android:layout_width="10dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="5dp"
-                android:layout_marginLeft="40dp"
-                android:layout_marginRight="40dp"
-                android:background="@drawable/calendar_icon"
+                android:scaleType="fitCenter"
+                android:background="@android:color/transparent"
+                android:src="@drawable/calendar_icon"
                 android:onClick="calenderMain" />
 
             <ImageButton
@@ -90,9 +90,9 @@
                 android:layout_width="10dp"
                 android:layout_height="35dp"
                 android:layout_marginTop="5dp"
-                android:layout_marginLeft="42dp"
-                android:layout_marginRight="42dp"
-                android:background="@drawable/menu_icon"
+                android:scaleType="fitCenter"
+                android:background="@android:color/transparent"
+                android:src="@drawable/menu_icon"
                 android:onClick="menuMain"/>
         </TableRow>
 

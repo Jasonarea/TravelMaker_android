@@ -30,12 +30,12 @@
             android:layout_width="65dp"
             android:layout_height="50dp"
             android:id="@+id/opt_residence"
-            android:drawableLeft="@drawable/marker_residence" />
+            android:drawableLeft="@drawable/marker_hotel" />
         <RadioButton
             android:layout_width="65dp"
             android:layout_height="50dp"
             android:id="@+id/opt_dining"
-            android:drawableLeft="@drawable/marker_dining"
+            android:drawableLeft="@drawable/marker_restaurant"
            />
         <RadioButton
             android:layout_width="65dp"
