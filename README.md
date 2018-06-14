@@ -15,7 +15,9 @@ Travel maker is an application which helps to make a travel plan on map.
 
 > **Motivation**
     👉🏻 We have difficulty in making our own travel map.
+    
     👉🏻 Before we go travel, we have to download lots of applications.
+    
     👉🏻 We need Travel integration System with Travel planner.
 
 ***
