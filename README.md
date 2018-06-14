@@ -1,10 +1,9 @@
 🛫 Welcome to TravelMaker!🛬
 ===================
 
-----------
 
 Travel_Maker software version v1.1
-
+----------
 
 What is this?
 -------------
