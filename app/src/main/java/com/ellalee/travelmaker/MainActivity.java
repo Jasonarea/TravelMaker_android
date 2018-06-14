@@ -242,20 +242,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
                     getResultsFromApi();
                 }
-                else if(id == R.id.menu_drawer_share){
-                /*
-                    Intent sendIntent = new Intent();
-                    sendIntent.setAction(Intent.ACTION_SEND);
-                    sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
-                    sendIntent.setType("text/plain");
-                    startActivity(sendIntent);
-                }*/
-                    File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + "abc.txt");
-                    Intent sharingIntent = new Intent(Intent.ACTION_SEND);
-                    sharingIntent.setType("text/*");
-                    sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse("file://" + file.getAbsolutePath()));
-                    startActivity(Intent.createChooser(sharingIntent, "share file with"));
-                }
                 return false;
             }
         });
@@ -392,7 +378,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 plan.setTitle(city); //default title is a city name
 
                 long plan_id = db.createPlan(plan);
-                Log.d("åÎûúùÏÑ±",plan_id+"*********");
 /*                db = helper.getWritableDatabase();
                 ContentValues values = new ContentValues();
                 values.put("KEY_ID",plan_id);
