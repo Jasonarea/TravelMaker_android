@@ -224,7 +224,7 @@ public class planListActivity extends AppCompatActivity {
                     alert.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            Toast.makeText(planListActivity.this, "delete plan "+plans.get(viewId).getPlan_id(), Toast.LENGTH_SHORT).show();
+                     //       Toast.makeText(planListActivity.this, "delete plan "+plans.get(viewId).getPlan_id(), Toast.LENGTH_SHORT).show();
                             db = helper.getWritableDatabase();
                             helper.deletePlan(plans.get(viewId).getPlan_id());
                             plans.remove(viewId);
@@ -257,6 +257,7 @@ public class planListActivity extends AppCompatActivity {
                             String newTitle = editTitle.getText().toString();
                             plans.get(viewId).setTitle(newTitle);
                             helper.updatePlan(plans.get(viewId).getPlan_id(),newTitle); //plan_id starts from 1.
+                            planListView.invalidateViews();
                         }
                     });
 

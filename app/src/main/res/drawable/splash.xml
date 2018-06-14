@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@drawable/calendar_label_background"/>
-    <item android:drawable = "@drawable/travellogo"
-        android:gravity = "center_vertical"/>
+    <item android:drawable="@drawable/splash_logo"
+        android:gravity = "center_vertical|center_horizontal"
+        android:height="300dp"
+        android:width="300dp"/>
+
 </layer-list>

@@ -127,11 +127,12 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private GoogleSignInAccount account;
     private GoogleApiClient mGoogleApiClient;
     private static boolean isLogin = false;
+    public static boolean isHello = false;
 
     CalendarSync calendarThread;
     AlertDialog customDialog;
     static ProgressBar pb;
-    static Handler handler = new Handler(Looper.getMainLooper());
+    Handler handler = new Handler(Looper.getMainLooper());
     static TextView ptt;
     static Context mContext;
 
@@ -166,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if( i == KeyEvent.KEYCODE_ENTER ){
-                    btnSearch.callOnClick();
+                    mapMain(btnSearch);
                 }
                 return false;
             }
@@ -242,11 +243,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     getResultsFromApi();
                 }
                 else if(id == R.id.menu_drawer_share){
-//                    Intent sendIntent = new Intent();
-//                    sendIntent.setAction(Intent.ACTION_SEND);
-//                    sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
-//                    sendIntent.setType("text/plain");
-//                    startActivity(sendIntent);
+                /*
+                    Intent sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, "This is my text to send.");
+                    sendIntent.setType("text/plain");
+                    startActivity(sendIntent);
+                }*/
                     File file = new File(Environment.getExternalStorageDirectory().toString() + "/" + "abc.txt");
                     Intent sharingIntent = new Intent(Intent.ACTION_SEND);
                     sharingIntent.setType("text/*");
@@ -389,7 +392,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 plan.setTitle(city); //default title is a city name
 
                 long plan_id = db.createPlan(plan);
-/*              db = helper.getWritableDatabase();
+                Log.d("åÎûúùÏÑ±",plan_id+"*********");
+/*                db = helper.getWritableDatabase();
                 ContentValues values = new ContentValues();
                 values.put("KEY_ID",plan_id);
                 db.insert("TABLE_PLAN",null,values);

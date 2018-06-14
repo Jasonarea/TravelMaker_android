@@ -10,10 +10,10 @@
         android:title="backward"/>-->
 
     <item android:id="@+id/option_residence"
-        android:icon="@drawable/marker_residence"
+        android:icon="@drawable/marker_hotel"
         android:title="Home"/>
     <item android:id="@+id/option_restaurant"
-        android:icon="@drawable/marker_dining"
+        android:icon="@drawable/marker_restaurant"
         android:title="Food"/>
     <item android:id="@+id/option_shopping"
         android:icon="@drawable/marker_shopping"

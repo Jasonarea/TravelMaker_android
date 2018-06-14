@@ -328,7 +328,7 @@ public class CalendarMain extends Activity {
             db.insert("calendar", null, values);
         }
         else {
-            Toast.makeText(MainActivity.mContext, "이미 저장되어 있는 스케줄입니다!", Toast.LENGTH_LONG).show();
+           // Toast.makeText(MainActivity.mContext, "이미 저장되어 있는 스케줄입니다!", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -626,6 +626,13 @@ public class CalendarMain extends Activity {
                 holder.tvItemGridView.setTextColor(getResources().getColor(R.color.black));
 
             }
+
+            ViewGroup.LayoutParams param = convertView.getLayoutParams();
+            if(param == null) {
+                param = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            }
+            param.height = 300; //48dp
+            convertView.setLayoutParams(param);
 
             return convertView;
 

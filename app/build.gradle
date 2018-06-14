@@ -12,9 +12,9 @@ android {
     defaultConfig {
         applicationId "com.ellalee.travelmaker"
         minSdkVersion 21
-        targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion 26
+        versionCode 2
+        versionName "1.1"
         multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -88,13 +88,10 @@ dependencies {
     androidTestImplementation 'com.android.support:support-annotations:27.1.1'
 
 
-//    implementation files('C:/Users/jiwon/Travel-Maker/libs/activation.jar')
-//    implementation files('C:/Users/jiwon/Travel-Maker/libs/additionnal.jar')
-//    implementation files('C:/Users/jiwon/Travel-Maker/libs/mail.jar')
-
 /*    implementation files('C:/Users/jiwon/Travel-Maker/libs/activation.jar')
     implementation files('C:/Users/jiwon/Travel-Maker/libs/additionnal.jar')
     implementation files('C:/Users/jiwon/Travel-Maker/libs/mail.jar')
+<<<<<<< HEAD
 */
 //    implementation files('F:/Travel-Maker/libs/additionnal.jar')
 //    implementation files('F:/Travel-Maker/libs/activation.jar')
@@ -105,7 +102,10 @@ dependencies {
 //    implementation files('C:/Users/jiwon/Travel-Maker/libs/mail.jar')
 
 
-      implementation files('D:/18_1/Travel-Maker/libs/mail.jar')
-      implementation files('D:/18_1/Travel-Maker/libs/additionnal.jar')
-      implementation files('D:/18_1/Travel-Maker/libs/activation.jar')
+    implementation files('F:/Travel-Maker/libs/additionnal.jar')
+    implementation files('F:/Travel-Maker/libs/activation.jar')
+    implementation files('F:/Travel-Maker/libs/mail.jar')
+//      implementation files('D:/18_1/Travel-Maker/libs/mail.jar')
+//      implementation files('D:/18_1/Travel-Maker/libs/additionnal.jar')
+//      implementation files('D:/18_1/Travel-Maker/libs/activation.jar')
 }

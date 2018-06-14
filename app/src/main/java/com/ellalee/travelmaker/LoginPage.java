@@ -299,6 +299,7 @@ public class LoginPage extends AppCompatActivity implements EasyPermissions.Perm
     public static String getEmail() {
         return "EmailStuff";
     }
+
     public static String loadSavedPreferences() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.mContext);
         String name = sharedPreferences.getString("email", "EmailStuff");

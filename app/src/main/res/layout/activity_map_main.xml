@@ -15,48 +15,48 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_horizontal">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_horizontal">
 
-            <EditText
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/editAddress"
-                android:singleLine="true"
-                android:hint="Address"/>
+                    <EditText
+                        android:layout_width="300dp"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/editAddress"
+                        android:singleLine="true"
+                        android:hint="Address"/>
 
-            <Button
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:id="@+id/btnSearch"
-                android:background="@drawable/search_icon"
-                android:onClick="searchMarker"/>
-        </LinearLayout>
+                    <Button
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:id="@+id/btnSearch"
+                        android:background="@drawable/search_icon"
+                        android:onClick="searchMarker"/>
+                </LinearLayout>
 
-        <Button
-            android:id="@+id/btnRoute"
-            android:layout_margin="10dp"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignParentBottom="true"
-            android:onClick="editRoute"
-            android:background="@drawable/button_day"
-            android:fontFamily="@font/nanumsquareround_b"
-            android:text="DAY"
-            android:textSize="15dp"/>
-<!--
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/btnSave"
-            android:text="save"
-            android:layout_alignParentBottom="true"
-            android:onClick="save"
-            android:layout_centerInParent="true"/>
--->
+                <Button
+                    android:id="@+id/btnRoute"
+                    android:layout_margin="10dp"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentBottom="true"
+                    android:onClick="editRoute"
+                    android:background="@drawable/button_day"
+                    android:fontFamily="@font/nanumbarunpen_b"
+                    android:text="DAY"
+                    android:textSize="16dp"/>
+        <!--
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btnSave"
+                    android:text="save"
+                    android:layout_alignParentBottom="true"
+                    android:onClick="save"
+                    android:layout_centerInParent="true"/>
+        -->
         <Button
             android:layout_width="60dp"
             android:layout_height="60dp"
@@ -65,6 +65,7 @@
             android:textColor="#ffffff"
             android:textStyle="bold"
             android:textSize="10dp"
+            android:fontFamily="@font/nanumbarunpen_b"
             android:id="@+id/btnPlace"
             android:onClick="editMarker"
             android:background="@drawable/close_bin_big"

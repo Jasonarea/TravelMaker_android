@@ -40,7 +40,7 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
 
     // Table Names
     private static final String TABLE_PLAN = "plans";
- //   private static final String TABLE_ROUTELIST = "route_lists";
+    //private static final String TABLE_ROUTELIST = "route_lists";
     private static final String TABLE_ROUTE = "routes";
     private static final String TABLE_MARKERLIST = "marker_lists";
     private static final String TABLE_MARKER = "markers";
@@ -58,12 +58,12 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
     private static final String KEY_DAY = "day";
 //    private static final String KEY_ROUTELIST_ID = "route_list_id"; //
 
-    // ROUTELIST Table - column names
-    private static final String KEY_PLAN_ID = "plan_id";
-    private static final String KEY_ROUTE_ID = "route_id";
+    private static final String KEY_PLAN_ID ="plan_id";
+    private static final String KEY_ROUTE_ID="route_id";
 
     // ROUTE Table - column names
     private static final String KEY_INDEX = "routeIndex";
+//    private static final String K
 //    private static final String KEY_PLAN_ID = "plan_id";
 //    private static final String KEY_MARKERLIST_ID = "marker_list_id"; //
 
@@ -94,7 +94,10 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
     // Route table create statement
     private static final String CREATE_TABLE_ROUTE = "CREATE TABLE " + TABLE_ROUTE + "("
             + KEY_ID + " INTEGER PRIMARY KEY, "
-            + KEY_PLAN_ID+ " INTEGER, "
+            + KEY_PLAN_ID + " INTEGER, "
+            + KEY_YEAR + " INTEGER, "
+            + KEY_MONTH + " INTEGER, "
+            + KEY_DAY + " INTEGER, "
             + KEY_INDEX + " INTEGER )"; //fk
 
     // MarkerList table create statement
@@ -171,6 +174,66 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         }
         return resultList;
     }
+    public ArrayList<String> getPlanDocumentation(long plan_id){ //for sharing & documentation
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ArrayList<String> resultList= new ArrayList<>();
+        String result,tmp;
+
+        String selectQuery = "SELECT * FROM "+ TABLE_ROUTE  + " WHERE "+KEY_PLAN_ID+ " = '"+plan_id+"'";
+        Cursor c = db.rawQuery(selectQuery,null);
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date(0,0,0);
+
+        if(c!=null && c.getCount()!=0) {
+            c.moveToFirst();
+            do{
+                date = new Date(c.getInt(c.getColumnIndex(KEY_YEAR)),
+                        c.getInt(c.getColumnIndex(KEY_MONTH)),
+                        c.getInt(c.getColumnIndex(KEY_DAY)));
+
+                tmp = getRouteDocumentation(c.getInt(c.getColumnIndex(KEY_ID)));
+
+                result = sdf.format(date) + tmp ;
+                resultList.add(result);
+
+            }while(c.moveToNext());
+        }
+        return resultList;
+    }
+
+    public String getRouteDocumentation(long route_id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String selectQuery = "SELECT * FROM "+ TABLE_MARKERLIST  + " WHERE "+KEY_ROUTE_ID+ " = '"+route_id+"'";
+        Cursor c = db.rawQuery(selectQuery,null);
+
+        String result="",tmp ;
+        if(c!=null && c.getCount()!=0) {
+            c.moveToFirst();
+            do{
+                tmp = getMarkerDocumentation(c.getInt(c.getColumnIndex(KEY_MARKER_ID)));
+                if(tmp.trim().length()>0){
+                    result = result + " -> " + tmp; //get markers which has a title.
+                }
+            }while(c.moveToNext());
+        }
+        return result;
+    }
+    public String getMarkerDocumentation(long marker_id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        String selectQuery = "SELECT * FROM " + TABLE_MARKER + " WHERE " + KEY_ID + " = '" + marker_id + "'";
+        Cursor c = db.rawQuery(selectQuery, null);
+        String title="";
+
+        if (c != null && c.getCount() != 0) {
+            c.moveToFirst();
+            title = c.getString(c.getColumnIndex(KEY_TITLE));
+        }
+        if(title.equals("Click to edit!") || title.isEmpty()){
+            return " ";
+        }else return title;
+    }
 
     public long createPlan(Plan plan){ // make another create without date //default plan name is city name.
         SQLiteDatabase db = this.getWritableDatabase();
@@ -212,6 +275,40 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
 
         return plan_id; //call by ref
     }
+
+    public Date getDateAfterNdays(Date date,int n){
+        Calendar cal = new GregorianCalendar(date.getYear(),date.getMonth()+1,date.getDate());
+        cal.add(Calendar.DAY_OF_MONTH,n);
+        return cal.getTime();
+    }
+    public long createRoute(long plan_id,Route route){
+        SQLiteDatabase db = this.getWritableDatabase();
+        String selectQuery = "SELECT * FROM "+ TABLE_PLAN + " WHERE "+KEY_ID+ " = '"+plan_id+"'";
+        Date date = new Date(0,0,0);
+        Cursor c = db.rawQuery(selectQuery,null);
+
+        if(c!=null && c.getCount()!=0) {
+            c.moveToFirst();
+            date = new Date(c.getInt(c.getColumnIndex(KEY_YEAR)),
+                    c.getInt(c.getColumnIndex(KEY_MONTH)),
+                    c.getInt(c.getColumnIndex(KEY_DAY)));
+            date = getDateAfterNdays(date,route.getIndex());
+        }
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_INDEX,route.getIndex());
+        values.put(KEY_PLAN_ID,plan_id);
+        values.put(KEY_YEAR,date.getYear());
+        values.put(KEY_MONTH,date.getMonth()+1);
+        values.put(KEY_DAY,date.getDate());
+
+        long route_id = db.insert(TABLE_ROUTE,null,values);
+        route.setId(route_id);
+
+        return route_id;
+    }
+
+/*
     public long createRoute(long plan_id,Route route){
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -222,33 +319,9 @@ public class PlanSQLiteHelper extends SQLiteOpenHelper /*extends SQLiteOpenHelpe
         long route_id = db.insert(TABLE_ROUTE,null,values);
         route.setId(route_id);
 
- /*     //assigning markerlist
-        ArrayList<Marker> markers = route.getMarkerList();
-        Iterator<Marker> iterator = markers.iterator();
-        Marker cur;
-
-        while (iterator.hasNext()){
-            cur = iterator.next();
-            createMarkerList(plan_id,route_id,cur);
-        }
-        *///----update route
-
-        /*
-        long[] marker_id_List = new long[markers.size()];
-        int i=0;
-
-        while(iterator.hasNext()){
-            cur = iterator.next();
-            marker_id_List[i++]=createMarker(cur,plan_id);
-        }
-
-        for (long marker_id : marker_id_List){
-            createMarkerList(route_id,marker_id); //link routes to the plan
-        }
-*/
         return route_id;
     }
-    public long createMarkerList(long plan_id,long route_id,Marker marker){
+*/    public long createMarkerList(long plan_id,long route_id,Marker marker){
         SQLiteDatabase db = this.getWritableDatabase();
         String selectQuery = "SELECT * FROM "+ TABLE_MARKER + " WHERE "+KEY_PLAN_ID+ " = '"+plan_id+"'"
                 +" AND "+KEY_LATITUDE + " = '" +marker.getPosition().latitude+"'"
